@@ -3,8 +3,9 @@ var config = require("../database/key");
 require("../config/userpassport")(passport);
 var jwt = require("jsonwebtoken");
 var Doctor = require("../models/doctor");
+var Especialidad = require("../models/especialidad");
 const chalk = require("chalk");
-
+var pup = require("../tools/scrapers");
 
 
 //registro doctor
@@ -94,8 +95,7 @@ exports.SignupDoctor = async function (req, res) {
     console.log("Error"+e);
   }
 };
-
-//login del doctor
+//ingreso del doctor logeado
 exports.SigninDoctor = async function (req, res) {
   Doctor.findOne(
     {
@@ -138,6 +138,11 @@ exports.SigninDoctor = async function (req, res) {
       }
     }
   );
+};
+//salida del doctor
+exports.SignoutDoctor = function (req, res) {
+  req.logout();
+  res.json({ success: true, msg: "Sign out Doctor EXITOSA." });
 };
 
 
