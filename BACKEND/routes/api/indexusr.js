@@ -15,7 +15,8 @@ router.get('/',function (req,res) {
 //crear un nuevo usuario REGISTANDOTE
 router.post('/signupuser',userController.SignupUsuario);
 
-
+//LOGEARTE una vez ya tengas tu CUENTA REGISTRADA
+router.post('/signinuser', userController.SingninUsuario);
 
 
 

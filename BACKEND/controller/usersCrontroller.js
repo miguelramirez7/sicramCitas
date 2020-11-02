@@ -44,7 +44,45 @@ exports.SignupUsuario = async function (req, res) {
   }
 };
 
+//INGRESO DE USUARIO UNA VEZ SE REGSITRO
+exports.SingninUsuario = function (req, res) {
+  User.findOne(
+    {
+      email: req.body.email,
+    },
+    function (err, user) {
+      if (!user) {
+        res.status(401).send({
+          success: false,
+          msg: "LA AUTENTICACION FALLO USUARIO NO EXISTE",
+        });
+      } else {
+        // check if password matches
+        user.comparePassword(req.body.password, function (err, isMatch) {
+          if (isMatch && !err) {
+            // si el usuario se encuentra y la contraseña  es correcta, crea un token
+            var token = jwt.sign(user.toJSON(), config.database.secretU, {
+              expiresIn: 604800, // 1 week
+            });
+            // retornamos la informacion incluyendo el token como json
+            res.json({ success: true, id: user._id, token: "Bearer " + token });
+          } else {
+            res.status(401).send({
+              success: false,
+              msg: "LA AUTENTICACION FALLO PASSWORD INCORRECTO ",
+            });
+          }
+        });
+      }
+    }
+  );
+};
 
+//salir de la cuenta
+exports.SignoutUsuario = function (req, res) {
+  req.logout();
+  res.json({ success: true, msg: "Sign out Exitosa." });
+};
 //obtener datos del usuario logeado, para su perfil.
 exports.Obntener_datos_Paciente = async function (req, res) {
   try {
