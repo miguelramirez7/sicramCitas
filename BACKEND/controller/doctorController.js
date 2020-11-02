@@ -5,6 +5,8 @@ var jwt = require("jsonwebtoken");
 var Doctor = require("../models/doctor");
 const chalk = require("chalk");
 
+
+
 //registro doctor
 exports.SignupDoctor = async function (req, res) {
   try {
@@ -27,8 +29,8 @@ exports.SignupDoctor = async function (req, res) {
                 req.body.cmp
             );
             var especialidad = await Especialidad.findOne({
-              especialidad: req.body.especialidad,
-            });
+                especialidad: req.body.especialidad,
+              });
 
 
             //si los nombres del doctor y cmp coinciden

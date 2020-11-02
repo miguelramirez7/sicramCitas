@@ -50,7 +50,11 @@ var DoctorSchema = new Schema({
     type: String,
     required: true,
   },
- 
+  
+  especialidad:{
+    type: Schema.Types.ObjectId,
+    ref: 'Especialidad'
+  }
 });
 
 
