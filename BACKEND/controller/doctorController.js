@@ -3,8 +3,9 @@ var config = require("../database/key");
 require("../config/userpassport")(passport);
 var jwt = require("jsonwebtoken");
 var Doctor = require("../models/doctor");
+var Especialidad = require("../models/especialidad");
 const chalk = require("chalk");
-
+var pup = require("../tools/scrapers");
 
 
 //registro doctor
