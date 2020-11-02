@@ -95,7 +95,7 @@ exports.SignupDoctor = async function (req, res) {
     console.log("Error"+e);
   }
 };
-//ingreso del doctor logeado
+//ingreso del doctor
 exports.SigninDoctor = async function (req, res) {
   Doctor.findOne(
     {
@@ -139,7 +139,7 @@ exports.SigninDoctor = async function (req, res) {
     }
   );
 };
-//salida del doctor
+//salida del doctor que se loggeo
 exports.SignoutDoctor = function (req, res) {
   req.logout();
   res.json({ success: true, msg: "Sign out Doctor EXITOSA." });
