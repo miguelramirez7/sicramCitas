@@ -48,19 +48,7 @@ var UserSchema = new Schema({
   direccion:{
         type: String,
         required: true,
-  },
-  cita:[{
-        type: Schema.Types.ObjectId,
-        ref: 'Cita'
-  }],
-  diagnostico:[{
-    type:Schema.Types.ObjectId,
-    ref: 'Diagnostico'
-    }],
-  dependiente:[{
-      type:Schema.Types.ObjectId,
-      ref: 'Dependiente'
-  }]
+  }
 });
 
 UserSchema.pre('save', function (next) {
