@@ -5,6 +5,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 // RUTA DE USUARIOS
 var indexUserApiRouter = require('./routes/api/indexusr');
+var indexDoctorApiRouter = require('./routes/api/indexct');
 var usersRouter = require('./routes/users');
 
 //INICIANDO LA APP
@@ -24,6 +25,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 //            AGREGANDO RUTAS PADRES
 //----------------------------------------------------------------
 app.use('/api', indexUserApiRouter);
+app.use('/api', indexDoctorApiRouter);
 app.use('/users', usersRouter);
 
 // catch 404 and forward to error handler
