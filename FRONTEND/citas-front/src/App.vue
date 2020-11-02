@@ -1,17 +1,17 @@
 <template>
   <v-app>
-    <vista-home/>
+    <vista-sidebar-paciente/>
   </v-app>
 </template>
 
 <script>
-import VistaHome from './components/VistaHome';
+import VistaSidebarPaciente from './components/VistaSidebarPaciente.vue';
 
 export default {
   name: 'App',
 
   components: {
-    VistaHome,
+    VistaSidebarPaciente,
   },
 
   data: () => ({
