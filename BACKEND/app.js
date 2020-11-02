@@ -5,8 +5,10 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 // RUTA DE USUARIOS
 var indexUserApiRouter = require('./routes/api/indexusr');
+var indexDoctorApiRouter = require('./routes/api/indexct');
+var cmpScrapApiRouter = require('./routes/api/scrap');
 var usersRouter = require('./routes/users');
-
+var passport =  require('passport');
 //INICIANDO LA APP
 var app = express();
 require("./database/database");
@@ -25,7 +27,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 //----------------------------------------------------------------
 app.use('/api', indexUserApiRouter);
 app.use('/users', usersRouter);
-
+app.use('/api', indexDoctorApiRouter);
+app.use('/cmp', cmpScrapApiRouter);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));

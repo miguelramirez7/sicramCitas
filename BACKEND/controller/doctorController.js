@@ -101,20 +101,15 @@ exports.SigninDoctor = async function (req, res) {
     {
       email: req.body.email,
     },
-    function (erro, doctor) {
+    function (err, doctor) {
       if (!doctor) {
-        loggerwin.info("El auntenticacion del usuario fallo");
         res.status(401).send({
           success: false,
           msg: "LA AUTENTICACION FALLO USUARIO NO EXISTE",
         });
       } else {
-        logger(chalk.blue("especialidad ") + chalk.green(doctor.especialidad));
-        // comparando password verificando
-        logger(chalk.blue("Password:") + chalk.green(req.body.password));
         doctor.comparePassword(req.body.password, function (err, isMatch) {
           if (isMatch && !err) {
-            logger(chalk.blue("ID:") + chalk.green(doctor.id));
             // si el usuario se encuentra y la contraseña  es correcta, crea un token
             var token = jwt.sign(doctor.toJSON(), config.database.secretU, {
               expiresIn: 604800, // 1 week
@@ -126,9 +121,6 @@ exports.SigninDoctor = async function (req, res) {
               token: "Bearer " + token,
             });
           } else {
-            loggerwin.info(
-              "El auntenticacion del usuario fallo : password incorrecto"
-            );
             res.status(401).send({
               success: false,
               msg: "LA AUTENTICACION FALLO PASSWORD INCORRECTO ",

@@ -18,7 +18,8 @@
     "morgan": "^1.9.1",
     "passport": "^0.4.1",
     "passport-jwt": "^4.0.0",
-    "pug": "2.0.0-beta11"
+    "pug": "2.0.0-beta11",
+    "puppeteer": "^5.4.1"
   },
   "devDependencies": {
     "nodemon": "^2.0.6"
