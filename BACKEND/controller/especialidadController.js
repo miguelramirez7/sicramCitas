@@ -19,9 +19,7 @@ exports.Cargar_Especialidades = function (req, res) {
   const esp13 = new Especialidad({ especialidad: "Ginecología" });
   const esp14 = new Especialidad({ especialidad: "Quiropráctica" });
   const esp15 = new Especialidad({ especialidad: "Hematología" });
-  const esp16 = new Especialidad({
-    especialidad: "Medicina física y rehabilitación",
-  });
+  const esp16 = new Especialidad({especialidad: "Medicina física y rehabilitación"});
   const esp17 = new Especialidad({ especialidad: "Medicina interna" });
   const esp18 = new Especialidad({ especialidad: "Neonatología" });
   const esp19 = new Especialidad({ especialidad: "Oncología" });
