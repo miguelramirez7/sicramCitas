@@ -2,7 +2,7 @@ module.exports = {
     database: {
       secretD: 'miSecreto',
       secretU: 'usuariosecret',
-      URI: 'mongodb+srv://rpopi:holamundo2020@cluster0.scxnr.mongodb.net/prubaSicram?retryWrites=true&w=majority'
+      URI: 'mongodb+srv://aicos:SXzVuOIPKhXFgAK9@cluster0.vzuc9.mongodb.net/sicram2020?retryWrites=true&w=majority'
     }
   };
   
