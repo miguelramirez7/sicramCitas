@@ -50,11 +50,17 @@ var DoctorSchema = new Schema({
     type: String,
     required: true,
   },
-  
+  horario:[{
+    type: Schema.Types.ObjectId,
+    ref: 'Horario'
+  }],
   especialidad:{
     type: Schema.Types.ObjectId,
     ref: 'Especialidad'
-  }
+  },organizacion:{
+    type: Schema.Types.ObjectId,
+    ref:  'Organizacion'
+  },
 });
 
 

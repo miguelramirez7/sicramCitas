@@ -101,20 +101,15 @@ exports.SigninDoctor = async function (req, res) {
     {
       email: req.body.email,
     },
-    function (erro, doctor) {
+    function (err, doctor) {
       if (!doctor) {
-        loggerwin.info("El auntenticacion del usuario fallo");
         res.status(401).send({
           success: false,
           msg: "LA AUTENTICACION FALLO USUARIO NO EXISTE",
         });
       } else {
-        logger(chalk.blue("especialidad ") + chalk.green(doctor.especialidad));
-        // comparando password verificando
-        logger(chalk.blue("Password:") + chalk.green(req.body.password));
         doctor.comparePassword(req.body.password, function (err, isMatch) {
           if (isMatch && !err) {
-            logger(chalk.blue("ID:") + chalk.green(doctor.id));
             // si el usuario se encuentra y la contraseña  es correcta, crea un token
             var token = jwt.sign(doctor.toJSON(), config.database.secretU, {
               expiresIn: 604800, // 1 week
@@ -126,9 +121,6 @@ exports.SigninDoctor = async function (req, res) {
               token: "Bearer " + token,
             });
           } else {
-            loggerwin.info(
-              "El auntenticacion del usuario fallo : password incorrecto"
-            );
             res.status(401).send({
               success: false,
               msg: "LA AUTENTICACION FALLO PASSWORD INCORRECTO ",
@@ -145,9 +137,253 @@ exports.SignoutDoctor = function (req, res) {
   res.json({ success: true, msg: "Sign out Doctor EXITOSA." });
 };
 
+exports.Actualizar_datos_doctor = async function (req, res) {
+  try {
+    var token = getToken(req.headers);
+    if (token) {
+      if (req.user.id == req.params.id) {
+        await Doctor.findById(req.user.id, async (err, doctor) => {
+          if (!doctor) {
+           console.log("Doctor no encontrado");
+          } else {
+            //Buscamos la especialidad para borrar de esta al médico
+            var especialidadEncontrada = await Especialidad.findById(
+              doctor.especialidad
+            );
+            var nuevaEspecialidad = await Especialidad.findOne({
+              especialidad: req.body.especialidad,
+            });
+
+            if (especialidadEncontrada != nuevaEspecialidad) {
+              // Buscamos el médico dentro de la especialidad y hallamos el indice del array
+              var indice = especialidadEncontrada.doctor.indexOf(doctor._id);
+              // Con el índice que hallamos, ahora borramos ese doctor del array
+              especialidadEncontrada.doctor.splice(indice, 1);
+              // Guardamos los cambios y se actualiza con un doctor menos
+              await especialidadEncontrada.save();
+              doctor.especialidad = nuevaEspecialidad;
+              //En la nueva especialidad pusheamos al doctor
+              nuevaEspecialidad.doctor.push(doctor);
+              await nuevaEspecialidad.save();
+            }
+
+            //Editamos datos del doctor
+            doctor.email = req.body.email;
+            doctor.celular = req.body.celular;
+            doctor.edad = req.body.edad;
+
+            await doctor.save((err, doctorUpdate) => {
+              if (err) {
+                console.log("Error al guardar");
+                res.send("error al guardar al doctor actualizado :" + err);
+              } else {
+                res.json({
+                  msg: "Doctor actualizado!",
+                  doctor: doctorUpdate,
+                });
+              }
+            });
+          }
+        }).populate("especialidad");
+      } else {
+        console.log("No es el usuario");
+        res.send(
+          "NO ES EL USUARIO   " +
+            req.user.id +
+            " comparando con " +
+            req.params.id
+        );
+      }
+    } else {
+      
+      return res.status(403).send({ success: false, msg: "Unauthorized." });
+    }
+  } catch (err) {
+    console.log("error"+err);
+  }
+};
+//obtener datos para el perfil del doctor
+exports.Obtener_datos_doctor = async function (req, res) {
+  try {
+    var token = getToken(req.headers);
+    if (token) {
+      if (req.user.id == req.params.id) {
+        var doctor = await Doctor.findById(req.params.id).populate(
+          "especialidad"
+        );
+        console.log("Doctor"+doctor);
+        res.send(doctor);
+      } else {
+        console.log("No es el usuario");
+        res.send(
+          "NO ES EL USUARIO    " +
+            req.user.id +
+            " username :  " +
+            req.user.username +
+            "  comparando con " +
+            req.params.id
+        );
+      }
+    } else {
+      return res.status(403).send({ success: false, msg: "Unauthorized." });
+    }
+  } catch (error) {
+    console.log("Error "+error);
+    res.json({msg: "Error"+error});
+  }
+};
 
 
+//agregar stack de horarios
+exports.Agregar_horario_doctor = async function (req, res) {
+  try {
+    var token = getToken(req.headers);
+    if (token) {
+      if (req.user.id == req.params.id) {
+        //encontramos doctor
+        var doctor = await Doctor.findById(req.user.id);
+        logger(chalk.blue("Doctor:") + chalk.green(doctor));
+        //confirmando que este horario ya existe
+        var horarioEncontrado = await Horario.findOne({
+          fecha: req.body.fecha,
+          hora_inicio: req.body.hora_inicio,
+          hora_fin: req.body.hora_fin,
+          doctor: doctor,
+        });
+        if (horarioEncontrado) {
+          res.json({ msg: "YA EXISTE ESE HORARIO PARA EL DOCTOR" });
+        } else {
+          logger(chalk.red("puedes poner horario"));
+          //nuevo horario agarramos por body los datos
+          var newhorario = new Horario({
+            fecha: req.body.fecha,
+            hora_inicio: req.body.hora_inicio,
+            hora_fin: req.body.hora_fin,
+          });
+          //agregamos el doctor del horario gracias al token
+          newhorario.doctor = doctor;
+          logger(chalk.blue("nuevo horario --- : ") + chalk.green(newhorario));
+          //guardamos horario
+          await newhorario.save((err, horario) => {
+            if (err) {
+              logger(chalk.red("Error al guardar horario"));
+              res.send("error al guardar al horario :" + err);
+            } else {
+              logger(chalk.blue("Se guardó el horario"));
+              res.status(200).json({ msg: "nuevo horario guardado" });
+            }
+          });
+          //pusheamos el areglo de horarios del doctor
+          doctor.horario.push(newhorario);
+          //guardamos dooctor actualizado
+          await doctor.save();
+        }
+      } else {
+        logger(
+          chalk.blue("NO es el usuario ") +
+            chalk.green(req.user.id) +
+            chalk.blue("comparado con ") +
+            chalk.magenta(req.params.id)
+        );
+        res.send(
+          "NO ES EL USUARIO   " +
+            req.user.id +
+            " comparando con " +
+            req.params.id
+        );
+      }
+    } else {
+      return res.status(403).send({ success: false, msg: "Unauthorized." });
+    }
+  } catch (err) {
+    loggerwin.info(err);
+    logger(chalk.red("ERROR: ") + chalk.white(err));
+    throw err;
+  }
+};
+// Actualizar el horario del doctor
+exports.Actualizar_horario_doctor = async function (req, res) {
+  try {
+    var token = getToken(req.headers);
+    if (token) {
+      if (req.user.id == req.params.id) {
+        await Horario.findById(req.body.horario_id, async (err, horario) => {
+          if (!horario) {
+            logger(
+              chalk.blue("Horario no encontrado error: ") + chalk.red(err)
+            );
+          } else {
+            //horario encontrado es la coincidencia con el horario que recién están introduciendo, esto sirve para que no hayan 2 horarios con la misma hora así tengan diferentes ids
+            var horarioEncontrado = await Horario.findOne({
+              fecha: req.body.fecha,
+              hora_inicio: req.body.hora_inicio,
+              hora_fin: req.body.hora_fin,
+            });
+            logger(
+              "doctor del horario: " +
+                horario.doctor._id +
+                " es igual a: " +
+                req.user.id
+            );
 
+            if (!horarioEncontrado) {
+              if (horario.doctor._id == req.user.id) {
+                if (horario.ocupado == false) {
+                  horario.fecha = req.body.fecha;
+                  horario.hora_inicio = req.body.hora_inicio;
+                  horario.hora_fin = req.body.hora_fin;
+
+                  await horario.save((err, horarioUpdate) => {
+                    if (err) {
+                      logger(chalk.red("Error al guardar"));
+                      res.json({
+                        msg: "error al guardar al doctor actualizado :" + err,
+                      });
+                    } else {
+                      res.json({ msg: "Horario actualizado! " });
+                    }
+                  });
+                } else {
+                  res.json({
+                    msg:
+                      "El horario esta siendo usado en una cita, No se puede Modificar",
+                  });
+                }
+              } else {
+                res.json({ msg: "El Horario no pertenece al doctor" });
+              }
+            } else {
+              res.json({ msg: "Este horario ya existe, elige otro" });
+            }
+          }
+        }).populate({
+          path: "doctor",
+          populate: { path: "organizacion", select: "nameOrg" },
+          select: "name & lastname",
+        });
+      } else {
+        logger(
+          chalk.blue("NO es el usuario ") +
+            chalk.green(req.user.id) +
+            chalk.blue("comparado con ") +
+            chalk.magenta(req.params.id)
+        );
+        res.send(
+          "NO ES EL USUARIO   " +
+            req.user.id +
+            " comparando con " +
+            req.params.id
+        );
+      }
+    } else {
+      loggerwin.info("usuario no autorizado");
+      return res.status(403).send({ success: false, msg: "Unauthorized." });
+    }
+  } catch (err) {
+    loggerwin.info(err);
+    logger(chalk.red("ERROR:") + chalk.white(err));
+  }
+};
 
 getToken = function (headers) {
   if (headers && headers.authorization) {

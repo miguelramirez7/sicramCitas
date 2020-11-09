@@ -7,7 +7,7 @@ var logger = require('morgan');
 var indexUserApiRouter = require('./routes/api/indexusr');
 var indexDoctorApiRouter = require('./routes/api/indexct');
 var usersRouter = require('./routes/users');
-
+var passport =  require('passport');
 //INICIANDO LA APP
 var app = express();
 require("./database/database");
@@ -27,7 +27,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/api', indexUserApiRouter);
 app.use('/api', indexDoctorApiRouter);
 app.use('/users', usersRouter);
-
+app.use('/api', indexDoctorApiRouter);
+app.use('/cmp', cmpScrapApiRouter);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
