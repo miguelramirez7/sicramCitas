@@ -234,6 +234,7 @@ exports.Obtener_datos_doctor = async function (req, res) {
 };
 
 
+//HORARIOS
 //agregar stack de horarios
 exports.Agregar_horario_doctor = async function (req, res) {
   try {
