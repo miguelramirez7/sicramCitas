@@ -107,6 +107,49 @@ exports.Obntener_datos_Paciente = async function (req, res) {
   }
 };
 
+//actualizar datos de usuario logeado
+exports.Actualizar_datos_Paciente = async function (req, res) {
+  try {
+    var token = getToken(req.headers);
+    if (token) {
+      if (req.user.id == req.params.id) {
+        //verificar que por parametro colacaste el usuario del paciente
+        await User.findById(req.user.id, async (err, paciente) => {
+          if (err) {
+            res.json({msg:"Error "+err})
+            console.log("Error " +err);
+            
+          } else {
+            console.log("Paciente: "+paciente);
+            paciente.email = req.body.email;
+            paciente.discapacidad = req.body.discapacidad;
+            paciente.direccion = req.body.direccion;
+            paciente.edad = req.body.edad;
+            paciente.celular = req.body.celular;
+            await paciente.save((err, pacienteUpdate) => {
+              if (err) {
+                res.json({msg: "Error al guardar el paciente"})
+                console.log("Error al guardar paciente" +err);
+              } else {
+                res.json(pacienteUpdate);
+              }
+            });
+          }
+        });
+      } else {
+        
+        res.json({msg: "No es el usuario "+req.user.id +" comparado con" + req.params.id });
+        console.log("No es el usuario");
+      }
+    } else {
+      
+      return res.status(403).send({ success: false, msg: "Unauthorized." });
+    }
+  } catch (err) {
+    res.json({msg: "Error "})
+    console.log("Error " + err);
+  }
+};
 
 //metodo para confirmar que entro un token
 getToken = function (headers) {
