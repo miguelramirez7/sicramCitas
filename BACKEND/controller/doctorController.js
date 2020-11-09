@@ -202,7 +202,36 @@ exports.Actualizar_datos_doctor = async function (req, res) {
     console.log("error"+err);
   }
 };
-
+//obtener datos para el perfil del doctor
+exports.Obtener_datos_doctor = async function (req, res) {
+  try {
+    var token = getToken(req.headers);
+    if (token) {
+      if (req.user.id == req.params.id) {
+        var doctor = await Doctor.findById(req.params.id).populate(
+          "especialidad"
+        );
+        console.log("Doctor"+doctor);
+        res.send(doctor);
+      } else {
+        console.log("No es el usuario");
+        res.send(
+          "NO ES EL USUARIO    " +
+            req.user.id +
+            " username :  " +
+            req.user.username +
+            "  comparando con " +
+            req.params.id
+        );
+      }
+    } else {
+      return res.status(403).send({ success: false, msg: "Unauthorized." });
+    }
+  } catch (error) {
+    console.log("Error "+error);
+    res.json({msg: "Error"+error});
+  }
+};
 
 
 getToken = function (headers) {
