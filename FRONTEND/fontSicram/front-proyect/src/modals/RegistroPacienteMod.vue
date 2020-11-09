@@ -1,18 +1,17 @@
 <template>
   <v-dialog :value="regPacDialog" max-width="600px" persistent>
-    
     <v-card color="grey lighten-5">
       <v-card-title>
         <span class="headline ">REGISTRO DE PACIENTE</span>
       </v-card-title>
       <v-card-text>
         <v-container>
-          <v-form ref="form"  lazy-validation>
+          <v-form ref="form" v-model="valid" lazy-validation>
             <v-row>
               <v-col cols="12" sm="6" md="6">
                 <v-text-field
                   label="Nombres*"
-                  :rules="getReglasCampoRequerido"
+                  :rules="[getReglas.requerido]"
                   required
                   color="light-blue"
                 ></v-text-field>
@@ -20,7 +19,7 @@
               <v-col cols="12" sm="6" md="6">
                 <v-text-field
                   label="Apellidos*"
-                  :rules="getReglasCampoRequerido"
+                  :rules="[getReglas.requerido]"
                   required
                   color="light-blue"
                 ></v-text-field>
@@ -28,7 +27,7 @@
               <v-col cols="12" sm="6" md="6">
                 <v-text-field
                   label="Correo*"
-                  :rules="getReglasCorreo"
+                  :rules="[getReglas.requerido, getReglas.correo]"
                   required
                   color="light-blue"
                 ></v-text-field>
@@ -36,22 +35,25 @@
               <v-col cols="12" sm="6" md="6">
                 <v-text-field
                   label="Contraseña*"
-                  type="password"
+                  :rules="[getReglas.requerido,getReglas.pass,getReglas.minimochar]"
+                  :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
+                  :type="show1 ? 'text' : 'password'"
                   required
                   color="light-blue"
+                  @click:append="show1 = !show1"
                 ></v-text-field>
               </v-col>
               <v-col cols="12" sm="6">
                 <v-text-field
                   label="DNI*"
-                  :rules="getReglasDNI"
+                  :rules="[getReglas.DNI]"
                   required
                   color="light-blue"
                 ></v-text-field>
               </v-col>
               <v-col cols="12" sm="6">
                 <v-select
-                  :rules="getReglasCampoRequerido"
+                  :rules="[getReglas.requerido]"
                   :items="['MASCULINO', 'FEMENINO']"
                   label="Género*"
                   required
@@ -62,7 +64,7 @@
                 <v-text-field
                   type="number"
                   label="Edad*"
-                  :rules="getReglasEdad"
+                  :rules="[getReglas.requerido]"
                   required
                   color="light-blue"
                 ></v-text-field>
@@ -82,10 +84,10 @@
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn color="pink darken-1" text @click="close()">
-          Close
+          Cerrar
         </v-btn>
-        <v-btn color="blue darken-1" text @click="close()">
-          Save
+        <v-btn color="blue darken-1" text @click="validate">
+          Registrar
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -104,15 +106,13 @@ export default {
   },
   data() {
     return {
-      
+      valid: true, //VALIDACIÓN DEL FORMULARIO
+      show1: false, //MOSTRAR CONTRASEÑA
     };
   },
   computed: {
     ...mapGetters([
-      "getReglasCorreo",
-      "getReglasCampoRequerido",
-      "getReglasDNI",
-      "getReglasEdad"
+      "getReglas",
     ]),
     regPacDialog() {
       return this.dialog;
@@ -121,6 +121,10 @@ export default {
   methods: {
     close() {
       this.$emit("close");
+    },
+    //VALIDAR EL FORMULARIO
+    validate() {
+      this.$refs.form.validate();
     },
   },
 };

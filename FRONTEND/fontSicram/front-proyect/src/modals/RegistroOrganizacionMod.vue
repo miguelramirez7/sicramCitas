@@ -6,27 +6,31 @@
       </v-card-title>
       <v-card-text>
         <v-container>
+          <v-form ref="form" v-model="valid" lazy-validation>
           <v-row>
             <v-col cols="12" sm="6" md="6">
               <v-text-field
                 label="Correo*"
-                :rules="getReglasCorreo"
+                :rules="[getReglas.correo,getReglas.requerido]"
                 required
                 color="blue"
               ></v-text-field>
             </v-col>
             <v-col cols="12" sm="6" md="6">
               <v-text-field
-                label="Contraseña*"
-                type="password"
-                required
-                color="blue"
+               label="Contraseña*"
+                  :rules="[getReglas.requerido,getReglas.pass,getReglas.minimochar]"
+                  :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
+                  :type="show1 ? 'text' : 'password'"
+                  required
+                  color="blue"
+                  @click:append="show1 = !show1"
               ></v-text-field>
             </v-col>
             <v-col cols="12" sm="12" md="12">
               <v-text-field
                 label="Nombre organización*"
-                :rules="getReglasCampoRequerido"
+                :rules="[getReglas.requerido]"
                 required
                 color="blue"
               ></v-text-field>
@@ -43,19 +47,21 @@
                 label="R.U.C.*"
                 required
                 color="blue"
+                :rules="[getReglas.requerido]"
               ></v-text-field>
             </v-col>
           </v-row>
+          </v-form>
         </v-container>
         <small>*Datos obligatorios a llenar.</small>
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn color="pink darken-1" text @click="close()">
-          Close
+          Cerrar
         </v-btn>
-        <v-btn color="blue darken-1" text @click="close()">
-          Save
+        <v-btn color="blue darken-1" text @click="validate()">
+          Registrar
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -73,11 +79,15 @@ export default {
       default: false,
     },
   },
+  data() {
+    return {
+      valid: true, //VALIDACIÓN DEL FORMULARIO
+      show1: false, //MOSTRAR CONTRASEÑA
+    };
+  },
   computed: {
     ...mapGetters([
-      "getReglasCorreo",
-      "getReglasCampoRequerido",
-      "getReglasEdad"
+      "getReglas",
     ]),
     regOrgDialog() {
       return this.dialog;
@@ -86,6 +96,10 @@ export default {
   methods: {
     close() {
       this.$emit("close");
+    },
+    //VALIDAR EL FORMULARIO
+    validate() {
+      this.$refs.form.validate();
     },
   },
 };
