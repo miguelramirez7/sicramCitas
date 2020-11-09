@@ -10,5 +10,9 @@ router.post('/signupdoctor', doctorController.SignupDoctor);
 router.post('/signindoctor', doctorController.SigninDoctor);
 //salir de la cuenta del doctor
 router.get('/signoutdoctor', passport.authenticate('doctor', { session: false}), doctorController.SignoutDoctor);
+//mostrar datos del perfil del doctor
+router.get('/doctor/perfil/:id', passport.authenticate('doctor', { session: false}), doctorController.Obtener_datos_doctor);
+//actualizar datos del doctor logeado
+router.post('/doctor/perfil/update/:id',passport.authenticate('doctor', { session: false}),doctorController.Actualizar_datos_doctor);
 
 module.exports = router;

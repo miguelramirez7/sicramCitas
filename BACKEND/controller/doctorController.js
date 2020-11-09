@@ -137,7 +137,71 @@ exports.SignoutDoctor = function (req, res) {
   res.json({ success: true, msg: "Sign out Doctor EXITOSA." });
 };
 
+exports.Actualizar_datos_doctor = async function (req, res) {
+  try {
+    var token = getToken(req.headers);
+    if (token) {
+      if (req.user.id == req.params.id) {
+        await Doctor.findById(req.user.id, async (err, doctor) => {
+          if (!doctor) {
+           console.log("Doctor no encontrado");
+          } else {
+            //Buscamos la especialidad para borrar de esta al médico
+            var especialidadEncontrada = await Especialidad.findById(
+              doctor.especialidad
+            );
+            var nuevaEspecialidad = await Especialidad.findOne({
+              especialidad: req.body.especialidad,
+            });
 
+            if (especialidadEncontrada != nuevaEspecialidad) {
+              // Buscamos el médico dentro de la especialidad y hallamos el indice del array
+              var indice = especialidadEncontrada.doctor.indexOf(doctor._id);
+              // Con el índice que hallamos, ahora borramos ese doctor del array
+              especialidadEncontrada.doctor.splice(indice, 1);
+              // Guardamos los cambios y se actualiza con un doctor menos
+              await especialidadEncontrada.save();
+              doctor.especialidad = nuevaEspecialidad;
+              //En la nueva especialidad pusheamos al doctor
+              nuevaEspecialidad.doctor.push(doctor);
+              await nuevaEspecialidad.save();
+            }
+
+            //Editamos datos del doctor
+            doctor.email = req.body.email;
+            doctor.celular = req.body.celular;
+            doctor.edad = req.body.edad;
+
+            await doctor.save((err, doctorUpdate) => {
+              if (err) {
+                console.log("Error al guardar");
+                res.send("error al guardar al doctor actualizado :" + err);
+              } else {
+                res.json({
+                  msg: "Doctor actualizado!",
+                  doctor: doctorUpdate,
+                });
+              }
+            });
+          }
+        }).populate("especialidad");
+      } else {
+        console.log("No es el usuario");
+        res.send(
+          "NO ES EL USUARIO   " +
+            req.user.id +
+            " comparando con " +
+            req.params.id
+        );
+      }
+    } else {
+      
+      return res.status(403).send({ success: false, msg: "Unauthorized." });
+    }
+  } catch (err) {
+    console.log("error"+err);
+  }
+};
 
 
 
