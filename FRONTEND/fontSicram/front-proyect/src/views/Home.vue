@@ -1,10 +1,19 @@
 <template>
   <div class="imagen">
     <!---------------MODALES---------------------->
-    <Login :dialog="loginDialog" @close="loginDialog = false"/>
-    <RegistroPacienteMod :dialog="registroPacienteDialog" @close="registroPacienteDialog = false"/>
-    <RegistroDoctorMod :dialog="registroDoctorDialog" @close="registroDoctorDialog = false"/>
-    <RegistroOrganizacionMod :dialog="registroOrganizacionDialog" @close="registroOrganizacionDialog = false"/>
+    <Login :dialog="loginDialog" @close="loginDialog = false" />
+    <RegistroPacienteMod
+      :dialog="registroPacienteDialog"
+      @close="registroPacienteDialog = false"
+    />
+    <RegistroDoctorMod
+      :dialog="registroDoctorDialog"
+      @close="registroDoctorDialog = false"
+    />
+    <RegistroOrganizacionMod
+      :dialog="registroOrganizacionDialog"
+      @close="registroOrganizacionDialog = false"
+    />
     <!-------------------------------------------->
     <v-app-bar color="" dense dark absolute>
       <v-app-bar-nav-icon
@@ -36,10 +45,10 @@
         </v-list>
       </v-menu>
     </v-app-bar>
-    
+
     <v-navigation-drawer color="#f2f2f2" app v-model="drawer" clipped>
-      <v-list shaped>
-        <v-list-item>
+      <v-list shaped >
+        <v-list-item link>
           <v-list-item-avatar>
             <v-icon color="cyan">view_sidebar</v-icon>
           </v-list-item-avatar>
@@ -51,25 +60,32 @@
         </v-list-item>
         <v-divider />
 
-        <v-list-group
-          no-action
-          color="teal lighten-2"
-          v-for="item in items"
-          :key="item.title"
-          v-model="item.active"
-        >
-          <template v-slot:activator>
-            <v-list-item-content>
-              <v-list-item-title v-text="item.title"></v-list-item-title>
-            </v-list-item-content>
-          </template>
+        <v-list-item-group link>
+          <v-list-item link color="teal lighten-2" @click="loginDialog = true" >
+            <v-list-item-title>Ingresar</v-list-item-title>
+          </v-list-item>
 
-          <v-list-item-group>
-            <v-list-item v-for="child in item.items" :key="child.title" link>
-              <v-list-item-title v-text="child.title"></v-list-item-title>
-            </v-list-item>
-          </v-list-item-group>
-        </v-list-group>
+          <v-list-group
+            no-action
+            color="teal lighten-2"
+            v-for="item in items"
+            :key="item.title"
+            v-model="item.active"
+            link
+          >
+            <template v-slot:activator>
+                <v-list-item-title v-text="item.title"></v-list-item-title>
+            </template>
+
+            <v-list-item-group>
+              <v-list-item v-for="child in item.items" :key="child.title" link>
+                <v-list-item-title v-text="child.title"></v-list-item-title>
+              </v-list-item>
+            </v-list-item-group>
+          </v-list-group>
+        </v-list-item-group>
+
+        
 
         <v-divider />
       </v-list>
@@ -82,7 +98,14 @@
           BIENVENIDO A SICRAM
         </h1>
         <h2 class="grey--text mb-5 subtitulo">Consultorio de citas médicas</h2>
-        <v-btn class="mx-2" dark large color="cyan" elevation="10" @click="loginDialog = true">
+        <v-btn
+          class="mx-2"
+          dark
+          large
+          color="cyan"
+          elevation="10"
+          @click="loginDialog = true"
+        >
           <v-icon left>
             accessibility
           </v-icon>
@@ -94,18 +117,17 @@
 </template>
 
 <script>
-import Login from '@/modals/Login.vue'
-import RegistroPacienteMod from '@/modals/RegistroPacienteMod.vue'
-import RegistroDoctorMod from '@/modals/RegistroDoctorMod.vue'
-import RegistroOrganizacionMod from '@/modals/RegistroOrganizacionMod.vue'
+import Login from "@/modals/Login.vue";
+import RegistroPacienteMod from "@/modals/RegistroPacienteMod.vue";
+import RegistroDoctorMod from "@/modals/RegistroDoctorMod.vue";
+import RegistroOrganizacionMod from "@/modals/RegistroOrganizacionMod.vue";
 export default {
-  name: 'Home',
-  components:{
+  name: "Home",
+  components: {
     Login,
     RegistroPacienteMod,
     RegistroDoctorMod,
     RegistroOrganizacionMod,
-
   },
   data() {
     return {
@@ -118,9 +140,6 @@ export default {
       group: null,
       items: [
         {
-          title: "Ingresar",
-        },
-        {
           active: false,
           items: [
             {
@@ -130,16 +149,16 @@ export default {
               title: "Paciente",
             },
             {
-              title: "Doctore",
+              title: "Doctor",
             },
           ],
           title: "Registrarse",
         },
       ],
-      loginDialog : false, //VARIABLE PARA ABRIR EL MODAL DE LOGIN
-      registroPacienteDialog : false, //VARIABLE PARA ABRIR EL MODAL DE REGISTRO PACIENTE
-      registroDoctorDialog : false, //VARIABLE PARA ABRIR EL MODAL DE REGISTRO DOCTOR
-      registroOrganizacionDialog : false, //VARIABLE PARA ABRIR EL MODAL DE REGISTRO ORGANIZACION
+      loginDialog: false, //VARIABLE PARA ABRIR EL MODAL DE LOGIN
+      registroPacienteDialog: false, //VARIABLE PARA ABRIR EL MODAL DE REGISTRO PACIENTE
+      registroDoctorDialog: false, //VARIABLE PARA ABRIR EL MODAL DE REGISTRO DOCTOR
+      registroOrganizacionDialog: false, //VARIABLE PARA ABRIR EL MODAL DE REGISTRO ORGANIZACION
     };
   },
   watch: {

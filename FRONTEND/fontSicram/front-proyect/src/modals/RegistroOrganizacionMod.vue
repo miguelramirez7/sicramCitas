@@ -86,9 +86,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters([
-      "getReglas",
-    ]),
+    ...mapGetters(["getReglas"]),
     regOrgDialog() {
       return this.dialog;
     },

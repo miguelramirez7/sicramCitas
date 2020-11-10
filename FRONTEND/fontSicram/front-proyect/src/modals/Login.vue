@@ -1,5 +1,5 @@
 <template>
-  <v-dialog :value="loginDialog" @click:outside="close()" max-width="600px">
+  <v-dialog :value="loginDialog"  max-width="600px" persistent>
     <v-row no-gutters>
       <v-col cols="6">
         <v-card class="rounded-0">
