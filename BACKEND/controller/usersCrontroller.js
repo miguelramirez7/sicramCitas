@@ -7,7 +7,7 @@ var User = require("../models/user");
 //REGISTRO USUARIO
 exports.SignupUsuario = async function (req, res) {
   try {
-    if (!req.body.username || !req.body.password || !req.body.email) {
+    if (!req.body.password || !req.body.email) {
       res.json({ success: false, msg: "Por favor, ponga email y contraseña" });
     } else {
       await User.findOne({ email: req.body.email }, async (erro, user) => {
@@ -15,7 +15,6 @@ exports.SignupUsuario = async function (req, res) {
           res.status(401).json({ msg: "email ya esta siendo usado" });
         } else {
           var newUser = new User({
-            username: req.body.username,
             password: req.body.password,
             email: req.body.email,
             name: req.body.name,
@@ -23,9 +22,7 @@ exports.SignupUsuario = async function (req, res) {
             genero: req.body.genero,
             dni: req.body.dni,
             edad: req.body.edad,
-            discapacidad: req.body.discapacidad,
-            celular: req.body.celular,
-            direccion: req.body.direccion,
+            celular: req.body.celular       
           });
         
           // guardamos usuario registrado
