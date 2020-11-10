@@ -2,7 +2,11 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var bcrypt = require('bcrypt-nodejs');
 
-var UserSchema = new Schema({
+
+var OrganizacionSchema = new Schema({
+  ruc:{
+      type: String,
+  },
   username: {
         type: String,
         unique: true,
@@ -17,41 +21,25 @@ var UserSchema = new Schema({
         required: true,
         unique: true
   },
-  genero: {
-      type:String,
-  },
-  name:  {
+  nameOrg:  {
         type: String,
-        required: true,
-  },
-  lastname: {
-        type: String,
-        required: true,
-  },
-  dni: {
-        type: Number,
-        required: true,
-        minlength: 8,
-  },
-  edad:{
-        type: Number,
-        required: true,
-  },
-  discapacidad:  {
-        type: String,
-        required: true,
-  },
-  celular: {
-        type: Number,
         required: true,
   },
   direccion:{
         type: String,
         required: true,
-  }
+  },
+  especialidad:[{
+      type: Schema.Types.ObjectId,
+      ref: 'Especialidad'
+  }],
+  doctor:[{
+        type: Schema.Types.ObjectId,
+        ref: 'Doctor'
+  }]
 });
 
-UserSchema.pre('save', function (next) {
+OrganizacionSchema.pre('save', function (next) {
     var user = this;
     if (this.isModified('password') || this.isNew) {
         bcrypt.genSalt(10, function (err, salt) {
@@ -71,14 +59,9 @@ UserSchema.pre('save', function (next) {
     }
 });
 
-UserSchema.methods.toJSON=function(){
-    let user= this;
-    let userObject = user.toObject();
-    delete userObject.password;
-    return userObject;
-};
 
-UserSchema.methods.comparePassword = function (passw, cb) {
+
+OrganizacionSchema.methods.comparePassword = function (passw, cb) {
     bcrypt.compare(passw, this.password, function (err, isMatch) {
         if (err) {
             return cb(err);
@@ -88,6 +71,17 @@ UserSchema.methods.comparePassword = function (passw, cb) {
     });
 };
 
+OrganizacionSchema.methods.toJSON=function(){
+    let user= this;
+    let userObject = user.toObject();
+    delete userObject.password;
+
+    return userObject;
+};
+
+OrganizacionSchema.pre('deleteOne', function (next){
+    console.log('antes de eliminar organizacion eliminamos referencias')
+})
 
 
-module.exports = mongoose.model('User', UserSchema);
+module.exports = mongoose.model('Organizacion', OrganizacionSchema);

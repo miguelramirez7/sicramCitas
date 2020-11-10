@@ -3,17 +3,23 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "node ./bin/www",
+    "dev": "nodemon ./bin/www"
   },
   "dependencies": {
     "bcrypt-nodejs": "0.0.3",
-    "cookie-parser": "~1.4.4",
+    "chalk": "^4.1.0",
+    "cookie-parser": "^1.4.5",
     "debug": "~2.6.9",
-    "express": "~4.16.1",
-    "http-errors": "~1.6.3",
+    "express": "^4.16.4",
+    "http-errors": "^1.6.3",
+    "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.10.11",
-    "morgan": "~1.9.1",
-    "pug": "2.0.0-beta11"
+    "morgan": "^1.9.1",
+    "passport": "^0.4.1",
+    "passport-jwt": "^4.0.0",
+    "pug": "2.0.0-beta11",
+    "puppeteer": "^5.4.1"
   },
   "devDependencies": {
     "nodemon": "^2.0.6"
