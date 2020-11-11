@@ -22,17 +22,18 @@ exports.SignupUsuario = async function (req, res) {
             genero: req.body.genero,
             dni: req.body.dni,
             edad: req.body.edad,
-            celular: req.body.celular       
+            celular: req.body.celular,
+            direccion: req.body.direccion       
           });
-        
-          // guardamos usuario registrado
-          await newUser.save(function (err) {
-            if (err) {
-              
-              return res.json({ success: false, msg: "Username ya existe." });
+          
+          await newUser.save((err,nuevousuario)=>{
+            if(err){
+              res.json({msg:"Error al guardar en la bd"});
+            }else{
+              res.json({msg:"Usuario registrado"});
             }
-            res.json({ success: true, msg: "Exito nuevo usuario creado." });
           });
+          
         }
       });
     }
