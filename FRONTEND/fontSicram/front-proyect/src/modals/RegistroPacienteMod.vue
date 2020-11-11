@@ -1,12 +1,16 @@
 <template>
   <v-dialog :value="regPacDialog" max-width="600px" persistent>
     <v-card color="grey lighten-5">
-      <v-card-title>
-        <span class="headline ">REGISTRO DE PACIENTE</span>
-      </v-card-title>
-      <v-card-text>
-        <v-container>
-          <v-form ref="form" v-model="valid" lazy-validation>
+      <v-form
+        ref="form"
+        lazy-validation
+        @submit.prevent="registrar"
+      >
+        <v-card-title>
+          <span class="headline ">REGISTRO DE PACIENTE</span>
+        </v-card-title>
+        <v-card-text>
+          <v-container>
             <v-row>
               <v-col cols="12" sm="6" md="6">
                 <v-text-field
@@ -14,6 +18,7 @@
                   :rules="[getReglas.requerido]"
                   required
                   color="light-blue"
+                  v-model="pacienteDatos.name"
                 ></v-text-field>
               </v-col>
               <v-col cols="12" sm="6" md="6">
@@ -22,6 +27,7 @@
                   :rules="[getReglas.requerido]"
                   required
                   color="light-blue"
+                  v-model="pacienteDatos.lastname"
                 ></v-text-field>
               </v-col>
               <v-col cols="12" sm="6" md="6">
@@ -30,17 +36,23 @@
                   :rules="[getReglas.requerido, getReglas.correo]"
                   required
                   color="light-blue"
+                  v-model="pacienteDatos.email"
                 ></v-text-field>
               </v-col>
               <v-col cols="12" sm="6" md="6">
                 <v-text-field
                   label="Contraseña*"
-                  :rules="[getReglas.requerido,getReglas.pass,getReglas.minimochar]"
+                  :rules="[
+                    getReglas.requerido,
+                    getReglas.pass,
+                    getReglas.minimochar,
+                  ]"
                   :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
                   :type="show1 ? 'text' : 'password'"
                   required
                   color="light-blue"
                   @click:append="show1 = !show1"
+                  v-model="pacienteDatos.password"
                 ></v-text-field>
               </v-col>
               <v-col cols="12" sm="6">
@@ -49,6 +61,7 @@
                   :rules="[getReglas.DNI]"
                   required
                   color="light-blue"
+                  v-model="pacienteDatos.dni"
                 ></v-text-field>
               </v-col>
               <v-col cols="12" sm="6">
@@ -58,6 +71,7 @@
                   label="Género*"
                   required
                   color="light-blue"
+                  v-model="pacienteDatos.genero"
                 ></v-select>
               </v-col>
               <v-col cols="12" sm="6">
@@ -67,35 +81,37 @@
                   :rules="[getReglas.requerido]"
                   required
                   color="light-blue"
+                  v-model="pacienteDatos.edad"
                 ></v-text-field>
               </v-col>
               <v-col cols="12" sm="6">
                 <v-text-field
                   label="Número de celular"
                   color="light-blue"
+                  v-model="pacienteDatos.celular"
                 ></v-text-field>
               </v-col>
             </v-row>
-          </v-form>
-        </v-container>
+          </v-container>
 
-        <small>*Datos obligatorios a llenar.</small>
-      </v-card-text>
-      <v-card-actions>
-        <v-spacer></v-spacer>
-        <v-btn color="pink darken-1" text @click="close()">
-          Cerrar
-        </v-btn>
-        <v-btn color="blue darken-1" text @click="validate">
-          Registrar
-        </v-btn>
-      </v-card-actions>
+          <small>*Datos obligatorios a llenar.</small>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="pink darken-1" text @click="close()">
+            Cerrar
+          </v-btn>
+          <v-btn type="submit" color="blue darken-1" text >
+            Registrar
+          </v-btn>
+        </v-card-actions>
+      </v-form>
     </v-card>
   </v-dialog>
 </template>
 
 <script>
-import { mapGetters, mapState } from "vuex";
+import { mapActions, mapGetters, mapState } from "vuex";
 export default {
   name: "RegistroPacienteMod",
   props: {
@@ -106,26 +122,41 @@ export default {
   },
   data() {
     return {
-      valid: true, //VALIDACIÓN DEL FORMULARIO
       show1: false, //MOSTRAR CONTRASEÑA
+      pacienteDatos : {
+        password: "",
+        email:"",
+        name:"",
+        lastname:"",
+        dni:"",
+        edad:"",
+        celular:"",
+        genero:"",
+      }
     };
   },
   computed: {
-    ...mapGetters([
-      "getReglas",
-    ]),
+    ...mapGetters(["getReglas"]),
     regPacDialog() {
       return this.dialog;
     },
   },
   methods: {
+    ...mapActions(["registrarPaciente"]),
+    //PARA CERRAR EL MODAL
     close() {
       this.$emit("close");
     },
-    //VALIDAR EL FORMULARIO
-    validate() {
-      this.$refs.form.validate();
-    },
+    //REGISTRO DE PACIENTE
+    registrar(){
+      if(this.$refs.form.validate()){
+        console.log("REGITRAR")
+        console.log("PACIENTE :" , this.pacienteDatos)
+        this.registrarPaciente(this.pacienteDatos)
+      }else{
+        console.log("MOSTRAR MENSAJE NEGATIVO")
+      }
+    }
   },
 };
 </script>
