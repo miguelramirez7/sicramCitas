@@ -33,7 +33,7 @@ exports.SignupUsuario = async function (req, res) {
               return res.status(400).json({ok: false, err});
           }
   
-          res.json({nuevous});
+          res.json({msg:"Usuario registrado"});
 
           });
         }
