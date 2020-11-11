@@ -7,6 +7,7 @@ var logger = require('morgan');
 var indexUserApiRouter = require('./routes/api/indexusr');
 var indexDoctorApiRouter = require('./routes/api/indexct');
 var usersRouter = require('./routes/users');
+var cmpScrapApiRouter = require('./routes/api/scrap');
 var passport =  require('passport');
 //INICIANDO LA APP
 var app = express();
@@ -25,7 +26,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 //            AGREGANDO RUTAS PADRES
 //----------------------------------------------------------------
 app.use('/api', indexUserApiRouter);
-app.use('/api', indexDoctorApiRouter);
 app.use('/users', usersRouter);
 app.use('/api', indexDoctorApiRouter);
 app.use('/cmp', cmpScrapApiRouter);
