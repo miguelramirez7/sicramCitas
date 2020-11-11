@@ -11,7 +11,7 @@ var pup = require("../tools/scrapers");
 //registro doctor
 exports.SignupDoctor = async function (req, res) {
   try {
-    if (!req.body.username || !req.body.password || !req.body.email) {
+    if (!req.body.password || !req.body.email) {
       res.json({
         success: false,
         msg: "Por favor, ponga nombre de usuario y contraseña",
@@ -42,7 +42,6 @@ exports.SignupDoctor = async function (req, res) {
             ) {
               //creamos el nuevo docotor y guaardamos sus datos
               var newDoctor = new Doctor({
-                username: req.body.username,
                 password: req.body.password,
                 genero: req.body.genero,
                 email: req.body.email,
