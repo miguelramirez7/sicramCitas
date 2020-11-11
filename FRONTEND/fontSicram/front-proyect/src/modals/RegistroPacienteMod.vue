@@ -128,10 +128,10 @@ export default {
         email:"",
         name:"",
         lastname:"",
+        genero:"",
         dni:"",
         edad:"",
         celular:"",
-        genero:"",
       }
     };
   },

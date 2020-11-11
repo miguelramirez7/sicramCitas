@@ -13,11 +13,16 @@ const mutations = {
 
 const actions = {
     registrarPaciente({commit},datos){
-        let url = `http://localhost:3000/api/signupuser`;
-        return axios
-            .post(url,datos)
+        axios
+            .post("https://sicramv1.herokuapp.com/api/signupuser",{...datos},
+            {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+              }
+            }
+            )
             .then((res)=>{
-                console.log(res)
+                console.log(res.data.msg)
             })
             .catch((e)=>{
                 console.log(e)
