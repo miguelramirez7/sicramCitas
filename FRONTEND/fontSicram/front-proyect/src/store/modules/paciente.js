@@ -14,11 +14,17 @@ const mutations = {
 const actions = {
     registrarPaciente({commit},datos){
         axios
-            .post("https://sicramv1.herokuapp.com/api/signupuser",{...datos},
-            {
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-              }
+            .post("https://sicramv1.herokuapp.com/api/signupuser",{
+                
+                    emaiL: "d1sd@asd.com",
+                    password : "asdfasf",
+                    name: "asd",
+                    lastname : "asd",
+                    dni: 78945612,
+                    edad : 39,
+                    celular : 987456321,
+                    direccion: "asdasfasfaf"
+                
             }
             )
             .then((res)=>{

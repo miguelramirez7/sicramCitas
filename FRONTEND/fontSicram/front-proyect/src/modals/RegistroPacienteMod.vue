@@ -149,13 +149,13 @@ export default {
     },
     //REGISTRO DE PACIENTE
     registrar(){
-      if(this.$refs.form.validate()){
-        console.log("REGITRAR")
-        console.log("PACIENTE :" , this.pacienteDatos)
+      //if(this.$refs.form.validate()){
+      //  console.log("REGITRAR")
+      //  console.log("PACIENTE :" , this.pacienteDatos)
         this.registrarPaciente(this.pacienteDatos)
-      }else{
-        console.log("MOSTRAR MENSAJE NEGATIVO")
-      }
+      //}else{
+      //  console.log("MOSTRAR MENSAJE NEGATIVO")
+      //}
     }
   },
 };
