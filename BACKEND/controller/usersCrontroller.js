@@ -10,30 +10,32 @@ exports.SignupUsuario = async function (req, res) {
     if (!req.body.password || !req.body.email) {
       res.json({ success: false, msg: "Por favor, ponga email y contraseña" });
     } else {
-      await User.findOne({ email: req.body.email }, async (erro, user) => {
+      await User.findOne({ email: req.body.email },async(err, user) =>{
         if (user) {
           res.status(401).json({ msg: "email ya esta siendo usado" });
         } else {
           var newUser = new User({
-            password: req.body.password,
             email: req.body.email,
+            password: req.body.password,
             name: req.body.name,
             lastname: req.body.lastname,
-            genero: req.body.genero,
             dni: req.body.dni,
             edad: req.body.edad,
             celular: req.body.celular,
-            direccion: req.body.direccion       
+            direccion: req.body.direccion
           });
-          
-          await newUser.save((err,nuevousuario)=>{
+
+          await newUser.save((err,nuevous)=>{
             if(err){
-              res.json({msg:"Error al guardar en la bd"});
-            }else{
-              res.json({msg:"Usuario registrado"});
-            }
+              return res.status(500).json({ ok: false, err})
+          }
+          if(!nuevous){
+              return res.status(400).json({ok: false, err});
+          }
+  
+          res.json({nuevous});
+
           });
-          
         }
       });
     }
@@ -114,20 +116,18 @@ exports.Actualizar_datos_Paciente = async function (req, res) {
         //verificar que por parametro colacaste el usuario del paciente
         await User.findById(req.user.id, async (err, paciente) => {
           if (err) {
-            res.json({msg:"Error "+err})
-            console.log("Error " +err);
-            
+            res.json({ msg: "Error " + err });
+            console.log("Error " + err);
           } else {
-            console.log("Paciente: "+paciente);
+            console.log("Paciente: " + paciente);
             paciente.email = req.body.email;
-            paciente.discapacidad = req.body.discapacidad;
             paciente.direccion = req.body.direccion;
             paciente.edad = req.body.edad;
             paciente.celular = req.body.celular;
             await paciente.save((err, pacienteUpdate) => {
               if (err) {
-                res.json({msg: "Error al guardar el paciente"})
-                console.log("Error al guardar paciente" +err);
+                res.json({ msg: "Error al guardar el paciente" });
+                console.log("Error al guardar paciente" + err);
               } else {
                 res.json(pacienteUpdate);
               }
@@ -135,16 +135,20 @@ exports.Actualizar_datos_Paciente = async function (req, res) {
           }
         });
       } else {
-        
-        res.json({msg: "No es el usuario "+req.user.id +" comparado con" + req.params.id });
+        res.json({
+          msg:
+            "No es el usuario " +
+            req.user.id +
+            " comparado con" +
+            req.params.id,
+        });
         console.log("No es el usuario");
       }
     } else {
-      
       return res.status(403).send({ success: false, msg: "Unauthorized." });
     }
   } catch (err) {
-    res.json({msg: "Error "})
+    res.json({ msg: "Error " });
     console.log("Error " + err);
   }
 };
@@ -154,7 +158,7 @@ getToken = function (headers) {
   if (headers && headers.authorization) {
     var parted = headers.authorization.split(" ");
     if (parted.length === 2) {
-      logger(chalk.green(parted));
+      console.log(parted);
       return parted[1];
     } else {
       return null;
@@ -163,5 +167,3 @@ getToken = function (headers) {
     return null;
   }
 };
-
-
