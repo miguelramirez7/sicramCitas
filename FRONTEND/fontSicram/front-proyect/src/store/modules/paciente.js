@@ -10,7 +10,7 @@ const getters = {
 const mutations = {
 
 };
-
+ 
 const actions = {
     registrarPaciente({commit},datos){
         axios
