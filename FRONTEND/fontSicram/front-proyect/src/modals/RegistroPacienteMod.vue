@@ -167,7 +167,7 @@ export default {
           "http://localhost:3000/api/signupuser",{...datos})
         .then((res) => {
           console.log(res.data.msg);
-        })
+        }) 
         .catch((e) => {
           console.log(e);
         });
