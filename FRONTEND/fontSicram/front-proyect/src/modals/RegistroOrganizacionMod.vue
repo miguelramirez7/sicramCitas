@@ -1,5 +1,5 @@
 <template>
-  <v-dialog :value="regOrgDialog" max-width="600px" persistent>
+  <v-dialog :value="regOrgDialog" max-width="600px" persistent content-class="modal">
     <v-card color="grey lighten-5">
       <v-card-title>
         <span class="headline">REGISTRO DE ORGANIZACION</span>

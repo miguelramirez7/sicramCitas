@@ -1,10 +1,15 @@
 <template>
-  
+  <menu-doctor></menu-doctor>
 </template>
 
 <script>
+
+import MenuDoctor from './../components/MenuDoctor'
 export default {
-    name:"DoctorSistema"
+    name:"DoctorSistema",
+    components: {
+        MenuDoctor
+    }
 }
 </script>
 

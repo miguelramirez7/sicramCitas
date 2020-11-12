@@ -1,5 +1,5 @@
 <template>
-  <v-dialog :value="regDocDialog" max-width="600px" persistent>
+  <v-dialog :value="regDocDialog" max-width="600px" persistent content-class="modal">
     <v-card color="grey lighten-5">
       <v-card-title>
         <span class="headline">REGISTRO DE DOCTOR</span>
