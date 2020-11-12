@@ -27,6 +27,15 @@
         </v-list-item>
         <v-divider />
 
+        <v-list-item-group>
+          <v-list-item link color='teal lighten-2'> 
+          <v-list-item-action>
+            <v-icon>mdi-home</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Inicio</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
         <v-list-group no-action color='teal lighten-2' v-for="item in items" :key="item.title" v-model="item.active"
           :prepend-icon="item.action">
           <template v-slot:activator>
@@ -41,7 +50,7 @@
               </v-list-item>
             </v-list-item-group>
         </v-list-group>
-      
+        </v-list-item-group>
       <v-divider />
 
       <v-list-item-group color='pink'>
@@ -81,11 +90,7 @@
       drawer: null,
       group: null,
 
-       items: [{
-          action: 'mdi-home',
-          
-          title: 'Inicio',
-        },
+       items: [
         {
           action: 'mdi-account',
           active: false,
