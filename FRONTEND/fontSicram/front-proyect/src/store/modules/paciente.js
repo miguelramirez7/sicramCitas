@@ -1,12 +1,4 @@
 const axios = require('axios');
-const qs = require('qs')
-/*const axiosInstance = axios.create({
-    headers: {
-      "Access-Control-Allow-Origin": "*",
-      'content-type': 'application/x-www-form-urlencoded;charset=utf-8',
-      'Content-Length': data.length
-    }
-  });*/
 
 const state = {
     
@@ -21,22 +13,17 @@ const mutations = {
 };
  
 const actions = {
-    registrarPaciente({commit},datos){
-        axios
-            .post("https://sicramv1.herokuapp.com/api/signupuser",qs.stringify(datos),
-            {
-                headers: {
-                  "Access-Control-Allow-Origin": "*",
-                  'content-type': 'application/x-www-form-urlencoded;charset=utf-8',
-                }
-              }
-            )
+    registrarPaciente({commit,dispatch},datos){
+        return axios
+            .post("http://localhost:3000/api/signupuser",{...datos})
             .then((res)=>{
-                console.log(datos)
                 console.log(res.data.msg)
+                dispatch('mensajeTipoAlert', {mensajeAlerta:res.data.msg ,tipoAlerta:'success'} , { root: true })
+                return Promise.resolve(true)
             })
             .catch((e)=>{
                 console.log(e)
+                return Promise.resolve(false)
             })
     }
 };

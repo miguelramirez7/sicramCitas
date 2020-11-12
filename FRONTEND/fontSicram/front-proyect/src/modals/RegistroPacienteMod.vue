@@ -1,5 +1,14 @@
 <template>
   <v-dialog :value="regPacDialog" max-width="600px" persistent>
+    <!----CARGADOR---->
+    <Loader :dialog="showLoader" />
+    <!----ALERTA---->
+    <Alert
+      :dialog="showAlert"
+      @close="showAlert = false"
+      :mensaje="getAlert.mensajeAlerta"
+      :tipo="getAlert.tipoAlerta"
+    />
     <v-card color="grey lighten-5">
       <v-form ref="form" lazy-validation @submit.prevent="registrar">
         <v-card-title>
@@ -113,10 +122,17 @@
 </template>
 
 <script>
+import Loader from "@/modals/Loader.vue";
+import Alert from "@/modals/Alert.vue";
 import { mapActions, mapGetters, mapState } from "vuex";
 export default {
   name: "RegistroPacienteMod",
+  components: {
+    Loader,
+    Alert,
+  },
   props: {
+    //VARIABLE PARA MOSTRAR EL MODAL
     dialog: {
       type: Boolean,
       default: false,
@@ -125,7 +141,9 @@ export default {
   data() {
     return {
       show1: false, //MOSTRAR CONTRASEÑA
-      pacienteDatos: {
+      showLoader: false, //MUESTRA EL CARGADOR DESPUES DE REGISTRAR
+      showAlert: false, //MUESTRA LA ALERTA DESPUES DEL REGISTRO
+      pacienteDatos: { //DATOS DEL PACIENTE A REGISTRAR
         password: "",
         email: "",
         name: "",
@@ -138,7 +156,8 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["getReglas"]),
+    ...mapGetters(["getReglas", "getAlert"]),
+    //PREGUNTA SI EL MODAL DEBE ABRIRSE
     regPacDialog() {
       return this.dialog;
     },
@@ -151,26 +170,21 @@ export default {
     },
     //REGISTRO DE PACIENTE
     registrar() {
-      const datos = this.pacienteDatos
-      console.log("datos")
-      console.log(this.pacienteDatos)
-      //if(this.$refs.form.validate()){
-      //  console.log("REGITRAR")
-      //  console.log("PACIENTE :" , this.pacienteDatos)
-      // this.registrarPaciente(this.pacienteDatos)
-      //}else{
-      //  console.log("MOSTRAR MENSAJE NEGATIVO")
-      //}
-     
-      this.axios
-        .post(
-          "http://localhost:3000/api/signupuser",{...datos})
-        .then((res) => {
-          console.log(res.data.msg);
-        }) 
-        .catch((e) => {
-          console.log(e);
+      //PREGUNTA A LA VALIDACÓN SI TODO HA SIDO LLENADO CORRECTAMENTE
+      if (this.$refs.form.validate()) {
+        //MUESTRA EL CARGADOR
+        this.showLoader = true;
+        console.log("PACIENTE :", this.pacienteDatos);
+        //LLAMA A LA FUNCION REGISTRAR PACIENTE DE PACIENTE.JS
+        this.registrarPaciente(this.pacienteDatos).then((res) => {
+          //DESHABILITA EL LOADER Y MUESTRA LA ALERTA CON EL MENSAJE DE ALERTA DEL BACK
+          this.showLoader = false;
+          this.showAlert = true;
         });
+      } else {
+        //MENSAJE DE AYUDA
+        console.log("MOSTRAR MENSAJE NEGATIVO");
+      }
     },
   },
 };

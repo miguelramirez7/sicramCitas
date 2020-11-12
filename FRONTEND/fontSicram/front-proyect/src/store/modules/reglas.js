@@ -7,6 +7,11 @@ const state = {
         minimochar : (v) => (v && v.length >= 8)  || 'Mínimo 8 carácteres.', //MINIMO CARÀCTERES
         pass : (v) => /^(?=.*\d)(?=.*[a-záéíóúüñ]).*[A-ZÁÉÍÓÚÜÑ]/.test(v) || 'Debe contener por lo menos una mayúscula y un número.',  //CONTRASEÑA ESPECIAL
     },
+
+    alerta: {
+        mensajeAlerta: null, //MENSAJE QUE CONTIENE LA ALERTA
+        tipoAlerta: null, //EL TIPO DE ALERTA
+    }
     
 };
 
@@ -15,14 +20,25 @@ const getters = {
     getReglas(state){
         return state.reglas
     },
+    //CONSIGUE EL MENSAJE DE LA ALERTA
+    getAlert(state){
+        return state.alerta
+    }
+
 };
 
 const mutations = {
-
+    //PONE EL MENSAJE Y EL TIPO DE ALERTA
+    setAlerta(state,payload){
+        state.alerta = payload
+    }
 };
 
 const actions = {
-
+    //LLAMA AL SETTER DE LA ALERTA
+    mensajeTipoAlert({commit},alerta){
+        commit('setAlerta',alerta)
+    }
 };
 
 export default {
