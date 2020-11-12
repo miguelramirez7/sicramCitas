@@ -22,7 +22,7 @@ exports.SignupUsuario = async function (req, res) {
             dni: req.body.dni,
             edad: req.body.edad,
             celular: req.body.celular,
-            direccion: req.body.direccion
+            genero: req.body.genero
           });
 
           await newUser.save((err,nuevous)=>{
