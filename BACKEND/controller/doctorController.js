@@ -51,7 +51,7 @@ exports.SignupDoctor = async function (req, res) {
                 edad: req.body.edad,
                 celular: req.body.celular,
                 cmp: req.body.cmp,
-                profesion: req.body.profesion,
+                profesion: req.body.profesion
               });
 
               //agregamos el atributo especialidad del doctor agregamos aparte por que especialidad es un Objeto encontrado en la base de datos
