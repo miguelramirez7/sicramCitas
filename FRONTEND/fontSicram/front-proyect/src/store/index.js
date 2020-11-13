@@ -6,14 +6,26 @@ import reglas from './modules/reglas.js'
 Vue.use(Vuex)
 
 export default new Vuex.Store({
-  state: {
-  },
-  mutations: {
-  },
-  actions: {
-  },
-  modules: {
-    reglas : reglas,
-    paciente: paciente,
-  }
+    state: {
+        componenteDoctor: 'InicioDoctor'
+    },
+    getters: {
+        getComponenteDoctor(state) {
+            return state.componenteDoctor
+        }
+    },
+    mutations: {
+        setComponenteDoctor(state, payload) {
+            state.componenteDoctor = payload
+        }
+    },
+    actions: {
+        cambiarComponenteDoctor({ commit }, payload) {
+            commit('setComponenteDoctor', payload)
+        }
+    },
+    modules: {
+        reglas: reglas,
+        paciente: paciente,
+    }
 })

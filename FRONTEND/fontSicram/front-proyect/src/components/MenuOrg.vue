@@ -1,7 +1,7 @@
 <template>
   <v-app>
 
-    <div>
+    <template>
       <v-app-bar app dark color="teal lighten-2" clipped-left>
         <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
         <v-toolbar-title>Vuetify</v-toolbar-title>
@@ -12,7 +12,8 @@
       </v-app-bar>
 
 
-    </div>
+    </template>
+    <template>
     <v-navigation-drawer color="#f2f2f2" app v-model="drawer" clipped>
       <v-list shaped >
         <v-list-item>
@@ -71,6 +72,7 @@
 
 
     </v-navigation-drawer>
+    </template>
 
 
 

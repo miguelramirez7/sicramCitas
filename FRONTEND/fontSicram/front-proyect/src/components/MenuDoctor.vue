@@ -1,7 +1,8 @@
+
 <template>
   <v-app>
 
-    <div>
+    <template content-class="menu">
       <v-app-bar app dark color="teal lighten-2" clipped-left>
         <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
         <v-toolbar-title>Vuetify</v-toolbar-title>
@@ -12,7 +13,8 @@
       </v-app-bar>
 
 
-    </div>
+    </template>
+    <template>
     <v-navigation-drawer color="#f2f2f2" app v-model="drawer" clipped>
       <v-list shaped >
         <v-list-item>
@@ -28,7 +30,7 @@
         <v-divider />
 
         <v-list-item-group>
-          <v-list-item link color='teal lighten-2'> 
+          <v-list-item link color='teal lighten-2' @click="cambiarComponenteDoctor('InicioDoctor')" > 
           <v-list-item-action>
             <v-icon>mdi-home</v-icon>
           </v-list-item-action>
@@ -46,7 +48,7 @@
 
           <v-list-item-group>
               
-              <v-list-item v-for="child in item.items" :key="child.title" link>
+              <v-list-item v-for="child in item.items" :key="child.title" link @click="cambiarComponenteDoctor(child.componente)" >
                 <v-list-item-title v-text="child.title"></v-list-item-title>
               </v-list-item>
             </v-list-item-group>
@@ -72,7 +74,7 @@
 
     </v-navigation-drawer>
 
-
+  </template>
 
 
 
@@ -81,6 +83,8 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
+
   export default {
     name: 'App',
     components: {
@@ -95,10 +99,12 @@
           action: 'mdi-account',
           active: false,
           items: [{
-              title: 'Tu Perfil'
+              title: 'Tu Perfil',
+              componente: 'TuPerfilDoc'
             },
             {
-              title: 'Actualizar Datos'
+              title: 'Actualizar Datos',
+              componente: 'ActualizarPerfilDoc'
             }
           ],
           title: 'Perfil',
@@ -106,10 +112,12 @@
         {
           action: 'mdi-calendar',
           items: [{
-            title: 'Agregar Horario'
+            title: 'Agregar Horario',
+            componente: 'AgregarHorarioDoc'
           },
           {
-            title: 'Historial Horario'
+            title: 'Historial Horario',
+            componente: 'HistorialHorarioDoc'
           }
           ],
           title: 'Horario',
@@ -117,10 +125,12 @@
         {
           action: 'mdi-mailbox',
           items: [{
-            title: 'Citas Pendientes'
+            title: 'Citas Pendientes',
+            componente: 'CitasPendientesDoc'
           },
           {
-            title: 'Citas Pasadas'
+            title: 'Citas Pasadas',
+            componente: 'CitasPasadasDoc'
           }],
           title: 'Buzón',
         }
@@ -133,12 +143,20 @@
         this.drawer = false
       },
     },
+    methods:{
+      ...mapActions(['cambiarComponenteDoctor'])
+    }
   };
 </script>
 
-<style scoped>
-  
-  
+<style>
+
+  .v-application--wrap {
+    padding-top: 10px;
+    padding-left: 30px;
+    min-height: 0 !important;
+}
+
   
 
 .v-list-item--link[data-v-169ff5e0]::before {
