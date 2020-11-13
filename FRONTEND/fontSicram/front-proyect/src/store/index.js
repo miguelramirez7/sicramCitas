@@ -8,7 +8,8 @@ Vue.use(Vuex)
 export default new Vuex.Store({
     state: {
         componenteDoctor: 'InicioDoctor',
-        componentePaciente: 'InicioPaciente'
+        componentePaciente: 'InicioPaciente',
+        componenteOrganizacion: 'InicioOrganizacion'
     },
     getters: {
         getComponenteDoctor(state) {
@@ -16,6 +17,9 @@ export default new Vuex.Store({
         },
         getComponentePaciente(state) {
             return state.componentePaciente
+        },
+        getComponenteOrganizacion(state) {
+            return state.componenteOrganizacion
         }
     },
     mutations: {
@@ -24,6 +28,9 @@ export default new Vuex.Store({
         },
         setComponentePaciente(state, payload) {
             state.componentePaciente = payload
+        },
+        setComponenteOrganizacion(state, payload) {
+            state.componenteOrganizacion = payload
         }
     },
     actions: {
@@ -32,6 +39,9 @@ export default new Vuex.Store({
         },
         cambiarComponentePaciente({ commit }, payload) {
             commit('setComponentePaciente', payload)
+        },
+        cambiarComponenteOrganizacion({ commit }, payload) {
+            commit('setComponenteOrganizacion', payload)
         }
     },
     modules: {

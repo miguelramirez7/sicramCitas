@@ -29,7 +29,7 @@
         <v-divider />
 
         <v-list-item-group>
-          <v-list-item link color='teal lighten-2'> 
+          <v-list-item link color='teal lighten-2' @click="cambiarComponenteOrganizacion('InicioOrganizacion')"> 
           <v-list-item-action>
             <v-icon>mdi-home</v-icon>
           </v-list-item-action>
@@ -46,7 +46,7 @@
           </template>
 
           <v-list-item-group >
-              <v-list-item v-for="child in item.items" :key="child.title" >
+              <v-list-item v-for="child in item.items" :key="child.title" @click="cambiarComponenteOrganizacion(child.componente)">
                 <v-list-item-title v-text="child.title"></v-list-item-title>
               </v-list-item>
             </v-list-item-group>
@@ -83,6 +83,7 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex';
   export default {
     name: 'App',
     components: {
@@ -97,10 +98,12 @@
           action: 'mdi-account',
           active: false,
           items: [{
-              title: 'Tu Perfil'
+              title: 'Tu Perfil',
+              componente: 'TuPerfilOrg'
             },
             {
-              title: 'Actualizar Datos'
+              title: 'Actualizar Datos',
+              componente: 'ActualizarDatosOrg'
             }
           ],
           title: 'Perfil',
@@ -108,10 +111,12 @@
         {
           action: 'mdi-account-supervisor',
           items: [{
-            title: 'Agregar Doctor'
+            title: 'Agregar Doctor',
+            componente: 'AgregarDoctorOrg'
           },
           {
-            title: 'Tus Doctores'
+            title: 'Tus Doctores',
+            componente: 'TusDoctoresOrg'
           }
           ],
           title: 'Personal',
@@ -126,10 +131,18 @@
         this.drawer = false
       },
     },
+    methods:{
+      ...mapActions(['cambiarComponenteOrganizacion'])
+    }
   };
 </script>
 
-<style scoped>
-  
+<style >
+  .v-application--wrap {
+    padding-top: 10px;
+    padding-left: 30px;
+    min-height: 0 !important;
+}
+
 
 </style>

@@ -1,5 +1,5 @@
 <template>
-    <h1>InicioOrganizacion</h1>
+    <h1>AgregarDoctorOrg</h1>
 </template>
 
 <script>
