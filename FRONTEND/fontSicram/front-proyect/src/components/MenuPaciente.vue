@@ -27,7 +27,7 @@
         </v-list-item>
         <v-divider />
         <v-list-item-group>
-          <v-list-item link color='teal lighten-2'> 
+          <v-list-item link color='teal lighten-2' @click="cambiarComponentePaciente('InicioPaciente')"> 
           <v-list-item-action>
             <v-icon>mdi-home</v-icon>
           </v-list-item-action>
@@ -44,7 +44,7 @@
           </template>
 
           <v-list-item-group >
-              <v-list-item v-for="child in item.items" :key="child.title" >
+              <v-list-item v-for="child in item.items" :key="child.title" @click="cambiarComponentePaciente(child.componente)" >
                 <v-list-item-title v-text="child.title"></v-list-item-title>
               </v-list-item>
             </v-list-item-group>
@@ -81,6 +81,7 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex';
   export default {
     name: 'App',
     components: {
@@ -95,10 +96,12 @@
           action: 'mdi-account',
           active: false,
           items: [{
-              title: 'Tu Perfil'
+              title: 'Tu Perfil',
+              componente:'TuPerfilPac'
             },
             {
-              title: 'Actualizar Datos'
+              title: 'Actualizar Datos',
+              componente:'ActualizarDatosPac'
             }
           ],
           title: 'Perfil',
@@ -106,10 +109,12 @@
         {
           action: 'mdi-account-supervisor',
           items: [{
-            title: 'Registrar Familiar'
+            title: 'Registrar Familiar',
+            componente:'RegistrarFamiliarPac'
           },
           {
-            title: 'Listar Familiares'
+            title: 'Listar Familiares',
+            componente:'ListarFamiliaresPac'
           }
           ],
           title: 'Familiar',
@@ -117,13 +122,16 @@
         {
           action: 'mdi-calendar',
           items: [{
-            title: 'Nueva Cita'
+            title: 'Nueva Cita',
+            componente:'NuevaCitaPac'
           },
           {
-            title: 'Citas Pendiente'
+            title: 'Citas Pendiente',
+            componente:'CitasPendientesPac'
           },
           {
-            title: 'Historial'
+            title: 'Historial',
+            componente:'HistorialPac'
           }],
           title: 'Citas',
         }
@@ -136,10 +144,18 @@
         this.drawer = false
       },
     },
+    methods:{
+      ...mapActions(['cambiarComponentePaciente'])
+    }
   };
 </script>
 
-<style scoped>
-  
+<style >
+  .v-application--wrap {
+    padding-top: 10px;
+    padding-left: 30px;
+    min-height: 0 !important;
+}
+
 
 </style>
