@@ -33,7 +33,7 @@ exports.SignupUsuario = async function (req, res) {
               return res.status(400).json({ok: false, err});
           }
   
-          res.json({msg:"Usuario registrado"});
+          res.json({msg:"Usuario registrado exitosamente!"});
 
           });
         }
@@ -84,7 +84,7 @@ exports.SignoutUsuario = function (req, res) {
   res.json({ success: true, msg: "Sign out Exitosa." });
 };
 //obtener datos del usuario logeado, para su perfil.
-exports.Obntener_datos_Paciente = async function (req, res) {
+exports.Obtener_datos_Paciente = async function (req, res) {
   try {
     var token = getToken(req.headers);
     if (token) {
@@ -108,7 +108,7 @@ exports.Obntener_datos_Paciente = async function (req, res) {
 };
 
 //actualizar datos de usuario logeado
-exports.Actualizar_datos_Paciente = async function (req, res) {
+exports.Actualizar_datos_Paciente = async function(req, res) {
   try {
     var token = getToken(req.headers);
     if (token) {
@@ -121,7 +121,6 @@ exports.Actualizar_datos_Paciente = async function (req, res) {
           } else {
             console.log("Paciente: " + paciente);
             paciente.email = req.body.email;
-            paciente.direccion = req.body.direccion;
             paciente.edad = req.body.edad;
             paciente.celular = req.body.celular;
             await paciente.save((err, pacienteUpdate) => {
