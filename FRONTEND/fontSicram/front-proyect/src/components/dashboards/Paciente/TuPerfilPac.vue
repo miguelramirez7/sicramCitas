@@ -9,7 +9,7 @@
 
                  </v-col>
                  <v-col cols="12" md="5">
-                     <v-card elevation="4" class="mt-5">
+                     <v-card elevation="4" class="mt-2">
                          <v-card-title class="titulo" >Información Personal</v-card-title>
                          <v-card-text>
                              <v-row>
