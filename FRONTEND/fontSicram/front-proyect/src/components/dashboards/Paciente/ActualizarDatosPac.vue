@@ -4,13 +4,13 @@
     <v-container>
     
     <v-form>
-        <v-row>
-            <v-col cols="12" md="6">
+        <v-row >
+            <v-col cols="12" md="6"  >
                 <v-row>
-                    <v-col  md="3">
+                    <v-col  md="3" class="ml-5">
                         <v-card-text class=" subtitulo">Nombre:</v-card-text>
                     </v-col>
-                    <v-col md="7" >
+                    <v-col md="7" class="mr-5">
                         <v-text-field dense outlined class="input1"></v-text-field>
                     </v-col>
                 </v-row>    
@@ -18,10 +18,10 @@
             </v-col>
             <v-col cols="12" md="6">
                 <v-row>
-                    <v-col md="3" class="d-flex  justify-center">
+                    <v-col md="3" class="ml-5">
                         <v-card-text class="subtitulo">Apellido:</v-card-text>
                     </v-col>
-                    <v-col md="7">
+                    <v-col md="7" class="mr-5">
                         <v-text-field dense outlined></v-text-field>
                     </v-col>
                 </v-row>
@@ -31,10 +31,10 @@
         <v-row>
             <v-col cols="12" md="6">
                 <v-row>
-                    <v-col  md="3">
+                    <v-col  md="3" class="ml-5">
                         <v-card-text class=" subtitulo">DNI:</v-card-text>
                     </v-col>
-                    <v-col md="7" >
+                    <v-col md="7" class="mr-5">
                         <v-text-field dense outlined class="input1"></v-text-field>
                     </v-col>
                 </v-row>    
@@ -42,10 +42,10 @@
             </v-col>
             <v-col cols="12" md="6">
                 <v-row>
-                    <v-col md="3" class="d-flex  justify-center">
+                    <v-col md="3" class="ml-5">
                         <v-card-text class="subtitulo">Discapacidad:</v-card-text>
                     </v-col>
-                    <v-col md="7">
+                    <v-col md="7" class="mr-5">
                         <v-text-field dense outlined></v-text-field>
                     </v-col>
                 </v-row>
@@ -55,10 +55,10 @@
         <v-row>
             <v-col cols="12" md="6">
                 <v-row>
-                    <v-col  md="3">
+                    <v-col  md="3" class="ml-5">
                         <v-card-text class=" subtitulo">Correo:</v-card-text>
                     </v-col>
-                    <v-col md="7" >
+                    <v-col md="7"  class="mr-5">
                         <v-text-field dense outlined class="input1"></v-text-field>
                     </v-col>
                 </v-row>    
@@ -66,10 +66,10 @@
             </v-col>
             <v-col cols="12" md="6">
                 <v-row>
-                    <v-col md="3" class="d-flex  justify-center">
+                    <v-col md="3" class="ml-5">
                         <v-card-text class="subtitulo">Edad:</v-card-text>
                     </v-col>
-                    <v-col md="7">
+                    <v-col md="7" class="mr-5">
                         <v-text-field dense outlined></v-text-field>
                     </v-col>
                 </v-row>
@@ -79,10 +79,10 @@
         <v-row>
             <v-col cols="12" md="6">
                 <v-row>
-                    <v-col  md="3">
+                    <v-col  md="3" class="ml-5">
                         <v-card-text class=" subtitulo">Celular:</v-card-text>
                     </v-col>
-                    <v-col md="7" >
+                    <v-col md="7" class="mr-5">
                         <v-text-field dense outlined class="input1"></v-text-field>
                     </v-col>
                 </v-row>    
@@ -90,10 +90,10 @@
             </v-col>
             <v-col cols="12" md="6">
                 <v-row>
-                    <v-col md="3" class="d-flex  justify-center">
+                    <v-col md="3" class="ml-5">
                         <v-card-text class="subtitulo">Dirección:</v-card-text>
                     </v-col>
-                    <v-col md="7">
+                    <v-col md="7" class="mr-5">
                         <v-text-field dense outlined></v-text-field>
                     </v-col>
                 </v-row>
@@ -137,14 +137,7 @@
     color: rgb(0, 92, 128);
 }
 
-.carta{
-    padding-right: 20px;
-    padding-left: 10px;
-}
 
-@media (max-width: 414px){
-    .input1{
-        
-    }
-}
+
+
 </style>
