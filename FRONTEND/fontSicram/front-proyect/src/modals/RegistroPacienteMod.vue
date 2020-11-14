@@ -81,7 +81,7 @@
                   label="Género*"
                   required
                   color="light-blue"
-                  v-model="pacienteDatos.direccion"
+                  v-model="pacienteDatos.genero"
                 ></v-select>
               </v-col>
               <v-col cols="12" sm="6">
@@ -96,10 +96,15 @@
               </v-col>
               <v-col cols="12" sm="6">
                 <v-text-field
-                  label="Número de celular"
+                  label="Número de celular*"
                   color="light-blue"
                   v-model="pacienteDatos.celular"
                   type="number"
+                  :rules="[
+                    getReglas.requerido,
+                    getReglas.numCelular,
+                    getReglas.celular,
+                  ]"
                 ></v-text-field>
               </v-col>
             </v-row>
@@ -143,12 +148,13 @@ export default {
       show1: false, //MOSTRAR CONTRASEÑA
       showLoader: false, //MUESTRA EL CARGADOR DESPUES DE REGISTRAR
       showAlert: false, //MUESTRA LA ALERTA DESPUES DEL REGISTRO
-      pacienteDatos: { //DATOS DEL PACIENTE A REGISTRAR
+      pacienteDatos: {
+        //DATOS DEL PACIENTE A REGISTRAR
         password: "",
         email: "",
         name: "",
         lastname: "",
-        direccion: "",
+        genero: "",
         dni: "",
         edad: "",
         celular: "",
@@ -180,6 +186,7 @@ export default {
           //DESHABILITA EL LOADER Y MUESTRA LA ALERTA CON EL MENSAJE DE ALERTA DEL BACK
           this.showLoader = false;
           this.showAlert = true;
+          if(res===true)this.$refs.form.reset() //SI SE LOGRA INGRESAR CON EXITO TODO SE RESETEA EL FORMULARIO
         });
       } else {
         //MENSAJE DE AYUDA
