@@ -1,5 +1,5 @@
 <template>
-  <v-dialog :value="regPacDialog" max-width="600px" persistent>
+  <v-dialog :value="regPacDialog" max-width="600px" persistent content-class="modal">
     <!----CARGADOR---->
     <Loader :dialog="showLoader" />
     <!----ALERTA---->

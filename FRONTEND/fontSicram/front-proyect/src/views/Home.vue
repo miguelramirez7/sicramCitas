@@ -61,7 +61,7 @@
         <v-divider />
 
         <v-list-item-group color="teal lighten-2">
-          <v-list-item  @click="loginDialog = true">
+          <v-list-item >
             <v-list-item-title>Ingresar</v-list-item-title>
           </v-list-item>
 
