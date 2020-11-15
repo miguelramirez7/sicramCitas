@@ -40,7 +40,7 @@ const actions = {
     },
 
     //CONSULTA PARA CONSEGUIR LOS DATOS DEL PERFIL DEL PACIENTE.
-    perfilPaciente({commit},paciente){
+    perfilPaciente({commit,dispatch},paciente){
         let url =
         `/user/perfil/${paciente.id}`;
         axios
@@ -52,6 +52,7 @@ const actions = {
         .then((res)=>{
             console.log("DATOS PACIENTE: ", res.data)
             commit('setPacientePerfil',res.data)
+            dispatch('leerUsuario',null, { root: true });
         })
         .catch((e)=>{
             console.log(e)
@@ -59,7 +60,7 @@ const actions = {
     },
 
     //CONSULTA PARA ACTUALIZAR LOS DATOS DEL PACIENTE
-    actualizarPaciente({commit},datos){
+    actualizarPaciente({commit,dispatch},datos){
         let url = `/user/perfil/update/${datos.paciente.id}`;
         return axios
           .post(
@@ -73,6 +74,7 @@ const actions = {
           )
         .then((res)=>{
             console.log(res)
+            dispatch('mensajeTipoAlert', {mensajeAlerta:res.data.msg ,tipoAlerta:'success'} , { root: true })
             return Promise.resolve(true)
         })
         .catch((e)=>{

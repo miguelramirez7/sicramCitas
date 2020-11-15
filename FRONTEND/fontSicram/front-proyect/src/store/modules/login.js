@@ -39,10 +39,10 @@ const actions = {
           ...doctor
         })
         .then((res)=>{
-            console.log("DOCTOR: ",res.data)
-            dispatch('perfilDoctor', res.data , { root: true })
             dispatch('guardarUsuario',res.data);
             dispatch('guardarTipoDeUsuario','doctor');
+            console.log("DOCTOR: ",res.data)
+            dispatch('perfilDoctor', res.data , { root: true })
             return Promise.resolve(true)
         })
 
@@ -82,10 +82,11 @@ const actions = {
           ...paciente
         })
         .then((res)=>{
-            dispatch('perfilPaciente', res.data , { root: true })
-            console.log("PACIENTE : ",res.data)
             dispatch('guardarUsuario',res.data);
             dispatch('guardarTipoDeUsuario','paciente');
+            dispatch('perfilPaciente', res.data , { root: true })
+            console.log("PACIENTE : ",res.data)
+            
             return Promise.resolve(true)
         })
 
@@ -111,18 +112,18 @@ const actions = {
     leerUsuario({commit,dispatch}){
         const user = JSON.parse(localStorage.getItem('user'))
         const tipoUser =  localStorage.getItem('tipoUser')
-        /*if(user){
-            commit('setUsuario',user)
-            commit('setTipoUsuario',tipoUser)
-            switch(tipoUser){
-                case 'paciente' : dispatch('getPerfilPaciente', user , { root: true }); break;
-                case 'doctor':  dispatch('perfilDoctor', user , { root: true });break;
-                case 'organizacion':  dispatch('perfilOrganizacion', user , { root: true });break;
-            }
-        }else{
-            commit('setUsuario',null)
-            commit('setTipoUsuario',null)
-        }*/
+        //if(user){
+            dispatch('guardarUsuario',user)
+            dispatch('guardarTipoDeUsuario',tipoUser)
+          //  switch(tipoUser){
+          //    case 'paciente' : dispatch('getPerfilPaciente', user , { root: true }); break;
+            //    case 'doctor':  dispatch('perfilDoctor', user , { root: true });break;
+            //    case 'organizacion':  dispatch('perfilOrganizacion', user , { root: true });break;
+            //}
+        //}else{
+        //    commit('setUsuario',null)
+        //    commit('setTipoUsuario',null)
+        //}*/
     },
 };
 
