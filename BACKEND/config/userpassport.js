@@ -13,7 +13,7 @@ module.exports = function(passport) {
   
   //estrategia para encontrar al paciente a partir del token y nos retornarar el user que sera de paciente
   passport.use('user',new JwtStrategy(opts, async function(jwt_payload, done) {
-    User.findOne({username: jwt_payload.username}, function(err, user) {
+    User.findOne({email: jwt_payload.email}, function(err, user) {
           if (err) {
               return done(err, false);
           }
@@ -29,13 +29,13 @@ module.exports = function(passport) {
 
   //estrategia para encontrar al Doctor a partir del token y nos retornarar el user que sera de doctor
   passport.use('doctor',new JwtStrategy(opts, function(jwt_payload, done) {
-    Doctor.findOne({username: jwt_payload.username},  function(err, user ){
+    Doctor.findOne({email: jwt_payload.email},  function(err, user ){
             if (err) {
                 
                 return done(err, false);
             }
             if (user) {
-              console.log(user.username + " " + user.id);
+              console.log(user.email + " " + user.id);
               done(null, user);
               
              } else {
