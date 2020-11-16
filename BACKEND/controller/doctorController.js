@@ -394,7 +394,6 @@ exports.Obtener_horario_doctor = async function (req, res) {
       ).populate("doctor");
     });
   } catch (error) {
-    loggerwin.info("id incorrecto, no se encontro doctor");
     res.json({ msg: "id incorrecto, no se encontro doctor" });
   }
 };
@@ -412,7 +411,6 @@ exports.Obtener_horarios_ocupados_doctor = async function (req, res) {
       ).populate("doctor");
     });
   } catch (error) {
-    loggerwin.info("id incorrecto, no se encontro doctor");
     res.json({ msg: "id incorrecto, no se encontro doctor" });
   }
 };
@@ -446,7 +444,6 @@ exports.Eliminar_horario_doctor = async function (req, res) {
                       msg: "Horario no pertenece a horarios del doctor",
                     });
                   } else {
-                    
                     if (horario.ocupado == false) {
                       horarios_doctor.splice(indice_temp_horario, 1);
                       doctor.save();
@@ -484,7 +481,6 @@ exports.Eliminar_horario_doctor = async function (req, res) {
       return res.status(403).send({ success: false, msg: "Unauthorized." });
     }
   } catch (error) {
-    loggerwin.info("No se pudo obtener los datos del doctor.");
     logger(chalk.red("ERROR:  ") + chalk.white(error));
   }
 };
