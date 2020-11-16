@@ -19,5 +19,11 @@ router.post('/doctor/perfil/update/:id',passport.authenticate('doctor', { sessio
 router.post('/doctor/horario/agregar/:id',passport.authenticate('doctor', { session: false}),doctorController.Agregar_horario_doctor)
 // modificar horario del doctors
 router.post('/doctor/horario/modificar/:id',passport.authenticate('doctor', { session: false}),doctorController.Actualizar_horario_doctor)
+// OBTENER HORARIOS DEL MÉDICO POR ID
+router.get('/doctor/horarios/:id',doctorController.Obtener_horario_doctor);
+//horarios ocupados por id del doctor
+router.get('/doctor/horarios_ocupados/:id',doctorController.Obtener_horarios_ocupados_doctor);
+//eliminar hoario del doctor
+router.post('/doctor/horario/eliminar/:id',passport.authenticate('doctor', { session: false}),doctorController.Eliminar_horario_doctor);
 
 module.exports = router;
