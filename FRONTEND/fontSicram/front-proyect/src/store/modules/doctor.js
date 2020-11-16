@@ -2,15 +2,19 @@ const axios = require('axios')
 axios.defaults.baseURL = 'http://localhost:3000/api';
 
 const state = {
-    
+  doctorPerfil: null // VARIABLE PARA LOS DATOS DEL DOCTOR
 };
 
 const getters = {
-    
+  getDoctorPerfil(state){
+      return state.doctorPerfil
+  }
 };
 
 const mutations = {
-
+  setDoctorPerfil(state,payload){
+      state.doctorPerfil = payload
+  }
 };
 
 const actions = {
@@ -20,7 +24,7 @@ const actions = {
             .post("/signupdoctor",{...datos})
             .then((res)=>{
                 console.log(res.data.msg)
-                if(res.data.msg == "Bienvenido Doctor, es un nuevo usario."){
+                if(res.data.msg == "Bienvenido Doctor, es un nuevo usuario."){
                     dispatch('mensajeTipoAlert', {mensajeAlerta:res.data.msg ,tipoAlerta:'success'} , { root: true })
                     return Promise.resolve(true)
                 }else{
@@ -36,7 +40,7 @@ const actions = {
     },
     
     //CONSULTA PARA CONSEGUIR EL PERFIL DEL DOCTOR
-    perfilDoctor({commit},doctor){
+    perfilDoctor({commit,dispatch},doctor){
         console.log(doctor)
         let url =
         `/doctor/perfil/${doctor.id}`;
@@ -47,8 +51,9 @@ const actions = {
           },
         })
         .then((res) => {
-            console.log(res.data)
-            commit('setDatosDoctor',res.data)
+          console.log("DATOS DOCTOR: ", res.data)
+          commit('setDoctorPerfil',res.data)
+          dispatch('leerUsuario',null, { root: true });
         })
         .catch((e) => {
             console.log(e)
@@ -56,7 +61,7 @@ const actions = {
     },
 
     //CONSULTA PARA ACTUALIZAR EL PERFIL DEL DOCTOR
-    actualizarDoctor({commit},datos){
+    actualizarDoctor({commit,dispatch},datos){
         let url = `/doctor/perfil/update/${datos.doctor.id}`;
         return axios
           .post(
@@ -68,24 +73,15 @@ const actions = {
               },
             }
           )
-          .then((res) =>{
-
+          .then((res)=>{
             console.log(res)
-            if(res.data.msg==="Doctor actualizado!"){
-            
-              return Promise.resolve(true)
-            }else{
-              
-              return Promise.resolve(false)
-            }
-            
-          })
-
-          .catch((e)=>{
+            dispatch('mensajeTipoAlert', {mensajeAlerta:res.data.msg ,tipoAlerta:'success'} , { root: true })
+            return Promise.resolve(true)
+        })
+        .catch((e)=>{
             console.log(e)
-            
             return Promise.resolve(false)
-          })
+        })
     },
 
     //CONSULTA PARA AGREGAR HORARIO AL DOCTOR

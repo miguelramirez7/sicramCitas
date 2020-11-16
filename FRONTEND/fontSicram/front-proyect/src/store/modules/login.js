@@ -33,7 +33,7 @@ const mutations = {
 
 const actions = {
     //INICIAR SESION DOCTOR 
-    loginDoctor({commit},doctor){
+    loginDoctor({commit,dispatch},doctor){
         return axios
         .post("/signindoctor",{
           ...doctor

@@ -138,7 +138,7 @@ import Alert from "@/modals/Alert.vue";
 import { mapActions, mapGetters } from "vuex";
 export default {
   name: "ActualizarDatosPac",
-  components:{
+  components: {
     Loader,
     Alert,
   },
@@ -146,25 +146,32 @@ export default {
     return {
       showLoader: false, //MUESTRA EL CARGADOR DESPUES DE REGISTRAR
       showAlert: false, //MUESTRA LA ALERTA DESPUES DEL REGISTRO
-    }   
+    };
   },
   computed: {
-    ...mapGetters(["getPacientePerfil","getReglas","getAlert","getUsuario"]),
+    ...mapGetters(["getPacientePerfil", "getReglas", "getAlert", "getUsuario"]),
   },
-  methods:{
-      ...mapActions(['actualizarPaciente']),
-      actualizarPerfil(){
-        
-         if(this.$refs.form.validate()){
-              this.showLoader= true
-              this.actualizarPaciente({datos:this.getPacientePerfil, paciente:this.getUsuario})
-              .then((res)=>{
-                this.showLoader= false
-                this.showAlert=true
-              })
-          }
+  methods: {
+    ...mapActions(["actualizarPaciente"]),
+    actualizarPerfil() {
+      const data = {
+        edad: this.getPacientePerfil.edad,
+        email: this.getPacientePerfil.email,
+        celular: this.getPacientePerfil.celular,
+      };
+      console.log(data)
+      if (this.$refs.form.validate()) {
+        this.showLoader = true;
+        this.actualizarPaciente({
+          newDatos: data,
+          paciente: this.getUsuario,
+        }).then((res) => {
+          this.showLoader = false;
+          this.showAlert = true;
+        });
       }
-  }
+    },
+  },
 };
 </script>
 
