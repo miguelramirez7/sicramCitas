@@ -159,71 +159,7 @@ export default {
 </script>
 
 <style scoped>
-.imagen {
-  width: 100%;
-  height: 100%;
 
-  background-attachment: fixed;
-  background-repeat: no-repeat;
-  background-position: 0% 0%;
-  background-size: cover;
-  display: block;
-  position: relative;
-  object-fit: cover;
-  background-image: linear-gradient(
-      to right,
-      rgba(5, 12, 31, 0.493),
-      rgba(5, 12, 31, 0.493)
-    ),
-    url("../assets/doctorHome.jpg");
-}
 
-.principal {
-  display: flex;
-  height: 100%;
-  align-items: center;
-  justify-content: center;
-}
-
-.contenedor {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-  align-items: center;
-  margin-top: auto;
-  margin-bottom: auto;
-}
-
-.titulo {
-  font-size: 80px;
-  font-family: "open sans";
-}
-
-.mostrarEnPantallaPequeña {
-  display: none;
-}
-
-@media (max-width: 414px) {
-  .titulo {
-    font-size: 30px;
-  }
-
-  .subtitulo {
-    font-size: 20px;
-  }
-
-  .centrar {
-    display: flex !important;
-    justify-content: center !important;
-  }
-
-  .mostrarEnPantallaPequeña {
-    display: block;
-  }
-
-  .ocultarEnPantallaPequeña {
-    display: none;
-  }
-}
+@import '../assets/css/home.css';
 </style>
