@@ -56,6 +56,9 @@ var DoctorSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "Organizacion",
   },
+  genero:{
+    type: String
+  }
 });
 
 DoctorSchema.pre("save", function (next) {

@@ -25,16 +25,15 @@ var UserSchema = new Schema({
     required: true,
     minlength: 8,
   },
+  genero:{
+    type: String
+  },
   edad: {
     type: Number,
     required: true,
   },
   celular: {
     type: Number,
-    required: true,
-  },
-  direccion: {
-    type: String,
     required: true,
   }
 });

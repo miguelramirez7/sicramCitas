@@ -38,7 +38,7 @@ export default {
       if (this.dialog == true) {
         setTimeout(() => {
           this.$emit("close");
-        }, 1000);
+        }, 1500);
       }
       return this.dialog;
     },

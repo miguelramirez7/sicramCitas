@@ -1,12 +1,21 @@
 <template>
-  <v-dialog :value="regDocDialog" max-width="600px" persistent content-class="modal">
-    <v-card color="grey lighten-5">
-      <v-card-title>
-        <span class="headline">REGISTRO DE DOCTOR</span>
-      </v-card-title>
-      <v-card-text class="pa-2">
-        <v-container>
-          <v-form ref="form" v-model="valid" lazy-validation>
+  <v-dialog :value="regDocDialog" max-width="600px" persistent>
+    <!----CARGADOR---->
+    <Loader :dialog="showLoader" />
+    <!----ALERTA---->
+    <Alert
+      :dialog="showAlert"
+      @close="showAlert = false"
+      :mensaje="getAlert.mensajeAlerta"
+      :tipo="getAlert.tipoAlerta"
+    />
+    <v-card color="grey lighten-5" >
+      <v-form ref="form" lazy-validation @submit.prevent="registrar">
+        <v-card-title >
+          <span class="headline">REGISTRO DE DOCTOR</span>
+        </v-card-title>
+        <v-card-text class="pa-1">
+          <v-container >
             <v-row dense>
               <v-col cols="12" sm="6" md="6" class="">
                 <v-text-field
@@ -14,6 +23,7 @@
                   required
                   color="cyan"
                   :rules="[getReglas.requerido]"
+                  v-model="doctorDatos.name"
                 ></v-text-field>
               </v-col>
               <v-col cols="12" sm="6" md="6">
@@ -22,6 +32,7 @@
                   required
                   color="cyan"
                   :rules="[getReglas.requerido]"
+                  v-model="doctorDatos.lastname"
                 ></v-text-field>
               </v-col>
               <v-col cols="12" sm="6" md="6">
@@ -30,6 +41,7 @@
                   required
                   color="cyan"
                   :rules="[getReglas.requerido, getReglas.correo]"
+                  v-model="doctorDatos.email"
                 ></v-text-field>
               </v-col>
               <v-col cols="12" sm="6" md="6">
@@ -43,6 +55,7 @@
                     getReglas.pass,
                     getReglas.minimochar,
                   ]"
+                  v-model="doctorDatos.password"
                 ></v-text-field>
               </v-col>
               <v-col cols="12" sm="6">
@@ -51,6 +64,7 @@
                   required
                   color="cyan"
                   :rules="[getReglas.requerido, getReglas.DNI]"
+                  v-model="doctorDatos.dni"
                 ></v-text-field>
               </v-col>
               <v-col cols="12" sm="6">
@@ -60,6 +74,7 @@
                   required
                   color="cyan"
                   :rules="[getReglas.requerido]"
+                  v-model="doctorDatos.genero"
                 ></v-select>
               </v-col>
               <v-col cols="12" sm="6">
@@ -68,6 +83,7 @@
                   required
                   color="cyan"
                   :rules="[getReglas.requerido]"
+                  v-model="doctorDatos.cmp"
                 ></v-text-field>
               </v-col>
               <v-col cols="12" sm="6">
@@ -76,6 +92,7 @@
                   color="cyan"
                   required
                   :rules="[getReglas.requerido]"
+                  v-model="doctorDatos.especialidad"
                 ></v-text-field>
               </v-col>
               <v-col cols="12" sm="6">
@@ -84,36 +101,50 @@
                   required
                   color="cyan"
                   :rules="[getReglas.requerido]"
+                  v-model="doctorDatos.edad"
                 ></v-text-field>
               </v-col>
               <v-col cols="12" sm="6">
                 <v-text-field
                   label="Número de celular"
                   color="cyan"
+                  type="number"
+                  :rules="[
+                    getReglas.requerido,
+                    getReglas.numCelular,
+                    getReglas.celular,
+                  ]"
+                  v-model="doctorDatos.celular"
                 ></v-text-field>
               </v-col>
             </v-row>
-          </v-form>
-        </v-container>
-        <small>*Datos obligatorios a llenar.</small>
-      </v-card-text>
-      <v-card-actions>
-        <v-spacer></v-spacer>
-        <v-btn color="pink darken-1" text @click="close()">
-          Cerrar
-        </v-btn>
-        <v-btn color="blue darken-1" text @click="validate()">
-          Registrar
-        </v-btn>
-      </v-card-actions>
+          </v-container>
+          <small>*Datos obligatorios a llenar.</small>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="pink darken-1" text @click="close()">
+            Cerrar
+          </v-btn>
+          <v-btn color="blue darken-1" text type="submit">
+            Registrar
+          </v-btn>
+        </v-card-actions>
+      </v-form>
     </v-card>
   </v-dialog>
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import Loader from "@/modals/Loader.vue";
+import Alert from "@/modals/Alert.vue";
+import { mapActions, mapGetters } from "vuex";
 export default {
   name: "RegistroDoctorMod",
+  components:{
+    Loader,
+    Alert,
+  },
   props: {
     dialog: {
       type: Boolean,
@@ -122,23 +153,55 @@ export default {
   },
   data() {
     return {
-      valid: true, //VALIDACIÓN DEL FORMULARIO
       show1: false, //MOSTRAR CONTRASEÑA
+      showLoader: false, //MUESTRA EL CARGADOR DESPUES DE REGISTRAR
+      showAlert: false, //MUESTRA LA ALERTA DESPUES DEL REGISTRO
+      doctorDatos: {
+        //DATOS DEL DOCTOR A REGISTRAR
+        password: "",
+        email: "",
+        name: "",
+        lastname: "",
+        genero: "",
+        dni: "",
+        edad: "",
+        celular: "",
+        cmp: "",
+        profesion: "DOCTOR",
+        especialidad: "",
+      },
     };
   },
   computed: {
-    ...mapGetters(["getReglas"]),
+    ...mapGetters(["getReglas", "getAlert"]),
     regDocDialog() {
       return this.dialog;
     },
   },
   methods: {
+    ...mapActions(["registrarDoctor"]),
+    //CIERRA EL MODAL
     close() {
       this.$emit("close");
     },
-    //VALIDAR EL FORMULARIO
-    validate() {
-      this.$refs.form.validate();
+    //REGISTRAR AL DOCTOR
+    registrar() {
+      //PREGUNTA A LA VALIDACÓN SI TODO HA SIDO LLENADO CORRECTAMENTE
+      if (this.$refs.form.validate()) {
+        //MUESTRA EL CARGADOR
+        this.showLoader = true;
+        console.log("DOCTOR :", this.doctorDatos);
+        //LLAMA A LA FUNCION REGISTRAR DOCTOR DE DOCTOR.JS
+        this.registrarDoctor(this.doctorDatos).then((res) => {
+          //DESHABILITA EL LOADER Y MUESTRA LA ALERTA CON EL MENSAJE DE ALERTA DEL BACK
+          this.showLoader = false;
+          this.showAlert = true;
+          if(res===true)this.$refs.form.reset() //SI SE LOGRA INGRESAR CON EXITO TODO SE RESETEA EL FORMULARIO
+        });
+      } else {
+        //MENSAJE DE AYUDA
+        console.log("MOSTRAR MENSAJE NEGATIVO");
+      }
     },
   },
 };

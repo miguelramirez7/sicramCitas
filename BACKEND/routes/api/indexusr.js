@@ -23,7 +23,7 @@ router.post('/signinuser', userController.SingninUsuario);
 router.get('/signoutuser', passport.authenticate('user', { session: false}), userController.SignoutUsuario);
 
 //obtener datos del usuario logeado
-router.get('/user/perfil/:id',passport.authenticate('user', { session: false}),userController.Obntener_datos_Paciente);
+router.get('/user/perfil/:id',passport.authenticate('user', { session: false}),userController.Obtener_datos_Paciente);
 
 //actualizar los datos del usuario logeado
 router.post('/user/perfil/update/:id',passport.authenticate('user', { session: false}),userController.Actualizar_datos_Paciente);

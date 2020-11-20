@@ -4,9 +4,10 @@ require("../config/userpassport")(passport);
 var jwt = require("jsonwebtoken");
 var Doctor = require("../models/doctor");
 var Especialidad = require("../models/especialidad");
+var Horario= require("../models/horario");
 const chalk = require("chalk");
 var pup = require("../tools/scrapers");
-
+const logger=console.log;
 
 //registro doctor
 exports.SignupDoctor = async function (req, res) {
@@ -51,7 +52,7 @@ exports.SignupDoctor = async function (req, res) {
                 edad: req.body.edad,
                 celular: req.body.celular,
                 cmp: req.body.cmp,
-                profesion: req.body.profesion,
+                profesion: req.body.profesion
               });
 
               //agregamos el atributo especialidad del doctor agregamos aparte por que especialidad es un Objeto encontrado en la base de datos
@@ -68,7 +69,7 @@ exports.SignupDoctor = async function (req, res) {
                 //si todo estuvo bien respondemos Json
                 res.json({
                   success: true,
-                  msg: "Bienvenido Doctor, es un nuevo usario.",
+                  msg: "Bienvenido Doctor, es un nuevo usuario.",
                 });
               });
               console.log(newDoctor);
@@ -242,7 +243,7 @@ exports.Agregar_horario_doctor = async function (req, res) {
       if (req.user.id == req.params.id) {
         //encontramos doctor
         var doctor = await Doctor.findById(req.user.id);
-        logger(chalk.blue("Doctor:") + chalk.green(doctor));
+        console.log(doctor);
         //confirmando que este horario ya existe
         var horarioEncontrado = await Horario.findOne({
           fecha: req.body.fecha,
@@ -253,7 +254,7 @@ exports.Agregar_horario_doctor = async function (req, res) {
         if (horarioEncontrado) {
           res.json({ msg: "YA EXISTE ESE HORARIO PARA EL DOCTOR" });
         } else {
-          logger(chalk.red("puedes poner horario"));
+          console.log("Puede poner horario");
           //nuevo horario agarramos por body los datos
           var newhorario = new Horario({
             fecha: req.body.fecha,
@@ -262,14 +263,14 @@ exports.Agregar_horario_doctor = async function (req, res) {
           });
           //agregamos el doctor del horario gracias al token
           newhorario.doctor = doctor;
-          logger(chalk.blue("nuevo horario --- : ") + chalk.green(newhorario));
+          console.log("Nuevo horario: "+newhorario);
           //guardamos horario
           await newhorario.save((err, horario) => {
             if (err) {
-              logger(chalk.red("Error al guardar horario"));
+              console.log("Error al guardar horario");
               res.send("error al guardar al horario :" + err);
             } else {
-              logger(chalk.blue("Se guardó el horario"));
+              console.log("Horario guardado");
               res.status(200).json({ msg: "nuevo horario guardado" });
             }
           });
@@ -279,12 +280,7 @@ exports.Agregar_horario_doctor = async function (req, res) {
           await doctor.save();
         }
       } else {
-        logger(
-          chalk.blue("NO es el usuario ") +
-            chalk.green(req.user.id) +
-            chalk.blue("comparado con ") +
-            chalk.magenta(req.params.id)
-        );
+        console.log("No es el usuario");
         res.send(
           "NO ES EL USUARIO   " +
             req.user.id +
@@ -296,7 +292,7 @@ exports.Agregar_horario_doctor = async function (req, res) {
       return res.status(403).send({ success: false, msg: "Unauthorized." });
     }
   } catch (err) {
-    loggerwin.info(err);
+    
     logger(chalk.red("ERROR: ") + chalk.white(err));
     throw err;
   }
@@ -337,10 +333,10 @@ exports.Actualizar_horario_doctor = async function (req, res) {
                     if (err) {
                       logger(chalk.red("Error al guardar"));
                       res.json({
-                        msg: "error al guardar al doctor actualizado :" + err,
+                        msg: "Error al guardar al doctor actualizado :" + err,
                       });
                     } else {
-                      res.json({ msg: "Horario actualizado! " });
+                      res.json({ msg: "Horario actualizado!" });
                     }
                   });
                 } else {

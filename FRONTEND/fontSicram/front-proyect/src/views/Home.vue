@@ -40,7 +40,7 @@
             <v-list-item-title>Paciente</v-list-item-title>
           </v-list-item>
           <v-list-item @click="items[2].action = true">
-            <v-list-item-title>Dóctor</v-list-item-title>
+            <v-list-item-title>Doctor</v-list-item-title>
           </v-list-item>
         </v-list>
       </v-menu>
@@ -90,6 +90,7 @@
           class="titulo  font-weight-black mb-5 text-center white--text d-flex align-center"
         >
           BIENVENIDO A SICRAM
+          
         </h1>
         <h2 class="grey--text mb-5 subtitulo">Consultorio de citas médicas</h2>
         <v-btn
