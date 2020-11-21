@@ -380,6 +380,110 @@ exports.Actualizar_horario_doctor = async function (req, res) {
     logger(chalk.red("ERROR:") + chalk.white(err));
   }
 };
+exports.Obtener_horario_doctor = async function (req, res) {
+  try {
+    await Doctor.findById(req.params.id, async (err, doctor) => {
+      await Horario.find(
+        { doctor: req.params.id, ocupado: false },
+        (err, horarios) => {
+          if (!horarios) {
+            res.json({ msg: "no se encontro horarios" });
+          }
+          res.json(horarios);
+        }
+      ).populate("doctor");
+    });
+  } catch (error) {
+    res.json({ msg: "id incorrecto, no se encontro doctor" });
+  }
+};
+exports.Obtener_horarios_ocupados_doctor = async function (req, res) {
+  try {
+    await Doctor.findById(req.params.id, async (err, doctor) => {
+      await Horario.find(
+        { doctor: req.params.id, ocupado: true },
+        (err, horarios) => {
+          if (!horarios) {
+            res.json({ msg: "No se encontro horarios" });
+          }
+          res.json(horarios);
+        }
+      ).populate("doctor");
+    });
+  } catch (error) {
+    res.json({ msg: "id incorrecto, no se encontro doctor" });
+  }
+};
+exports.Eliminar_horario_doctor = async function (req, res) {
+  try {
+    var token = getToken(req.headers);
+    if (token) {
+      if (req.user.id == req.params.id) {
+        //encotramos al doctor
+        await Doctor.findById(req.params.id, async (err, doctor) => {
+          if (!doctor) {
+            res.json({ msg: "no se encontro doctor" });
+          } else {
+            //encontramos el horario a eliminar
+            await Horario.findOne(
+              { _id: req.body.id_horario, doctor: req.user.id },
+              (err, horario) => {
+                if (!horario) {
+                  res.json({ msg: "horario no encontrado" });
+                } else {
+                  logger("id horario: " + horario.id);
+                  const horarios_doctor = doctor.horario;
+                  logger("horarios del doctor: " + horarios_doctor);
+                  logger("id doctor: " + doctor.id);
+                  const indice_temp_horario = horarios_doctor.indexOf(
+                    horario.id
+                  );
+                  logger("indice del Horario: " + indice_temp_horario);
+                  if (indice_temp_horario == -1) {
+                    res.json({
+                      msg: "Horario no pertenece a horarios del doctor",
+                    });
+                  } else {
+                    if (horario.ocupado == false) {
+                      horarios_doctor.splice(indice_temp_horario, 1);
+                      doctor.save();
+                      horario.deleteOne();
+                      res.json({ msg: "Se elimino el horario del doctor" });
+                    } else {
+                      res.json({
+                        msg:
+                          "El horario esta siendo usado en una cita, No se puede eliminar",
+                      });
+                    }
+                  }
+                }
+              }
+            );
+          }
+        });
+      } else {
+        logger(
+          chalk.blue("NO es el usuario ") +
+            chalk.green(req.user.id) +
+            chalk.blue("comparado con ") +
+            chalk.magenta(req.params.id)
+        );
+        res.send(
+          "NO ES EL USUARIO    " +
+            req.user.id +
+            " username :  " +
+            req.user.username +
+            "  comparando con " +
+            req.params.id
+        );
+      }
+    } else {
+      return res.status(403).send({ success: false, msg: "Unauthorized." });
+    }
+  } catch (error) {
+    logger(chalk.red("ERROR:  ") + chalk.white(error));
+  }
+};
 
 getToken = function (headers) {
   if (headers && headers.authorization) {

@@ -1,8 +1,11 @@
 <template>
   <div>
+    <!---MODAL PARA EDITAR EL HORARIO---->  
+    <EditarHorario :dialog="showEdit" :element="item" @close="showEdit = false"/>
+    <!----------------------------------->
     <v-data-table
       :headers="headers"
-      :items="desserts"
+      :items="getHorariosDesocupados"
       sort-by="calories"
       class="elevation-1"
     >
@@ -10,197 +13,59 @@
         <v-toolbar flat>
           <v-toolbar-title>Mis horarios</v-toolbar-title>
           <v-divider class="mx-4" inset vertical></v-divider>
-          
-          
-          
         </v-toolbar>
       </template>
       <template v-slot:item.actions="{ item }">
-      <v-icon
-        small
-        class="mr-2"
-        @click="editItem(item)"
-      >
-        mdi-pencil
-      </v-icon>
-      <v-icon
-        small
-        @click="deleteItem(item)"
-      >
-        mdi-delete
-      </v-icon>
-    </template>
-    <template v-slot:no-data>
-      <v-btn
-        color="primary"
-        @click="initialize"
-      >
-        Reset
-      </v-btn>
-    </template>
-  </v-data-table>
+        <v-icon small class="mr-2" @click="editarItem(item)">
+          mdi-pencil
+        </v-icon>
+        <v-icon small  @click="editarItem(item)">
+          mdi-delete
+        </v-icon>
+      </template>
+      
+    </v-data-table>
   </div>
 </template>
 <script>
+import EditarHorario from "../Doctor/modals/EditarHorarioDoctorMod.vue"
+import { mapActions, mapGetters } from "vuex";
 export default {
   name: "ListaHorarioDoc",
+  components:{
+      EditarHorario
+  },
   data: () => ({
-    dialog: false,
-    dialogDelete: false,
+    showEdit: false,
+    item: null,
     headers: [
-      { text: "Fecha", value: "calories" },
-      { text: "Hora", value: "fat" },
-      { text: "Carbs (g)", value: "carbs" },
-      { text: "Protein (g)", value: "protein" },
+      { text: "Fecha", value: "fecha" },
+      { text: "Hora inicio", value: "hora_inicio" },
+      { text: "Hora fin", value: "hora_fin" },
+      { text: "Estado", value: "ocupado" },
       { text: "Actions", value: "actions", sortable: false },
     ],
-    desserts: [],
-    editedIndex: -1,
-    defaultItem: {
-      name: "",
-      calories: 0,
-      fat: 0,
-      carbs: 0,
-      protein: 0,
-    },
   }),
 
   computed: {
-    formTitle() {
-      return this.editedIndex === -1 ? "New Item" : "Edit Item";
-    },
+    ...mapGetters(["getHorariosDesocupados", "getUsuario"]),
   },
-
-  watch: {
-    dialog(val) {
-      val || this.close();
-    },
-    dialogDelete(val) {
-      val || this.closeDelete();
-    },
-  },
-
   created() {
-    this.initialize();
+    this.listarHorariosDoctor(this.getUsuario);
   },
-
   methods: {
-    initialize() {
-      this.desserts = [
-        {
-          name: "Frozen Yogurt",
-          calories: 159,
-          fat: 6.0,
-          carbs: 24,
-          protein: 4.0,
-        },
-        {
-          name: "Ice cream sandwich",
-          calories: 237,
-          fat: 9.0,
-          carbs: 37,
-          protein: 4.3,
-        },
-        {
-          name: "Eclair",
-          calories: 262,
-          fat: 16.0,
-          carbs: 23,
-          protein: 6.0,
-        },
-        {
-          name: "Cupcake",
-          calories: 305,
-          fat: 3.7,
-          carbs: 67,
-          protein: 4.3,
-        },
-        {
-          name: "Gingerbread",
-          calories: 356,
-          fat: 16.0,
-          carbs: 49,
-          protein: 3.9,
-        },
-        {
-          name: "Jelly bean",
-          calories: 375,
-          fat: 0.0,
-          carbs: 94,
-          protein: 0.0,
-        },
-        {
-          name: "Lollipop",
-          calories: 392,
-          fat: 0.2,
-          carbs: 98,
-          protein: 0,
-        },
-        {
-          name: "Honeycomb",
-          calories: 408,
-          fat: 3.2,
-          carbs: 87,
-          protein: 6.5,
-        },
-        {
-          name: "Donut",
-          calories: 452,
-          fat: 25.0,
-          carbs: 51,
-          protein: 4.9,
-        },
-        {
-          name: "KitKat",
-          calories: 518,
-          fat: 26.0,
-          carbs: 65,
-          protein: 7,
-        },
-      ];
+    ...mapActions(["listarHorariosDoctor"]),
+    editarItem(e){
+        console.log(this.showEdit)
+        console.log(e)
+        this.showEdit=true
+        this.item =e
+        console.log(this.showEdit)
     },
-
-    editItem(item) {
-      this.editedIndex = this.desserts.indexOf(item);
-      this.editedItem = Object.assign({}, item);
-      this.dialog = true;
-    },
-
-    deleteItem(item) {
-      this.editedIndex = this.desserts.indexOf(item);
-      this.editedItem = Object.assign({}, item);
-      this.dialogDelete = true;
-    },
-
-    deleteItemConfirm() {
-      this.desserts.splice(this.editedIndex, 1);
-      this.closeDelete();
-    },
-
-    close() {
-      this.dialog = false;
-      this.$nextTick(() => {
-        this.editedItem = Object.assign({}, this.defaultItem);
-        this.editedIndex = -1;
-      });
-    },
-
-    closeDelete() {
-      this.dialogDelete = false;
-      this.$nextTick(() => {
-        this.editedItem = Object.assign({}, this.defaultItem);
-        this.editedIndex = -1;
-      });
-    },
-
-    save() {
-      if (this.editedIndex > -1) {
-        Object.assign(this.desserts[this.editedIndex], this.editedItem);
-      } else {
-        this.desserts.push(this.editedItem);
-      }
-      this.close();
-    },
+    elimiarItem(e){
+        console.log(e)
+    }
+    
   },
 };
 </script>

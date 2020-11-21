@@ -30,6 +30,11 @@ const routes = [
     name: 'OrganizacionSistema',
     component: () => import(/* webpackChunkName: "ORGANIZACION" */ '../views/OrganizacionSistema.vue')
   },
+  {
+    path: '/prueba',
+    name: 'Prueba',
+    component: () => import(/* webpackChunkName: "ORGANIZACION" */ '../views/prueba.vue')
+  },
 ]
 
 const router = new VueRouter({
