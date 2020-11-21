@@ -67,6 +67,7 @@
 </template>
 
 <script>
+///JORGITO GEI ////////
 import Loader from "@/modals/Loader.vue";
 import Alert from "@/modals/Alert.vue";
 import { mapGetters, mapActions } from "vuex";
