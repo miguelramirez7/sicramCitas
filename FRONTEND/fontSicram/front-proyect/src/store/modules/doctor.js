@@ -2,18 +2,33 @@ const axios = require('axios')
 axios.defaults.baseURL = 'http://localhost:3000/api';
 
 const state = {
-  doctorPerfil: null // VARIABLE PARA LOS DATOS DEL DOCTOR
+  doctorPerfil: null, // VARIABLE PARA LOS DATOS DEL DOCTOR
+  horariosDesocupados: null, // VARUABLE PARA LOS HORARIOS DEL DOCTOR
+  
 };
 
 const getters = {
+  //CONSIGUE EL PERFIL DEL DOCTOR
   getDoctorPerfil(state){
-      return state.doctorPerfil
-  }
+    return state.doctorPerfil
+  },
+
+  //CONSIGUE LOS HORARIOS DESOCUPADOS DEL DOCTOR
+  getHorariosDesocupados(state){
+    return state.horariosDesocupados
+  },
+
 };
 
 const mutations = {
+  //PONE LOS DATOS DEL PERFIL DEL DOCTOR
   setDoctorPerfil(state,payload){
       state.doctorPerfil = payload
+  },
+
+  //CONSIGUE LOS HORARIOS DESOCUPADOS DEL DOCTOR
+  setHorariosDesocupados(state,payload){
+    state.horariosDesocupados = payload
   }
 };
 
@@ -85,7 +100,7 @@ const actions = {
     },
 
     //CONSULTA PARA AGREGAR HORARIO AL DOCTOR
-    registrarHorarioDoctor({commit},datos){
+    registrarHorarioDoctor({commit,dispatch},datos){
         
         let url = `/doctor/horario/agregar/${datos.doctor.id}`;
         return axios
@@ -100,9 +115,18 @@ const actions = {
           )
           .then((res)=>{
             console.log(res)
-            return Promise.resolve(false)
+            if(res.data.msg ==="nuevo horario guardado"){
+                dispatch('listarHorariosDoctor', datos.doctor )
+                dispatch('mensajeTipoAlert', {mensajeAlerta:"Horario creado con éxito." ,tipoAlerta:'success'} , { root: true })
+                return Promise.resolve(true)
+            }else{
+                dispatch('mensajeTipoAlert', {mensajeAlerta:res.data.msg ,tipoAlerta:'warning'} , { root: true })
+                return Promise.resolve(false)
+            }
+            
           })
           .catch((e)=>{
+            dispatch('mensajeTipoAlert', {mensajeAlerta:e ,tipoAlerta:'error'} , { root: true })
             return Promise.resolve(false)
           })
     },
@@ -115,10 +139,10 @@ const actions = {
         .then((res) => {
             console.log(res)
             if(res.data.length!=0){
-                
+                commit('setHorariosDesocupados',res.data)
                 
             }else{
-                
+              commit('setHorariosDesocupados',null)
             }
         })
         .catch((e) => {
