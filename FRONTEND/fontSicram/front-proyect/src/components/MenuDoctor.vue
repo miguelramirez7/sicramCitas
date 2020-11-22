@@ -18,8 +18,8 @@
     <v-navigation-drawer color="#f2f2f2" app v-model="drawer" clipped>
       <v-list shaped >
         <v-list-item>
-          <v-list-item-avatar>
-            <img src="https://randomuser.me/api/portraits/men/86.jpg" alt="">
+          <v-list-item-avatar >
+            <img src="../assets/doctor.svg" alt="" content-class="imagen-perfil" color="red"> 
           </v-list-item-avatar>
           <v-list-item-content>
             <v-list-item-title>
@@ -83,7 +83,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions,mapGetters } from 'vuex'
 
   export default {
     name: 'App',
@@ -145,7 +145,8 @@ import { mapActions } from 'vuex'
     },
     methods:{
       ...mapActions(['cambiarComponenteDoctor'])
-    }
+    },
+
   };
 </script>
 
@@ -162,5 +163,8 @@ import { mapActions } from 'vuex'
 .v-list-item--link[data-v-169ff5e0]::before {
   color: teal;
 }
+
+
+@import '../assets/css/doctor.css';
 
 </style>

@@ -17,7 +17,7 @@
       <v-list shaped >
         <v-list-item>
           <v-list-item-avatar>
-            <img src="https://randomuser.me/api/portraits/men/86.jpg" alt="">
+            <img src="../assets/user.svg" alt="">
           </v-list-item-avatar>
           <v-list-item-content>
             <v-list-item-title>
