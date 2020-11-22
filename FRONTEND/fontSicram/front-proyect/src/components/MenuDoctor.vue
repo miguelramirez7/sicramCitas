@@ -154,7 +154,7 @@ import { mapActions,mapGetters } from 'vuex'
 
   .v-application--wrap {
     padding-top: 10px;
-    padding-left: 30px;
+    padding-left: 15px;
     min-height: 0 !important;
 }
 

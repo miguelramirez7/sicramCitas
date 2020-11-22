@@ -5,7 +5,7 @@
 				<h1>4<span class="mx-5 "></span>4</h1>
 			</div>
 			<h2>Oops! Página no encontrada</h2>
-			<v-btn  @click="$router.go(-1)"  >Regresar</v-btn>
+			<v-btn  @click="$router.go(-1)"   >Regresar</v-btn>
 		</div>
 	</div>
  </template>
