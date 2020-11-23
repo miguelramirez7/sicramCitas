@@ -61,21 +61,22 @@
         <v-divider />
 
         <v-list-item-group color="teal lighten-2">
-          <v-list-item >
+          <v-list-item>
             <v-list-item-title>Ingresar</v-list-item-title>
           </v-list-item>
 
-          <v-list-group
-            no-action
-            color="teal lighten-2"
-          >
+          <v-list-group no-action color="teal lighten-2">
             <template v-slot:activator>
-            <v-list-item-content>
-              <v-list-item-title>Registrarse</v-list-item-title>
-            </v-list-item-content>
-          </template>
+              <v-list-item-content>
+                <v-list-item-title>Registrarse</v-list-item-title>
+              </v-list-item-content>
+            </template>
 
-            <v-list-item v-for="(child, i) in items" :key="i" @click="child.action = true">
+            <v-list-item
+              v-for="(child, i) in items"
+              :key="i"
+              @click="child.action = true"
+            >
               <v-list-item-title v-text="child.title"></v-list-item-title>
             </v-list-item>
           </v-list-group>
@@ -90,7 +91,6 @@
           class="titulo  font-weight-black mb-5 text-center white--text d-flex align-center"
         >
           BIENVENIDO A SICRAM
-          
         </h1>
         <h2 class="grey--text mb-5 subtitulo">Consultorio de citas médicas</h2>
         <v-btn
@@ -135,18 +135,18 @@ export default {
       drawer: false,
       group: null,
       items: [
-            {
-              title: "Organización",
-              action: false
-            },
-            {
-              title: "Paciente",
-              action: false
-            },
-            {
-              title: "Doctor",
-              action: false 
-            },
+        {
+          title: "Organización",
+          action: false,
+        },
+        {
+          title: "Paciente",
+          action: false,
+        },
+        {
+          title: "Doctor",
+          action: false,
+        },
       ],
     };
   },
@@ -160,7 +160,5 @@ export default {
 </script>
 
 <style scoped>
-
-
-@import '../assets/css/modalIngreso.css';
+@import "../assets/css/modalIngreso.css";
 </style>

@@ -100,7 +100,7 @@
                   outlined
                   class="input1"
                   type="number"
-                  :rules="[getReglas.requerido]"
+                  :rules="[getReglas.requerido,getReglas.celular,getReglas.numCelular]"
                   v-model="getDoctorPerfil.celular"
                 ></v-text-field>
               </v-col>
@@ -116,7 +116,7 @@
                   dense
                   outlined
                   type="number"
-                  :rules="[getReglas.requerido]"
+                  :rules="[getReglas.requerido,getReglas.edad]"
                   v-model="getDoctorPerfil.edad"
                 ></v-text-field>
               </v-col>
