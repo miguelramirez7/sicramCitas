@@ -11,7 +11,10 @@ router.get('/',function (req,res) {
 
 
 /**ENDPOINTS ORGANIZACION---------------------------------------------------------------------------- */
-//crera una nueva organizacion REGISTANDOTE
+//crear una nueva organizacion REGISTANDOTE
 router.post('/signuporganizacion', organizacionController.SignupOrganizacion);
+
+//LOGEARTE una vez ya tengas tu CUENTA REGISTRADA
+router.post('/signinorganizacion', organizacionController.SigninOrganizacion);
 
 module.exports = router;
