@@ -19,7 +19,7 @@ require('./config/userpassport');
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
-// Cors para dividir los sv
+// Cors para dividir los svv
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
