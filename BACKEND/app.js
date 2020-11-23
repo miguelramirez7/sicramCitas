@@ -10,7 +10,7 @@ var indexDoctorApiRouter = require('./routes/api/indexct');
 var indexOrgApiRouter = require('./routes/api/indexorg');
 var usersRouter = require('./routes/users');
 var cmpScrapApiRouter = require('./routes/api/scrap');
-var passport =  require('passport');
+var passport = require('passport');
 // INICIANDO LA APP
 var app = express();
 require("./database/database");
