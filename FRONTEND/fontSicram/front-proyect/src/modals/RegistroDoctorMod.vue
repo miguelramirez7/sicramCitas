@@ -200,7 +200,7 @@ export default {
           
           {this.$refs.form.reset()
             this.close()
-          } //SI SE LOGRA INGRESAR CON EXITO TODO SE RESETEA EL FORMULARIO
+          } //SI SE LOGRA INGRESAR CON EXITO TODO SE RESETEA EL FORMULARIO x
 
         });
       } else {

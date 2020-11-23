@@ -138,7 +138,7 @@
             this.showAlert = true;
             if (res === true) {
               this.$refs.form.reset() //SI SE LOGRA INGRESAR CON EXITO TODO SE RESETEA EL FORMULARIO
-              
+              this.close()
             }
           });
         } else {
