@@ -18,6 +18,7 @@ import CitasPendientesDoc from './../components/dashboards/Doctor/CitasPendiente
 import CitasPasadasDoc from './../components/dashboards/Doctor/CitasPasadasDoc.vue'
 
 
+
 import { mapActions } from 'vuex'
 import { mapGetters } from 'vuex'
 
@@ -36,7 +37,8 @@ export default {
         AgregarHorarioDoc,
         HistorialHorarioDoc,
         CitasPendientesDoc,
-        CitasPasadasDoc
+        CitasPasadasDoc,
+       
     },
     computed:{
       ...mapGetters(['getComponenteDoctor'])
