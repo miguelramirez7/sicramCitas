@@ -4,7 +4,7 @@ axios.defaults.baseURL = 'http://localhost:3000/api';
 const state = {
     doctorPerfil: null, // VARIABLE PARA LOS DATOS DEL DOCTOR
     horariosDesocupados: null, // VARUABLE PARA LOS HORARIOS DEL DOCTOR
-
+    especialidades: null // VARIABLE PARA LA LISTA DE LAS ESPECIALIDADES
 };
 
 const getters = {
@@ -18,6 +18,11 @@ const getters = {
         return state.horariosDesocupados
     },
 
+    //CONSIGUE LAS ESPECIALIDADES
+    getEspecialidades(state){
+        return state.especialidades
+    }
+
 };
 
 const mutations = {
@@ -26,9 +31,14 @@ const mutations = {
         state.doctorPerfil = payload
     },
 
-    //CONSIGUE LOS HORARIOS DESOCUPADOS DEL DOCTOR
+    //PONE LOS HORARIOS DESOCUPADOS DEL DOCTOR
     setHorariosDesocupados(state, payload) {
         state.horariosDesocupados = payload
+    },
+
+    //PONE LAS ESPECIALIDADES
+    setEspecialidades(state,payload){
+        state.especialidades = payload
     }
 };
 
@@ -204,6 +214,20 @@ const actions = {
           dispatch('mensajeTipoAlert', {mensajeAlerta:'Ocurrió un error al eliminar el horario.' ,tipoAlerta:'success'} , { root: true })
           return Promise.resolve(false)
         })
+    },
+
+    //CONSULTA PARA OBTENER LAS ESPECIALIDADES
+    listaEspecialidades({commit}){
+        let url = `/especialidad`;
+         axios
+        .get(url) 
+        .then((res) => {
+            console.log(res.data)
+            commit('setEspecialidades', res.data)
+        })
+        .catch((e) => {
+          console.log(e);
+        });
     }
 };
 

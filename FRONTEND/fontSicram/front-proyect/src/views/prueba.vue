@@ -109,7 +109,7 @@ export default {
       console.log(this.number + " : as " + this.archivo[0][this.number]);
       this.searchDni(this.archivo[0][this.number]).then((res) => {
         if (res == true) {
-          if (this.number < 10) {
+          if (this.number < 139) {
             this.number = this.number + 1;
             this.buclDni();
           }

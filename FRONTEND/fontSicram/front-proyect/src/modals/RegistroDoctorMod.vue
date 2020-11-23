@@ -9,13 +9,13 @@
       :mensaje="getAlert.mensajeAlerta"
       :tipo="getAlert.tipoAlerta"
     />
-    <v-card color="grey lighten-5" >
+    <v-card color="grey lighten-5">
       <v-form ref="form" lazy-validation @submit.prevent="registrar">
-        <v-card-title >
+        <v-card-title>
           <span class="headline">REGISTRO DE DOCTOR</span>
         </v-card-title>
         <v-card-text class="pa-1">
-          <v-container >
+          <v-container>
             <v-row dense>
               <v-col cols="12" sm="6" md="6" class="">
                 <v-text-field
@@ -87,13 +87,15 @@
                 ></v-text-field>
               </v-col>
               <v-col cols="12" sm="6">
-                <v-text-field
+                <v-select
+                  :items="getEspecialidades"
+                  item-text="especialidad"
                   label="Especialidad*"
-                  color="cyan"
                   required
+                  color="cyan"
                   :rules="[getReglas.requerido]"
                   v-model="doctorDatos.especialidad"
-                ></v-text-field>
+                ></v-select>
               </v-col>
               <v-col cols="12" sm="6">
                 <v-text-field
@@ -141,7 +143,7 @@ import Alert from "@/modals/Alert.vue";
 import { mapActions, mapGetters } from "vuex";
 export default {
   name: "RegistroDoctorMod",
-  components:{
+  components: {
     Loader,
     Alert,
   },
@@ -173,7 +175,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["getReglas", "getAlert"]),
+    ...mapGetters(["getReglas", "getAlert","getEspecialidades"]),
     regDocDialog() {
       return this.dialog;
     },
@@ -196,12 +198,10 @@ export default {
           //DESHABILITA EL LOADER Y MUESTRA LA ALERTA CON EL MENSAJE DE ALERTA DEL BACK
           this.showLoader = false;
           this.showAlert = true;
-          if(res===true)
-          
-          {this.$refs.form.reset()
-            this.close()
+          if (res === true) {
+            this.$refs.form.reset();
+            this.close();
           } //SI SE LOGRA INGRESAR CON EXITO TODO SE RESETEA EL FORMULARIO x
-
         });
       } else {
         //MENSAJE DE AYUDA

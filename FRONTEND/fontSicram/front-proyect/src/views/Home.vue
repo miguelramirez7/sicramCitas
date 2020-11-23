@@ -116,6 +116,7 @@ import Login from "@/modals/Login.vue";
 import RegistroPacienteMod from "@/modals/RegistroPacienteMod.vue";
 import RegistroDoctorMod from "@/modals/RegistroDoctorMod.vue";
 import RegistroOrganizacionMod from "@/modals/RegistroOrganizacionMod.vue";
+import { mapActions } from 'vuex';
 export default {
   name: "Home",
   components: {
@@ -156,6 +157,12 @@ export default {
       this.drawer = false;
     },
   },
+  methods:{
+    ...mapActions(['listaEspecialidades'])
+  },
+  created(){
+    this.listaEspecialidades()
+  }
 };
 </script>
 

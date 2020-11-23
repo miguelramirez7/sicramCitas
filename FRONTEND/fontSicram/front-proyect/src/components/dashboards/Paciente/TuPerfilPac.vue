@@ -127,9 +127,10 @@
     },
     data() {
       return {
-         panel: 0
+         panel: 0,
+         datos: null
       }
-    }
+    },
 
 
   };

@@ -81,7 +81,7 @@
                   required
                   class="input1"
                   :rules="[getReglas.requerido]"
-                  v-model="getPacientePerfil.genero"
+                  v-model="datos.genero"
                 ></v-select>
               </v-col>
             </v-row>
@@ -100,7 +100,7 @@
                   class="input1"
                   type="number"
                   :rules="[getReglas.requerido]"
-                  v-model="getPacientePerfil.celular"
+                  v-model="datos.celular"
                 ></v-text-field>
               </v-col>
             </v-row>
@@ -116,7 +116,7 @@
                   outlined
                   type="number"
                   :rules="[getReglas.requerido]"
-                  v-model="getPacientePerfil.edad"
+                  v-model="datos.edad"
                 ></v-text-field>
               </v-col>
             </v-row>
@@ -146,7 +146,11 @@ export default {
     return {
       showLoader: false, //MUESTRA EL CARGADOR DESPUES DE REGISTRAR
       showAlert: false, //MUESTRA LA ALERTA DESPUES DEL REGISTRO
+      datos: null,
     };
+  },
+  created (){
+    this.datos = this.getPacientePerfil
   },
   computed: {
     ...mapGetters(["getPacientePerfil", "getReglas", "getAlert", "getUsuario"]),

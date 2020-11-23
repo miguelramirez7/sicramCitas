@@ -5,7 +5,7 @@ const state = {
         DNI: (v) => (v && v.length == 8) || 'El DNI debe ser de 8 dígitos.', // DNI VÀLIDO
         edad: (v) => (v && v >= 18  ) || 'Debe ser mayor de edad.', //EDAD VÀLIDA
         minimochar : (v) => (v && v.length >= 8)  || 'Mínimo 8 carácteres.', //MINIMO CARÀCTERES
-        pass : (v) => /^(?=.*\d)(?=.*[a-záéíóúüñ]).*[A-ZÁÉÍÓÚÜÑ]/.test(v) || 'Debe contener por lo menos una mayúscula y un número.',  //CONTRASEÑA ESPECIAL
+        pass : (v) => /^(?=.*\d)(?=.*[a-záéíóúüñ]).*[A-ZÁÉÍÓÚÜÑ]/.test(v) || 'Debe contener por lo menos una mayúscula, una minúscula y un número.',  //CONTRASEÑA ESPECIAL
         numCelular: (v) => (v && v.length == 9) || 'Debe ser un número válido.', // DNI VÀLIDO
         celular: (v) => /9+(?=.*\d)/.test(v) || 'Debe ser un número válido.',  //CONTRASEÑA ESPECIAL
     },
