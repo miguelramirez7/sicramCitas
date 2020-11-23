@@ -90,7 +90,7 @@ const actions = {
           )
           .then((res)=>{
             console.log(res)
-            dispatch('mensajeTipoAlert', {mensajeAlerta:res.data.msg ,tipoAlerta:'success'} , { root: true })
+            dispatch('mensajeTipoAlert', {mensajeAlerta:'Datos actualizados correctamente.',tipoAlerta:'success'} , { root: true })
             return Promise.resolve(true)
         })
         .catch((e)=>{
@@ -143,15 +143,17 @@ const actions = {
                 
             }else{
               commit('setHorariosDesocupados',null)
+            
             }
         })
         .catch((e) => {
             console.log(e)
+            
         });
     },
 
     //MODIFICAR EL HORARIO DE DOCTOR
-    modificarHorario({commit},datos){
+    modificarHorario({commit,dispatch},datos){
         let url = `/doctor/horario/modificar/${datos.doctor.id}`;
       return axios
         .post(
@@ -165,12 +167,44 @@ const actions = {
         )
         .then((res)=>{
           console.log(res)
+              if(res.data.msg==="Horario actualizado!"){
+                dispatch('mensajeTipoAlert', {mensajeAlerta:res.data.msg ,tipoAlerta:'success'} , { root: true })
+                return Promise.resolve(true)
+              }else{
+                dispatch('mensajeTipoAlert', {mensajeAlerta:res.data.msg ,tipoAlerta:'warning'} , { root: true })
+                return Promise.resolve(false)
+              }
             
+        })
+        .catch((e)=>{
+          console.log(e)
+          dispatch('mensajeTipoAlert', {mensajeAlerta:"Ocurrió un error al actualizar el Horario." ,tipoAlerta:'error'} , { root: true })
+          return Promise.resolve(false)
+        })
+    },
+
+    //CONSULTA PARA ELIMINAR UN HORARIO SELECCIONADO POR EL DOCTOR
+    eliminarHorario({commit,dispatch},datos){
+      let url = `/doctor/horario/eliminar/${datos.doctor.id}`;
+      return axios
+        .post(
+          url,
+          { id_horario: datos.id_horario },
+          {
+            headers: {
+              Authorization: `${datos.doctor.token}`,
+            },
+          }
+        )
+        .then((res)=>{
+          console.log(res)
+          dispatch('mensajeTipoAlert', {mensajeAlerta:res.data.msg ,tipoAlerta:'success'} , { root: true })
               return Promise.resolve(true)
             
         })
         .catch((e)=>{
           console.log(e)
+          dispatch('mensajeTipoAlert', {mensajeAlerta:'Ocurrió un error al eliminar el horario.' ,tipoAlerta:'success'} , { root: true })
           return Promise.resolve(false)
         })
     }
