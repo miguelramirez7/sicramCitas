@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <template content-class="menu">
+    <template >
       <v-app-bar app dark color="teal lighten-2" clipped-left>
         <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
         <v-toolbar-title>SICRAM</v-toolbar-title>
@@ -17,9 +17,6 @@
             <v-list-item-avatar>
               <img
                 src="../assets/doctor.svg"
-                alt=""
-                content-class="imagen-perfil"
-                color="red"
               />
             </v-list-item-avatar>
             <v-list-item-content>
@@ -88,7 +85,6 @@ export default {
   data: () => ({
     drawer: true,
     group: null,
-    asd: -1,
     items: [
       {
         action: "mdi-account",
@@ -155,6 +151,7 @@ export default {
 
 .v-list-item--link[data-v-169ff5e0]::before {
   color: teal;
+  
 }
 
 @import "../assets/css/doctor.css";

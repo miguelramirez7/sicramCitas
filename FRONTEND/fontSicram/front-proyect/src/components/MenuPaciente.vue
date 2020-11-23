@@ -1,10 +1,10 @@
 <template>
   <v-app>
 
-    <div>
+    <template>
       <v-app-bar app dark color="teal lighten-2" clipped-left>
         <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
-        <v-toolbar-title>Vuetify</v-toolbar-title>
+        <v-toolbar-title>SICRAM</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-btn icon>
           <v-icon>mdi-export</v-icon>
@@ -12,7 +12,7 @@
       </v-app-bar>
 
 
-    </div>
+    </template>
     <v-navigation-drawer color="#f2f2f2" app v-model="drawer" clipped>
       <v-list shaped >
         <v-list-item>
@@ -35,7 +35,7 @@
             <v-list-item-title>Inicio</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-        <v-list-group no-action color='teal lighten-2' v-for="item in items" :key="item.title" v-model="item.active"
+        <v-list-group no-action color='teal lighten-2' v-for="item in items" :key="item.title" 
           :prepend-icon="item.action">
           <template v-slot:activator>
             <v-list-item-content>
@@ -43,11 +43,11 @@
             </v-list-item-content>
           </template>
 
-          <v-list-item-group >
+          
               <v-list-item v-for="child in item.items" :key="child.title" @click="cambiarComponentePaciente(child.componente)" >
                 <v-list-item-title v-text="child.title"></v-list-item-title>
               </v-list-item>
-            </v-list-item-group>
+            
         </v-list-group>
         </v-list-item-group>
       

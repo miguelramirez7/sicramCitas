@@ -30,3 +30,30 @@
     font-weight: 600;
     color: rgb(10, 117, 90);
 }
+
+
+/*Inicio*/
+
+.imagenBienvenida img {
+    width: 100%;
+    box-shadow: 0 5px 10px rgb(167, 164, 164);
+}
+
+.guinBienvenida {
+    background: teal;
+    border-radius: 100%;
+    padding-right: 7px;
+    padding-left: 7px;
+    font-size: 18px;
+    color: white;
+}
+
+.contenidoBienvenida {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+.letrasIni {
+    font-size: 14px;
+}
