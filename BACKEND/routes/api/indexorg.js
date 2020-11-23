@@ -17,4 +17,11 @@ router.post('/signuporganizacion', organizacionController.SignupOrganizacion);
 //LOGEARTE una vez ya tengas tu CUENTA REGISTRADA
 router.post('/signinorganizacion', organizacionController.SigninOrganizacion);
 
+//salir de la cuenta de la orga
+router.get('/signoutorganizacion', passport.authenticate('organizacion', { session: false}), organizacionController.SignoutOrganizacion);
+
+//mostrar datos del perfil de la orga
+router.get('/organizacion/perfil/:id', passport.authenticate('organizacion', { session: false}), organizacionController.Obtener_Datos_Organizacion);
+
+
 module.exports = router;

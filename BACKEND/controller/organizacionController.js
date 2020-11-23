@@ -94,6 +94,39 @@ exports.SignoutOrganizacion = function (req, res) {
   req.logout();
   res.json({ success: true, msg: "Sign out Exitosa." });
 };
+
+// Obtener perfil de la organizacion
+exports.Obtener_Datos_Organizacion = async function (req, res) {
+  try {
+    var token = getToken(req.headers);
+    if (token) {
+      if (req.user.id == req.params.id) {
+        logger("ORGANIZACION:   " + req.user.id);
+        var org = await Organizacion.findById(req.params.id);
+        res.send(org);
+      } else {
+        res.send(
+          "NO ES EL USUARIO   " +
+            req.user.id +
+            " comparando con " +
+            req.params.id
+        );
+        logger(
+          "NO es el usuario " +
+            req.user.id +
+            "comparado con " +
+            req.params.id
+        );
+      }
+    } else {
+      return res.status(403).send({ success: false, msg: "Unauthorized." });
+    }
+  } catch (err) {
+    
+    logger("ERROR: " + err);
+  }
+};
+
 getToken = function (headers) {
   if (headers && headers.authorization) {
     var parted = headers.authorization.split(" ");
