@@ -12,7 +12,7 @@
     <v-card class="mb-5">
       <v-form ref="form" lazy-validation @submit.prevent="regitrarHorario">
         <v-container fluid>
-          <v-card-title class="titulo"> Lista de horarios </v-card-title>
+          <v-card-title class="titulo"> Nuevo Horario </v-card-title>
           <v-card-text>
             <v-row>
               <v-col class="pl-4 pr-4" cols="12" md="4">

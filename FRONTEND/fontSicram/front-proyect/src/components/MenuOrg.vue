@@ -4,7 +4,7 @@
     <template>
       <v-app-bar app dark color="teal lighten-2" clipped-left>
         <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
-        <v-toolbar-title>Vuetify</v-toolbar-title>
+        <v-toolbar-title>SICRAM</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-btn icon>
           <v-icon>mdi-export</v-icon>
@@ -18,7 +18,7 @@
       <v-list shaped >
         <v-list-item>
           <v-list-item-avatar>
-            <img src="https://randomuser.me/api/portraits/men/86.jpg" alt="">
+            <img src="../assets/organizacion.svg" alt="">
           </v-list-item-avatar>
           <v-list-item-content>
             <v-list-item-title>

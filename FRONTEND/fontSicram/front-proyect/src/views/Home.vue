@@ -61,21 +61,22 @@
         <v-divider />
 
         <v-list-item-group color="teal lighten-2">
-          <v-list-item >
+          <v-list-item>
             <v-list-item-title>Ingresar</v-list-item-title>
           </v-list-item>
 
-          <v-list-group
-            no-action
-            color="teal lighten-2"
-          >
+          <v-list-group no-action color="teal lighten-2">
             <template v-slot:activator>
-            <v-list-item-content>
-              <v-list-item-title>Registrarse</v-list-item-title>
-            </v-list-item-content>
-          </template>
+              <v-list-item-content>
+                <v-list-item-title>Registrarse</v-list-item-title>
+              </v-list-item-content>
+            </template>
 
-            <v-list-item v-for="(child, i) in items" :key="i" @click="child.action = true">
+            <v-list-item
+              v-for="(child, i) in items"
+              :key="i"
+              @click="child.action = true"
+            >
               <v-list-item-title v-text="child.title"></v-list-item-title>
             </v-list-item>
           </v-list-group>
@@ -90,7 +91,6 @@
           class="titulo  font-weight-black mb-5 text-center white--text d-flex align-center"
         >
           BIENVENIDO A SICRAM
-          
         </h1>
         <h2 class="grey--text mb-5 subtitulo">Consultorio de citas médicas</h2>
         <v-btn
@@ -135,18 +135,18 @@ export default {
       drawer: false,
       group: null,
       items: [
-            {
-              title: "Organización",
-              action: false
-            },
-            {
-              title: "Paciente",
-              action: false
-            },
-            {
-              title: "Doctor",
-              action: false 
-            },
+        {
+          title: "Organización",
+          action: false,
+        },
+        {
+          title: "Paciente",
+          action: false,
+        },
+        {
+          title: "Doctor",
+          action: false,
+        },
       ],
     };
   },
@@ -160,71 +160,5 @@ export default {
 </script>
 
 <style scoped>
-.imagen {
-  width: 100%;
-  height: 100%;
-
-  background-attachment: fixed;
-  background-repeat: no-repeat;
-  background-position: 0% 0%;
-  background-size: cover;
-  display: block;
-  position: relative;
-  object-fit: cover;
-  background-image: linear-gradient(
-      to right,
-      rgba(5, 12, 31, 0.493),
-      rgba(5, 12, 31, 0.493)
-    ),
-    url("../assets/doctorHome.jpg");
-}
-
-.principal {
-  display: flex;
-  height: 100%;
-  align-items: center;
-  justify-content: center;
-}
-
-.contenedor {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-  align-items: center;
-  margin-top: auto;
-  margin-bottom: auto;
-}
-
-.titulo {
-  font-size: 80px;
-  font-family: "open sans";
-}
-
-.mostrarEnPantallaPequeña {
-  display: none;
-}
-
-@media (max-width: 414px) {
-  .titulo {
-    font-size: 30px;
-  }
-
-  .subtitulo {
-    font-size: 20px;
-  }
-
-  .centrar {
-    display: flex !important;
-    justify-content: center !important;
-  }
-
-  .mostrarEnPantallaPequeña {
-    display: block;
-  }
-
-  .ocultarEnPantallaPequeña {
-    display: none;
-  }
-}
+@import "../assets/css/modalIngreso.css";
 </style>

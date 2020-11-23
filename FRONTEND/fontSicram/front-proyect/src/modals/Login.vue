@@ -1,5 +1,5 @@
 <template>
-  <v-dialog :value="loginDialog" max-width="600px" persistent>
+  <v-dialog :value="loginDialog" max-width="600px" persistent content-class="modal-ingreso">
     <!----CARGADOR---->
     <Loader :dialog="showLoader" />
     <!----ALERTA---->
@@ -9,8 +9,16 @@
       :mensaje="'Usuario o contraseña incorrectos!'"
       :tipo="'error'"
     />
-    <v-row no-gutters>
-      <v-col cols="6">
+    <v-row no-gutters >
+      <v-col cols="12" md="6">
+        <v-img
+          src="../assets/doctor-patient.jpg"
+          height="100%"
+          background="red"
+        >
+        </v-img>
+      </v-col>
+      <v-col cols="12" md="6">
         <v-card class="rounded-0">
           <v-form ref="form" lazy-validation @submit.prevent="login">
             <v-card-title class="d-flex justify-center">
@@ -54,14 +62,7 @@
           </v-form>
         </v-card>
       </v-col>
-      <v-col cols="6">
-        <v-img
-          src="../assets/doctor-patient.jpg"
-          height="100%"
-          background="red"
-        >
-        </v-img>
-      </v-col>
+      
     </v-row>
   </v-dialog>
 </template>
@@ -147,4 +148,8 @@ export default {
 };
 </script>
 
-<style></style>
+<style scoped>
+
+@import '../assets/css/home.css';
+
+</style>

@@ -1,34 +1,114 @@
 <template>
-  <div class="">
+  <div>
     <v-container>
       <v-row>
-        <v-col cols="12" md="4" class="d-flex justify-center align-center">
-          <v-avatar size="180">
-            <img src="https://cdn.vuetifyjs.com/images/john.jpg" alt="John" />
-          </v-avatar>
-        </v-col>
         <v-col cols="12" md="5">
-          <v-card elevation="4" class="mt-2">
-            <v-card-title class="titulo">Información Personal</v-card-title>
-            <v-card-text>
-              <v-row>
-                <v-col cols="6" md="6">
-                  <p class="font-weight-bold">NOMBRES Y APELLIDOS:</p>
-                  <p class="font-weight-bold">DNI:</p>
-                  <p class="font-weight-bold">EDAD:</p>
-                  <p class="font-weight-bold">CELULAR:</p>
-                  <p class="font-weight-bold">GENERO:</p>
-                </v-col>
-                <v-col style="text-transform: uppercase;" cols="6" md="6">
-                  <p>{{getPacientePerfil.name}} {{getPacientePerfil.lastname}}</p>
-                  <p>{{getPacientePerfil.dni}}</p>
-                  <p>{{getPacientePerfil.edad}}</p>
-                  <p>{{getPacientePerfil.celular}}</p>
-                  <p>{{getPacientePerfil.genero}}</p>
-                </v-col>
-              </v-row>
-            </v-card-text>
+          <v-card content-class="carta-perfil" class="mt-5">
+
+            <div class="imagen-card">
+              <img src="../../../assets/user.svg" alt="John" />
+            </div>
+ 
+
+            <v-card-title class="titulo2">{{ getPacientePerfil.name }} {{ getPacientePerfil.lastname }}</v-card-title>
+            <v-card-subtitle class="text-center">
+              Doctor
+            </v-card-subtitle>
           </v-card>
+
+        </v-col>
+        <v-col cols="12" md="6">
+          
+            
+              <div class="mt-5">
+                <v-row justify="center">
+                  <v-expansion-panels accordion v-model="panel">
+                    <v-expansion-panel value="true">
+                      <v-expansion-panel-header class="titulo">Información personal</v-expansion-panel-header>
+                      <v-expansion-panel-content>
+                        <v-simple-table>
+                          <template v-slot:default>
+                        <tbody>
+                          <tr>
+                            <td>
+                              <v-icon
+                                small
+                                class="mr-2"
+                                v-text="'mdi-rename-box'"
+                              ></v-icon
+                              >NOMBRES Y APELLIDOS
+                            </td>
+                            <td>{{ getPacientePerfil.name }} {{ getPacientePerfil.lastname }}</td>
+                          </tr>
+                          <tr>
+                            <td>
+                              <v-icon
+                                small
+                                class="mr-2"
+                                v-text="'mdi-credit-card'"
+                              ></v-icon
+                              >DNI
+                            </td>
+                            <td>{{ getPacientePerfil.dni }}</td>
+                          </tr>
+                          <tr>
+                            <td>
+                              <v-icon
+                                small
+                                class="mr-2"
+                                v-text="'mdi-clock'"
+                              ></v-icon
+                              >EDAD
+                            </td>
+                            <td>{{ getPacientePerfil.edad }}</td>
+                          </tr>
+                          <tr>
+                            <td>
+                              <v-icon
+                                small
+                                class="mr-2"
+                                v-text="'mdi-cellphone'"
+                              ></v-icon
+                              >CELULAR
+                            </td>
+                            <td>{{ getPacientePerfil.celular }}</td>
+                          </tr>
+                          <tr>
+                            <td>
+                              <v-icon
+                                small
+                                class="mr-2"
+                                v-text="'mdi-email'"
+                              ></v-icon
+                              >CORREO
+                            </td>
+                            <td>{{ getPacientePerfil.email }}</td>
+                          </tr>
+                          <tr>
+                            <td>
+                              <v-icon
+                                small
+                                class="mr-2"
+                                v-text="'mdi-gender-male-female-variant'"
+                              ></v-icon
+                              >GENERO
+                            </td>
+                            <td>{{ getPacientePerfil.genero }}</td>
+                          </tr>
+                          
+                        </tbody>
+                      </template>
+                        </v-simple-table>
+                      </v-expansion-panel-content>
+                    </v-expansion-panel>
+
+                   
+                  </v-expansion-panels>
+                </v-row>
+              </div>
+            
+
+          
         </v-col>
       </v-row>
     </v-container>
@@ -36,21 +116,27 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex';
-export default {
-    name: 'TuPerfilPac',
-    computed:{
-        ...mapGetters(['getPacientePerfil'])
+  import {
+    mapActions,
+    mapGetters
+  } from 'vuex';
+  export default {
+    name: 'TuPerfilDoc',
+    computed: {
+      ...mapGetters(['getPacientePerfil'])
+    },
+    data() {
+      return {
+         panel: 0
+      }
     }
 
-};
+
+  };
 </script>
 
 <style scoped>
-.v-card__title {
-  justify-content: center;
-  font-size: 1.7rem;
-  font-weight: 600;
-  color: rgb(8, 150, 114);
-}
+
+
+@import "../../../assets/css/paciente.css";
 </style>
