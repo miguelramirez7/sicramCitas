@@ -1,4 +1,5 @@
-const axios = require('axios');
+const axios = require('axios')
+axios.defaults.baseURL = 'https://sicramtest.herokuapp.com/api';
 
 const state = {
     
@@ -16,7 +17,7 @@ const actions = {
     //CONSULTA PARA CREAR UNA ORGANIZACION 
     registrarOrganizacion({commit,dispatch},datos){
         return axios
-            .post("http://localhost:3000/api/signuporganizacion",{...datos})
+            .post("/signuporganizacion",{...datos})
             .then((res)=>{
                 console.log(res.data.msg)
                 if(res.data.msg == "Exito nuevo organizacion creado."){
