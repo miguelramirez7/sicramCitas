@@ -5,7 +5,7 @@ var router = express.Router();
 var userController = require("../../controller/usersCrontroller");
 var especialidadController = require("../../controller/especialidadController");
 var dependienteCotroller = require('../../controller/dependienteController');
-
+var citaController = require('../../controller/citaController');
 router.get('/',function (req,res) {
     res.render("index",{title:"SICRAM"}); 
   });
@@ -41,7 +41,11 @@ router.get('/user/dependiente/listar/:id',passport.authenticate('user', { sessio
 // Eliminar dependiente
 router.post('/user/dependiente/eliminar/:id',passport.authenticate('user', { session: false}),dependienteCotroller.Eliminar_Dependiente)
 
-
+/*  ----------------------------------------------------------------------
+-------------ENDPOINTS PARA CITA---------------------------------
+ ----------------------------------------------------------------------- */
+//crear nueva cita una vez logeado
+router.post('/user/cita/crear/:id',passport.authenticate('user' , { session: false}),citaController.GenerarNuevaCita);
 /*  ----------------------------------------------------------------------
 -------------ENDPOINTS PARA ESPECIALIDAD---------------------------------
  ----------------------------------------------------------------------- */
