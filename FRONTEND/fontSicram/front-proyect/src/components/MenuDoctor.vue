@@ -146,6 +146,8 @@ export default {
 .v-application--wrap {
   padding-top: 10px;
   padding-left: 15px;
+  padding-right: 30px;
+  padding-bottom: 10px;
   min-height: 0 !important;
 }
 

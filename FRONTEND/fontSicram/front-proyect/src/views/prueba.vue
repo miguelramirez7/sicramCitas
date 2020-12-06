@@ -1,30 +1,23 @@
 <template>
   <div>
+    <Loader :dialog="showLoader" />
     <input type="file" id="file" @change="readFile" />
     <button @click="buclDni">DNI EN BUCLE</button>
     <button @click="ponerCSV">ELCSV</button>
-    <div v-if="!actualizar">
-      <span v-for="(element, index) in materiales" :key="index"
-        >{{ element.nombre }} {{ element.precio }}<br
-      /></span>
-      <br />
-    </div>
-    <div v-if="actualizar">
-      <div v-for="(element, index) in materiales" :key="index">
-        <input type="text" v-model="element.nombre" />
-        <input type="text" v-model="element.precio" />
-      </div>
-    </div>
-    <button @click="actualizar = false">guardar</button>
-    <button @click="actualizar = true">actualizar</button>
+    
   </div>
 </template>
 
 <script>
+import Loader from "@/modals/Loader.vue"; 
 export default {
   name: "prueba",
+  components: {
+    Loader,
+  },
   data() {
     return {
+      showLoader : false,
       actualizar: false,
       archivo: null,
       datosAlumnos: [],
@@ -106,19 +99,81 @@ export default {
     },
 
     buclDni() {
+      this.showLoader = true
       console.log(this.number + " : as " + this.archivo[0][this.number]);
       this.searchDni(this.archivo[0][this.number]).then((res) => {
         if (res == true) {
-          if (this.number < 139) {
+          if (this.number < this.archivo[0].length) {
             this.number = this.number + 1;
             this.buclDni();
           }
+          if(this.number == this.archivo[0].length ) this.showLoader = false
         }
       });
+      
     },
 
     ponerCSV() {
-      console.log(JSON.stringify(this.datosAlumnos));
+      this.ConvertJSONToCsv(JSON.stringify(this.datosAlumnos),"data")
+    },
+
+    ConvertJSONToCsv(JSONData, fileName, ShowLabel) {
+      if (fileName == null || fileName == "") {
+        fileName = "My export";
+      }
+
+      if (ShowLabel == null || ShowLabel == "") {
+        ShowLabel = true;
+      }
+
+      var arrData =
+        typeof JSONData != "object" ? JSON.parse(JSONData) : JSONData;
+      var CSV = "";
+      if (ShowLabel) {
+        var row = "";
+        for (var index in arrData[0]) {
+          row += index + ",";
+        }
+        row = row.slice(0, -1);
+        CSV += row + "\r\n";
+      }
+      for (var i = 0; i < arrData.length; i++) {
+        var row = "";
+        for (var index in arrData[i]) {
+          //var arrValue = arrData[i][index] == null ? "" : '="' + arrData[i][index] + '"';
+          var arrValue =
+            arrData[i][index] == null ? "" : '"' + arrData[i][index] + '"';
+          row += arrValue + ",";
+        }
+        row.slice(0, row.length - 1);
+        CSV += row + "\r\n";
+      }
+      if (CSV == "") {
+        growl.error("Invalid data");
+        return;
+      }
+
+      // Edge or IE
+      if (
+        (navigator.appVersion.indexOf("Win") != -1 &&
+          (navigator.userAgent.match(/msie/i) ||
+            navigator.userAgent.match(/trident/i))) ||
+        window.navigator.userAgent.indexOf("Edge") > -1
+      ) {
+        var blob = new Blob([CSV]);
+        if (window.navigator.msSaveOrOpenBlob)
+          window.navigator.msSaveBlob(blob, fileName + ".csv");
+      } else {
+        //Mozilla Firefox or Chrome
+        var uri = "data:application/csv;charset=utf-8," + escape(CSV);
+        var Link = document.createElement("a");
+        Link.href = uri;
+        Link.style = "visibility:hidden";
+        Link.download = fileName + ".csv";
+        document.body.appendChild(Link);
+        Link.click();
+        document.body.removeChild(Link);
+      }
     },
   },
 };

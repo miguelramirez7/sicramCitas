@@ -1,5 +1,5 @@
 const axios = require('axios');
-axios.defaults.baseURL = 'http://localhost:3000/api';
+axios.defaults.baseURL = 'https://sicramtest.herokuapp.com/api';
 
 const state = {
     pacientePerfil: null // VARIABLE PARA LOS DATOS DEL PACIENTE
