@@ -25,8 +25,8 @@ var UserSchema = new Schema({
     required: true,
     minlength: 8,
   },
-  genero:{
-    type: String
+  genero: {
+    type: String,
   },
   edad: {
     type: Number,
@@ -35,7 +35,13 @@ var UserSchema = new Schema({
   celular: {
     type: Number,
     required: true,
-  }
+  },
+  dependiente: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Dependiente",
+    },
+  ],
 });
 
 UserSchema.pre("save", function (next) {

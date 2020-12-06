@@ -4,6 +4,7 @@ var express = require('express');
 var router = express.Router();
 var userController = require("../../controller/usersCrontroller");
 var especialidadController = require("../../controller/especialidadController");
+var dependienteCotroller = require('../../controller/dependienteController');
 
 router.get('/',function (req,res) {
     res.render("index",{title:"SICRAM"}); 
@@ -28,7 +29,22 @@ router.get('/user/perfil/:id',passport.authenticate('user', { session: false}),u
 //actualizar los datos del usuario logeado
 router.post('/user/perfil/update/:id',passport.authenticate('user', { session: false}),userController.Actualizar_datos_Paciente);
 
-//ENDPOINTS PARA ESPECIALIDAD---------------------------------
+/*--------------------------------------------
+-------------ENDPOINT DEL DEPENDIENTE--------
+---------------------------------------------*/
+// Agregar nuevo dependiente
+router.post('/user/dependiente/agregar/:id',passport.authenticate('user', { session: false}),dependienteCotroller.Agregar_Dependiente);
+// Modificar dependiente
+router.post('/user/dependiente/modificar/:id',passport.authenticate('user', { session: false}),dependienteCotroller.Modificar_Dependiente);
+// Listar dependientes
+router.get('/user/dependiente/listar/:id',passport.authenticate('user', { session: false}),dependienteCotroller.Obtener_Dependientes);
+// Eliminar dependiente
+router.post('/user/dependiente/eliminar/:id',passport.authenticate('user', { session: false}),dependienteCotroller.Eliminar_Dependiente)
+
+
+/*  ----------------------------------------------------------------------
+-------------ENDPOINTS PARA ESPECIALIDAD---------------------------------
+ ----------------------------------------------------------------------- */
 //cargar las primeras especialidades a la base de datos
 router.post('/cargarespecialidad',especialidadController.Cargar_Especialidades);
 //obtener las especialidades
