@@ -142,7 +142,10 @@ export default {
           //DESHABILITA EL LOADER Y MUESTRA LA ALERTA CON EL MENSAJE DE ALERTA DEL BACK
           this.showLoader = false;
           this.showAlert = true;
-          if (res === true) this.$refs.form.reset(); //SI SE LOGRA INGRESAR CON EXITO TODO SE RESETEA EL FORMULARIO
+          if (res === true) 
+          {this.$refs.form.reset()
+          this.close();}
+          ; //SI SE LOGRA INGRESAR CON EXITO TODO SE RESETEA EL FORMULARIO
         });
       } else {
         //MENSAJE DE AYUDA

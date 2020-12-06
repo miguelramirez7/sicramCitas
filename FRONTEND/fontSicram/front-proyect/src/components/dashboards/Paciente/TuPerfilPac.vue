@@ -12,7 +12,7 @@
 
             <v-card-title class="titulo2">{{ getPacientePerfil.name }} {{ getPacientePerfil.lastname }}</v-card-title>
             <v-card-subtitle class="text-center">
-              Doctor
+              Paciente
             </v-card-subtitle>
           </v-card>
 

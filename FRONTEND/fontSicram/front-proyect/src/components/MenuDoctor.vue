@@ -3,7 +3,7 @@
     <template >
       <v-app-bar app dark color="teal lighten-2" clipped-left>
         <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
-        <v-toolbar-title>SICRAM</v-toolbar-title>
+        <v-toolbar-title>DOCTOR</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-btn icon>
           <v-icon>mdi-export</v-icon>
