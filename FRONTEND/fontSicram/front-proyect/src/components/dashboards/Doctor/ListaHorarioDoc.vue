@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div> 
     <!----CARGADOR---->
     <Loader :dialog="showLoader" />
     <!----ALERTA----> 
