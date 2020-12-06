@@ -241,6 +241,132 @@ exports.Eliminar_Dependiente = async function (req, res) {
   }
 };
 
+exports.Agregar_Cita_Dependiente = async function (req, res) {
+  try {
+    var token = getToken(req.headers);
+    if (token) {
+      await Dependiente.findOne(
+        { _id: req.params.id },
+        async (err, dependiente) => {
+          if (!dependiente) {
+            res.json({ msg: "No se encontró los dependientes" });
+          } else {
+            logger(chalk.blue("Obteniendo del body: ") + chalk.green(req.body));
+            //creando nueva cita
+            var nuevacita = new Cita();
+            //encontrando al usuario por parametro
+            var paciente = await User.findById(req.user.id); //deberia ser metido por parametro
+            logger(
+              chalk.blue("User paciente: ") + chalk.green(paciente.username)
+            );
+            //econtrando al doctor por parametro
+            var doctor = await Doctor.findById(req.body._iddoctor);
+            logger(chalk.blue("User doctor: ") + chalk.green(doctor.username));
+            //encontrando especialidad
+            var especialidad = await Especialidad.findOne({
+              especialidad: req.body.especialidad,
+            });
+            //si especialidad es true
+            if (especialidad) {
+              logger(
+                chalk.blue(
+                  especialidad._id + "  COMPARA  " + doctor.especialidad
+                )
+              );
+              //si especialidad es la del doctor
+              if (doctor.especialidad.equals(especialidad._id)) {
+                var horario = await Horario.findOne({
+                  fecha: req.body.fecha,
+                  hora_inicio: req.body.hora_inicio,
+                  hora_fin: req.body.hora_fin,
+                  doctor: doctor,
+                });
+                //si horario es true
+                if (horario) {
+                  if (horario.cita) {
+                    logger(chalk.red("Horario en uso"));
+                    res.json({
+                      msg: "HORARIO YA ESTA USADO ",
+                      cita: horario.cita,
+                    });
+                  } else {
+                    logger(chalk.blue("HORARIO: ") + chalk.green(horario));
+                    //horario estara ocupado
+                    horario.ocupado = true;
+                    //agregando el doctor y el usuario a la nueva cita
+                    nuevacita.user = paciente;
+                    nuevacita.doctor = doctor;
+                    nuevacita.especialidad = especialidad;
+                    nuevacita.horario = horario;
+                    //guardamos nueva cita con su doctor y su usuario respectivo
+                    await nuevacita.save(function (err) {
+                      if (err) {
+                        return res.json({
+                          success: false,
+                          msg: "Error al guardar la cita",
+                        });
+                      }
+                      res.json({
+                        success: true,
+                        msg: "Exito nueva cita creada.",
+                      });
+                    });
+                    //agregamos la cita para el usuario.
+                    paciente.cita.push(nuevacita);
+                    dependiente.cita.push(nuevacita);
+                    //agregamos la cita para el doctor
+                    doctor.cita.push(nuevacita);
+                    //guardamos al user con su cita
+                    await paciente.save();
+                    await dependiente.save();
+                    //guardamos al doctor con su cita
+                    await doctor.save();
+                    //guardamos la cita en el horario
+                    horario.cita = nuevacita;
+                    //guardamos al horario con su cita
+                    await horario.save();
+                  }
+                } else {
+                  logger(chalk.red("HORARIO NO COINCIDE "));
+                  res.json({ msg: "HORARIO NO COINCIDE" });
+                }
+              } else {
+                logger(chalk.red("ESPECIALIDAD NO COINCIDE "));
+                res.json({ msg: "La especialidad del doctor no coincide" });
+              }
+            } else {
+              logger(chalk.red("ESPECIALIDAD NO ENCONTRADA "));
+              res.status(400).json({ msg: "especialidad no encontrada" });
+            }
+          }
+        }
+      );
+    } else {
+      return res.status(403).send({ success: false, msg: "Unauthorized." });
+    }
+  } catch (err) {
+    loggerwin.info(err);
+    logger(chalk.red("ERROR  ") + chalk.white(err));
+  }
+};
+
+exports.Obtener_citas_dependiente = async function (req, res) {
+  try {
+    var token = getToken(req.headers);
+    if (token) {
+      var dependiente = await Dependiente.findById(req.params.id).populate(
+        "cita"
+      );
+      res.json(dependiente.cita);
+    } else {
+      loggerwin.info("Sin autorizacion");
+      return res.status(403).send({ success: false, msg: "Unauthorized." });
+    }
+  } catch (err) {
+    loggerwin.info(err);
+    logger(chalk.red("ERROR  ") + chalk.white(err));
+  }
+};
 getToken = function (headers) {
   if (headers && headers.authorization) {
     var parted = headers.authorization.split(" ");
