@@ -40,17 +40,23 @@ router.post('/user/dependiente/modificar/:id', passport.authenticate('user', { s
 router.get('/user/dependiente/listar/:id', passport.authenticate('user', { session: false }), dependienteCotroller.Obtener_Dependientes);
 // Eliminar dependiente
 router.post('/user/dependiente/eliminar/:id', passport.authenticate('user', { session: false }), dependienteCotroller.Eliminar_Dependiente)
+
 /*  ----------------------------------------------------------------------
 -------------ENDPOINTS PARA CITA DE DEPENDIENTE---------------------------------
  ---------------------------------------------------------------------- */
 router.post('/user/dependiente/cita/crear/:id', passport.authenticate('user', { session: false }), dependienteCotroller.Agregar_Cita_Dependiente);
 // listar citas por id dependiente 
 router.get('/user/dependiente/citas/:id', dependienteCotroller.Obtener_citas_dependiente);
+
+
 /*  ----------------------------------------------------------------------
 -------------ENDPOINTS PARA CITA---------------------------------
  ----------------------------------------------------------------------- */
 //crear nueva cita una vez logeado
 router.post('/user/cita/crear/:id', passport.authenticate('user', { session: false }), citaController.GenerarNuevaCita);
+
+
+
 /*  ----------------------------------------------------------------------
 -------------ENDPOINTS PARA ESPECIALIDAD---------------------------------
  ----------------------------------------------------------------------- */

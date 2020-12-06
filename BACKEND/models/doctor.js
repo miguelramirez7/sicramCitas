@@ -58,7 +58,11 @@ var DoctorSchema = new Schema({
   },
   genero:{
     type: String
-  }
+  },
+  cita:[{
+    type:Schema.Types.ObjectId,
+    ref: 'Cita'
+}]
 });
 
 DoctorSchema.pre("save", function (next) {

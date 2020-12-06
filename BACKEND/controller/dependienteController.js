@@ -251,7 +251,8 @@ exports.Agregar_Cita_Dependiente = async function (req, res) {
           if (!dependiente) {
             res.json({ msg: "No se encontró los dependientes" });
           } else {
-            logger(chalk.blue("Obteniendo del body: ") + chalk.green(req.body));
+              console.log(dependiente);
+            
             //creando nueva cita
             var nuevacita = new Cita();
             //encontrando al usuario por parametro
@@ -338,6 +339,8 @@ exports.Agregar_Cita_Dependiente = async function (req, res) {
               logger(chalk.red("ESPECIALIDAD NO ENCONTRADA "));
               res.status(400).json({ msg: "especialidad no encontrada" });
             }
+
+            
           }
         }
       );

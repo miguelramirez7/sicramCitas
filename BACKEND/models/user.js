@@ -36,6 +36,12 @@ var UserSchema = new Schema({
     type: Number,
     required: true,
   },
+  cita: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Cita",
+    },
+  ],
   dependiente: [
     {
       type: Schema.Types.ObjectId,
