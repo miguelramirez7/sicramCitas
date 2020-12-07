@@ -66,6 +66,6 @@ router.post('/cargarespecialidad', especialidadController.Cargar_Especialidades)
 router.get('/especialidad', especialidadController.Obtener_Especialidades);
 
 //obtener doctores de una especialidad
-router.get('/especialidad/doctores',especialidadController.Obtener_Doctores_por_Especialidades);
+router.post('/especialidad/doctores',especialidadController.Obtener_Doctores_por_Especialidades);
 
 module.exports = router;
