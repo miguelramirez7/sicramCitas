@@ -20,7 +20,7 @@
         <v-col cols="12" md="6">
           
             
-              <div class="mt-5">
+              <div class="mt-5 ml-5">
                 <v-row justify="center">
                   <v-expansion-panels accordion v-model="panel">
                     <v-expansion-panel value="true">
