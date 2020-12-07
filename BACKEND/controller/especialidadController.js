@@ -169,7 +169,17 @@ exports.Obtener_Doctores_por_Especialidades = async function (req, res) {
   await Especialidad.findOne(
     { especialidad: req.body.especialidad },
     (err, esp) => {
-      if (err) console.log("especialidad no encontrada");
-      else res.status(200).json(esp.doctor);
+      if (err){
+        return res.status(401).json({
+          ok: false,
+          err,
+        });
+      } 
+      if(esp){
+        res.status(200).json(esp.doctor);
+      }
+      else{
+        res.json({msg: "No se encontró la especialidad"})
+      } 
     }
   ).populate("doctor")};
