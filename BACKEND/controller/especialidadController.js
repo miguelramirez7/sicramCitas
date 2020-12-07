@@ -163,3 +163,13 @@ exports.Obtener_Especialidades = async function (req, res) {
     }
   }).populate("doctor");
 };
+
+//obtener doctores por especialidad
+exports.Obtener_Doctores_por_Especialidades = async function (req, res) {
+  await Especialidad.findOne(
+    { especialidad: req.body.especialidad },
+    (err, esp) => {
+      if (err) console.log("especialidad no encontrada");
+      else res.status(200).json(esp.doctor);
+    }
+  ).populate("doctor")};
