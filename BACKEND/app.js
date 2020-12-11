@@ -4,21 +4,22 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var cors = require("cors");
 var logger = require('morgan');
-// RUTA DE USUARIOS
+// RUTA DE USUARIOS 
 var indexUserApiRouter = require('./routes/api/indexusr');
 var indexDoctorApiRouter = require('./routes/api/indexct');
 var indexOrgApiRouter = require('./routes/api/indexorg');
 var usersRouter = require('./routes/users');
 var cmpScrapApiRouter = require('./routes/api/scrap');
-var passport =  require('passport');
-//INICIANDO LA APP
+var passport = require('passport');
+// INICIANDO LA APP
 var app = express();
 require("./database/database");
 require('./config/userpassport');
-// view engine setup
+// view engine setup  
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
+// Cors para dividir los svv
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
