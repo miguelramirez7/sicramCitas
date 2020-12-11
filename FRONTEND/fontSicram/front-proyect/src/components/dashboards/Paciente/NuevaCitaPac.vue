@@ -43,14 +43,18 @@
                   label="Especialidad*"
                   required
                   color="cyan"
+                  @change="changeListaDoctores"
                   :rules="[getReglas.requerido]"
                   v-model="newCita.especialidad"
                 ></v-select>
               </v-col>
               <v-col cols="12" sm="12">
                 <v-select
-                  :items="['Titular', 'Dependiente']"
+                  :items="doctores"
+                  item-text="lastname"
+                  return-object
                   label="Doctor*"
+                  @change="changeHorariosDoctor"
                   required
                   color="cyan"
                   append-outer-icon="mdi-doctor"
@@ -68,8 +72,14 @@
         </v-card>
       </v-col>
       <v-col cols="12" sm="8">
-        <v-card class="pa-2" tile>
-          <HorarioDoctor />
+        <v-card class="pa-2" tile height="480">
+          <HorarioDoctor
+            :dataTime="listaHorarios"
+            :doctor="newCita.doctor"
+            :dataCita= "newCita"
+            @recargarHorario="changeHorariosDoctor"
+            ref="childComponent"
+          />
         </v-card>
       </v-col>
     </v-row>
@@ -106,11 +116,17 @@ export default {
         doctor: "",
       },
       dependiente: "",
+      listaHorarios: [],
     };
   },
 
   computed: {
-    ...mapGetters(["getReglas", "getEspecialidades"]),
+    ...mapGetters([
+      "getReglas",
+      "getEspecialidades",
+      "getListaDoctoresPorEspecialidad",
+      "getHorariosDesocupados",
+    ]),
     pacientesDependientes() {
       if (this.tipoPaciente === "Dependiente") return false;
       return true;
@@ -120,10 +136,19 @@ export default {
       if (this.getEspecialidades == null) return [];
       else return this.getEspecialidades;
     },
+
+    doctores() {
+      if (this.getListaDoctoresPorEspecialidad == null) return [];
+      else return this.getListaDoctoresPorEspecialidad;
+    },
   },
 
   methods: {
-    ...mapActions(["listaEspecialidades"]),
+    ...mapActions([
+      "listaEspecialidades",
+      "listarDoctoresPorEspecialidad",
+      "listarHorariosDoctor",
+    ]),
     //PARA REGISTRAR LA CITA
     registrarCita() {
       if (this.$refs.form.validate()) {
@@ -151,6 +176,30 @@ export default {
     //REGISTRA LA CITA DEL TITULAR
     registrarCitaTitular() {
       //LLAMA A LA FUNCION DE CREAR CITA DEL TITULAR
+    },
+
+    //CAMBIA LA LISTA DE LOS DOCTORES
+    changeListaDoctores() {
+      //console.log(this.newCita.especialidad)
+      this.listarDoctoresPorEspecialidad(this.newCita.especialidad);
+      console.log(this.getListaDoctoresPorEspecialidad);
+    },
+
+    //CAMBIA A UNA LISTA DE LOS HORARIOS DEL DOCTOR
+    changeHorariosDoctor() {
+      console.log("EL DOCTOR: ", this.newCita.doctor);
+      this.listaHorarios = null;
+      this.listarHorariosDoctor({ id: this.newCita.doctor._id }).then((res) => {
+        this.listaHorarios = this.getHorariosDesocupados;
+        if (this.listaHorarios === null) {
+          this.alerta.mensajeAlerta =
+            "El doctor ya no cuenta con horarios disponibles.";
+          this.alerta.tipoAlerta = "warning";
+          this.showAlert = true;
+        }
+        console.log("ACTIVAR HORARIOS DOCTOR");
+        this.$refs.childComponent.updateRange;
+      });
     },
   },
 

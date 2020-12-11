@@ -47,7 +47,8 @@
               <v-col cols="12" sm="6" md="6">
                 <v-text-field
                   label="Contraseña*"
-                  type="password"
+                  :type="show1 ? 'text' : 'password'"
+                  :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
                   required
                   color="cyan"
                   :rules="[
@@ -55,6 +56,7 @@
                     getReglas.pass,
                     getReglas.minimochar,
                   ]"
+                  @click:append="show1 = !show1"
                   v-model="doctorDatos.password"
                 ></v-text-field>
               </v-col>
@@ -184,7 +186,7 @@ export default {
     ...mapActions(["registrarDoctor"]),
     //CIERRA EL MODAL
     close() {
-      this.$emit("close");
+      this.$emit("close"); 
     },
     //REGISTRAR AL DOCTOR
     registrar() {

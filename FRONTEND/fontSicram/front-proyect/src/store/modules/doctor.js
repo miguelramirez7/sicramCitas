@@ -4,7 +4,8 @@ axios.defaults.baseURL = 'https://sicramtest.herokuapp.com/api';
 const state = {
     doctorPerfil: null, // VARIABLE PARA LOS DATOS DEL DOCTOR
     horariosDesocupados: null, // VARUABLE PARA LOS HORARIOS DEL DOCTOR
-    especialidades: null // VARIABLE PARA LA LISTA DE LAS ESPECIALIDADES
+    especialidades: null, // VARIABLE PARA LA LISTA DE LAS ESPECIALIDADES
+    listaDoctoresPorEspecialidad : null // VARIABLE PARA LA LISTA DE DOCTORES POR ESPECIALIDAD
 };
 
 const getters = {
@@ -21,6 +22,10 @@ const getters = {
     //CONSIGUE LAS ESPECIALIDADES
     getEspecialidades(state){
         return state.especialidades
+    },
+
+    getListaDoctoresPorEspecialidad(state){
+        return state.listaDoctoresPorEspecialidad
     }
 
 };
@@ -39,7 +44,13 @@ const mutations = {
     //PONE LAS ESPECIALIDADES
     setEspecialidades(state,payload){
         state.especialidades = payload
+    },
+
+    //PONE LOS DOCTORES POR ESPECIALIDAD
+    setListaDoctoresPorEspecialidad(state,payload){
+        state.listaDoctoresPorEspecialidad = payload
     }
+
 };
 
 const actions = {
@@ -140,22 +151,26 @@ const actions = {
 
     //CONSULTA PARA LISTAR LOS HORARIOS DEL DOCTOR
     listarHorariosDoctor({ commit }, doctor) {
-        axios
+         return axios
             .get(`/doctor/horarios/${doctor.id}`)
 
         .then((res) => {
             console.log(res)
             if(res.data.length!=0){
+                commit('setHorariosDesocupados',null)
+                console.log("si tiene horarios")
                 commit('setHorariosDesocupados',res.data)
                 
             }else{
               commit('setHorariosDesocupados',null)
             
             }
+            return Promise.resolve(true)
+            
         })
         .catch((e) => {
             console.log(e)
-            
+            return Promise.resolve(false)
         });
     },
 
@@ -224,6 +239,21 @@ const actions = {
         .then((res) => {
             console.log(res.data)
             commit('setEspecialidades', res.data)
+        })
+        .catch((e) => {
+          console.log(e);
+        });
+    },
+
+    //CONSULTA PARA OBTENER EL LISTADO DE DOCTORES POR ESPECIALIDAD 
+    listarDoctoresPorEspecialidad({commit},especialidad){
+        let url = `/especialidad/doctores`;
+        return axios
+        .post("/especialidad/doctores", { especialidad : especialidad}, ) 
+        .then((res) => {
+            console.log(res.data)
+            if(res.data.length ===0) commit('setListaDoctoresPorEspecialidad',null)
+            else commit('setListaDoctoresPorEspecialidad',res.data)
         })
         .catch((e) => {
           console.log(e);
