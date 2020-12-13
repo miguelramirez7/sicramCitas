@@ -1,0 +1,92 @@
+.listaPropiedad {
+    background: #ebe1e1;
+    height: 120px;
+    display: flex;
+    margin-bottom: 10px;
+}
+
+.listaPropiedad .datos {
+    line-height: 80%;
+}
+
+.botonesPRO {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+}
+
+.botonPRO {
+    padding: 3px 10px;
+    width: 110px;
+    border: none;
+    border-radius: 5px;
+    display: block;
+}
+
+.boton-editar {
+    background: rgb(53, 170, 164);
+    color: white;
+    margin-bottom: 10px;
+}
+
+.boton-eliminar {
+    background: rgb(161, 30, 30);
+    color: white;
+}
+
+.boton-editar:hover {
+    background: rgb(72, 223, 215);
+    color: white;
+    margin-bottom: 10px;
+}
+
+.boton-eliminar:hover {
+    background: rgb(223, 44, 44);
+    color: white;
+}
+
+@media (max-width: 769px) {
+    .listaPropiedad {
+        border-radius: 10px;
+        width: 100%;
+        height: 100%;
+        padding: 20px;
+        display: block;
+    }
+    .botonesPRO {
+        display: flex;
+        margin-top: 20px;
+    }
+    .botonPRO {
+        padding: 5px 0;
+        width: 90px;
+        font-size: 12px;
+    }
+    .datos {
+        text-align: center;
+    }
+}
+
+@media (max-width: 415px) {
+    .listaPropiedad .contenido-prop-ejemplo {
+        display: flex;
+        justify-content: center;
+    }
+    .botonesPRO {
+        display: flex;
+        align-items: center;
+        margin-top: 25px;
+    }
+    .botonPRO {
+        padding: 5px 0;
+        width: 90px;
+        font-size: 12px;
+        margin-top: 0;
+    }
+    .datos {
+        display: block;
+    }
+}

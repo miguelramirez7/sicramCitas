@@ -145,7 +145,7 @@ export default {
       dependiente:{
           name: '',       
           lastname: '',
-          email:'email@email.com',    //
+          email:'email1@email.com',    //
           genero: '',
           edad: '',
           discapacidad:'ninguna',   //

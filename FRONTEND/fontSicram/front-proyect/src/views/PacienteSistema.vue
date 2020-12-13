@@ -18,6 +18,7 @@ import NuevaCitaPac from './../components/dashboards/Paciente/NuevaCitaPac.vue'
 import CitasPendientesPac from './../components/dashboards/Paciente/CitasPendientesPac.vue'
 import HistorialPac from './../components/dashboards/Paciente/HistorialPac.vue'
 
+
 export default {
     name: 'PacienteSistema',
     components:{
@@ -29,7 +30,8 @@ export default {
       ListarFamiliaresPac,
       NuevaCitaPac,
       CitasPendientesPac,
-      HistorialPac
+      HistorialPac,
+    
     },
     computed:{
       ...mapGetters(['getComponentePaciente'])
