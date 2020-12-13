@@ -4,4 +4,7 @@ node_modules/
 package-lock.json
 #ignorar el .vs-code de estilos
 .vscode
+#ignorar el sonnar
+sonnar-project.properties
+.scannerwork/
 
