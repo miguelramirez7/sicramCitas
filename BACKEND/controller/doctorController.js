@@ -4,10 +4,11 @@ require("../config/userpassport")(passport);
 var jwt = require("jsonwebtoken");
 var Doctor = require("../models/doctor");
 var Especialidad = require("../models/especialidad");
-var Horario= require("../models/horario");
+var Horario = require("../models/horario");
+var Cita = require("../models/cita");
 const chalk = require("chalk");
 var pup = require("../tools/scrapers");
-const logger=console.log;
+const logger = console.log;
 
 //registro doctor
 exports.SignupDoctor = async function (req, res) {
@@ -22,7 +23,6 @@ exports.SignupDoctor = async function (req, res) {
       await Doctor.findOne({ email: req.body.email }, async (erro, doctor) => {
         try {
           if (doctor) {
-          
             res.status(401).json({ msg: "email ya esta siendo usado" });
           } else {
             //variable que contiene los datos del cmp encontrado
@@ -31,9 +31,8 @@ exports.SignupDoctor = async function (req, res) {
                 req.body.cmp
             );
             var especialidad = await Especialidad.findOne({
-                especialidad: req.body.especialidad,
-              });
-
+              especialidad: req.body.especialidad,
+            });
 
             //si los nombres del doctor y cmp coinciden
             if (
@@ -52,7 +51,7 @@ exports.SignupDoctor = async function (req, res) {
                 edad: req.body.edad,
                 celular: req.body.celular,
                 cmp: req.body.cmp,
-                profesion: req.body.profesion
+                profesion: req.body.profesion,
               });
 
               //agregamos el atributo especialidad del doctor agregamos aparte por que especialidad es un Objeto encontrado en la base de datos
@@ -84,7 +83,6 @@ exports.SignupDoctor = async function (req, res) {
             }
           }
         } catch (e) {
-        
           return res.status(400).json({
             msg: "CMP INCORRECTO",
           });
@@ -92,7 +90,7 @@ exports.SignupDoctor = async function (req, res) {
       });
     }
   } catch (e) {
-    console.log("Error"+e);
+    console.log("Error" + e);
   }
 };
 //ingreso del doctor
@@ -144,7 +142,7 @@ exports.Actualizar_datos_doctor = async function (req, res) {
       if (req.user.id == req.params.id) {
         await Doctor.findById(req.user.id, async (err, doctor) => {
           if (!doctor) {
-           console.log("Doctor no encontrado");
+            console.log("Doctor no encontrado");
           } else {
             //Buscamos la especialidad para borrar de esta al médico
             var especialidadEncontrada = await Especialidad.findById(
@@ -195,11 +193,10 @@ exports.Actualizar_datos_doctor = async function (req, res) {
         );
       }
     } else {
-      
       return res.status(403).send({ success: false, msg: "Unauthorized." });
     }
   } catch (err) {
-    console.log("error"+err);
+    console.log("error" + err);
   }
 };
 //obtener datos para el perfil del doctor
@@ -211,7 +208,7 @@ exports.Obtener_datos_doctor = async function (req, res) {
         var doctor = await Doctor.findById(req.params.id).populate(
           "especialidad"
         );
-        console.log("Doctor"+doctor);
+        console.log("Doctor" + doctor);
         res.send(doctor);
       } else {
         console.log("No es el usuario");
@@ -228,11 +225,10 @@ exports.Obtener_datos_doctor = async function (req, res) {
       return res.status(403).send({ success: false, msg: "Unauthorized." });
     }
   } catch (error) {
-    console.log("Error "+error);
-    res.json({msg: "Error"+error});
+    console.log("Error " + error);
+    res.json({ msg: "Error" + error });
   }
 };
-
 
 //HORARIOS del doctor
 //agregar stack de horarios
@@ -254,7 +250,19 @@ exports.Agregar_horario_doctor = async function (req, res) {
         if (horarioEncontrado) {
           res.json({ msg: "YA EXISTE ESE HORARIO PARA EL DOCTOR" });
         } else {
-          console.log("Puede poner horario");
+          const n = new Date();
+          //Año
+          var y = n.getFullYear();
+          //Mes
+          var m = n.getMonth() + 1;
+          //Día
+          var d = n.getDate();
+          const fechaActual = "y-m-d";
+          var fechacita = req.body.fecha;
+          if(fechaActual>fechacita){
+            res.json({msg: "Error, no puede elegir un horario pasado"});
+          }else{
+            console.log("Puede poner horario");
           //nuevo horario agarramos por body los datos
           var newhorario = new Horario({
             fecha: req.body.fecha,
@@ -263,7 +271,7 @@ exports.Agregar_horario_doctor = async function (req, res) {
           });
           //agregamos el doctor del horario gracias al token
           newhorario.doctor = doctor;
-          console.log("Nuevo horario: "+newhorario);
+          console.log("Nuevo horario: " + newhorario);
           //guardamos horario
           await newhorario.save((err, horario) => {
             if (err) {
@@ -278,6 +286,8 @@ exports.Agregar_horario_doctor = async function (req, res) {
           doctor.horario.push(newhorario);
           //guardamos dooctor actualizado
           await doctor.save();
+          }
+          
         }
       } else {
         console.log("No es el usuario");
@@ -292,7 +302,6 @@ exports.Agregar_horario_doctor = async function (req, res) {
       return res.status(403).send({ success: false, msg: "Unauthorized." });
     }
   } catch (err) {
-    
     logger(chalk.red("ERROR: ") + chalk.white(err));
     throw err;
   }
@@ -574,7 +583,6 @@ exports.Obtener_Citas_Doctor = async function (req, res) {
       return res.status(403).send({ success: false, msg: "Unauthorized." });
     }
   } catch (err) {
-    loggerwin.info(err);
     logger(chalk.red("ERROR: ") + chalk.white(err));
   }
 };
@@ -585,17 +593,21 @@ exports.Obtener_Citas_Atendidas_Doctor = async function (req, res) {
     if (token) {
       if (req.user.id == req.params.id) {
         logger(chalk.blue("obtener Citas :  ") + chalk.green(req.user.id));
-        await Cita.find({ doctor: req.user.id, estado: 'atendido' }, (err, citas) => {
-          if (!citas) {
-            logger(chalk.red("CITAs atendidas NO ENCONTRADA"));
-            res.json({ msg: "No cuenta con citas atendidas" });
-          } else {
-            logger(
-              chalk.blue("CITAS ATENDIDAS ENCONTRADAS: ") + chalk.magenta(citas.length)
-            );
-            res.status(200).json(citas);
+        await Cita.find(
+          { doctor: req.user.id, estado: "atendido" },
+          (err, citas) => {
+            if (!citas) {
+              logger(chalk.red("CITAs atendidas NO ENCONTRADA"));
+              res.json({ msg: "No cuenta con citas atendidas" });
+            } else {
+              logger(
+                chalk.blue("CITAS ATENDIDAS ENCONTRADAS: ") +
+                  chalk.magenta(citas.length)
+              );
+              res.status(200).json(citas);
+            }
           }
-        })
+        )
           .populate("horario")
           .populate("especialidad")
           .populate("doctor")
@@ -618,13 +630,9 @@ exports.Obtener_Citas_Atendidas_Doctor = async function (req, res) {
       return res.status(403).send({ success: false, msg: "Unauthorized." });
     }
   } catch (err) {
-    loggerwin.info(err);
     logger(chalk.red("ERROR: ") + chalk.white(err));
   }
 };
-
-
-
 
 //obtener detalles de la cita de un paciente por parte del doctor de
 exports.Obtener_Detalles_De_Cita_De_Un_Paciente = async function (req, res) {
@@ -640,7 +648,6 @@ exports.Obtener_Detalles_De_Cita_De_Un_Paciente = async function (req, res) {
       .populate("user")
       .populate("doctor");
   } catch (err) {
-    loggerwin.info(err);
     logger(chalk.red("ERROR: ") + chalk.white(err));
   }
 };

@@ -180,7 +180,7 @@ exports.Eliminar_Dependiente = async function (req, res) {
                 if (!dependiente) {
                   res.json({ msg: "No se encontro dependiente" });
                 } else {
-                  if (dependiente.cita.length>0) {
+                  if (dependiente.cita.length > 0) {
                     res.json({
                       msg: "No puede eliminar un dependiente con citas",
                     });
@@ -251,8 +251,8 @@ exports.Agregar_Cita_Dependiente = async function (req, res) {
           if (!dependiente) {
             res.json({ msg: "No se encontró los dependientes" });
           } else {
-              console.log(dependiente);
-            
+            console.log(dependiente);
+
             //creando nueva cita
             var nuevacita = new Cita();
             //encontrando al usuario por parametro
@@ -276,7 +276,19 @@ exports.Agregar_Cita_Dependiente = async function (req, res) {
               );
               //si especialidad es la del doctor
               if (doctor.especialidad.equals(especialidad._id)) {
-                var horario = await Horario.findOne({
+                const n = new Date();
+                //Año
+                var y = n.getFullYear();
+                //Mes
+                var m = n.getMonth() + 1;
+                //Día
+                var d = n.getDate();
+                const fechaActual = "y-m-d";
+                var fechacita = req.body.fecha;
+                if(fechaActual > fechacita){
+                  res.json({msg: "Error, fecha pasada"});
+                }else{
+                  var horario = await Horario.findOne({
                   fecha: req.body.fecha,
                   hora_inicio: req.body.hora_inicio,
                   hora_fin: req.body.hora_fin,
@@ -331,6 +343,8 @@ exports.Agregar_Cita_Dependiente = async function (req, res) {
                   logger(chalk.red("HORARIO NO COINCIDE "));
                   res.json({ msg: "HORARIO NO COINCIDE" });
                 }
+                }
+                
               } else {
                 logger(chalk.red("ESPECIALIDAD NO COINCIDE "));
                 res.json({ msg: "La especialidad del doctor no coincide" });
@@ -339,8 +353,6 @@ exports.Agregar_Cita_Dependiente = async function (req, res) {
               logger(chalk.red("ESPECIALIDAD NO ENCONTRADA "));
               res.status(400).json({ msg: "especialidad no encontrada" });
             }
-
-            
           }
         }
       );

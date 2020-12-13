@@ -41,63 +41,77 @@ exports.GenerarNuevaCita = async function (req, res) {
                       );
                       //si especialidad es la del doctor
                       if (doctor.especialidad.equals(especialidad._id)) {
-                        var horario = await Horario.findOne({
-                          fecha: req.body.fecha,
-                          hora_inicio: req.body.hora_inicio,
-                          hora_fin: req.body.hora_fin,
-                          doctor: doctor,
-                        });
-                        //si horario exisete
-                        if (horario) {
-                          if (horario.cita) {
-                            logger(chalk.red("HORARIO USADO"));
-                            res.json({
-                              msg: "HORARIO YA ESTA USADO ",
-                              cita: horario.cita,
-                            });
-                          } else {
-                            logger(
-                              chalk.blue("HORARIO: ") + chalk.green(horario)
-                            );
-                            //horario estara ocupado
-                            horario.ocupado = true;
-                            //agregando el doctor y el usuario a la nueva cita
-                            nuevacita.user = paciente;
-                            nuevacita.doctor = doctor;
-                            nuevacita.especialidad = especialidad;
-                            nuevacita.horario = horario;
-                            /* Aquí debería ir opentok create session*/
-                            //agregamos el token y la session a la citanueva
-                            await nuevacita.save(function (err) {
-                              if (err) {
-                                return res.json({
-                                  success: false,
-                                  msg: "Error al guardar la cita",
-                                });
-                              }
-                              res.json({
-                                success: true,
-                                msg: "Exito nueva cita creada.",
-                              });
-                            });
-                            //agregamos la cita para el usuario.
-                            paciente.cita.push(nuevacita);
-                            //agregamos la cita para el doctor
-                            doctor.cita.push(nuevacita);
-                            //guardamos al user con su cita
-                            await paciente.save();
-                            //guardamos al doctor con su cita
-                            await doctor.save();
-                            //guardamos la cita en el horario
-                            horario.cita = nuevacita;
-                            //guardamos al horario con su cita
-                            await horario.save();
-                          }
-
-                          // res.send(nuevacita);  me sale error de cabecera si hago res.send
+                        const n = new Date();
+                        //Año
+                        var y = n.getFullYear();
+                        //Mes
+                        var m = n.getMonth() + 1;
+                        //Día
+                        var d = n.getDate();
+                        const fechaActual=('y-m-d');
+                        var fechacita = req.body.fecha;
+                        if (fechaActual > fechacita) {
+                          res.json({ msg: "Error, fecha pasada" });
                         } else {
-                          logger(chalk.red("HORARIO NO COINCIDE "));
-                          res.json({ msg: "HORARIO NO COINCIDE" });
+                          console.log(fechaActual + " " + fechacita);
+                          var horario = await Horario.findOne({
+                            fecha: req.body.fecha,
+                            hora_inicio: req.body.hora_inicio,
+                            hora_fin: req.body.hora_fin,
+                            doctor: doctor,
+                          });
+                          //si horario exisete
+                          if (horario) {
+                            if (horario.cita) {
+                              logger(chalk.red("HORARIO USADO"));
+                              res.json({
+                                msg: "HORARIO YA ESTA USADO ",
+                                cita: horario.cita,
+                              });
+                            } else {
+                              logger(
+                                chalk.blue("HORARIO: ") + chalk.green(horario)
+                              );
+                              //horario estara ocupado
+                              horario.ocupado = true;
+                              //agregando el doctor y el usuario a la nueva cita
+                              nuevacita.user = paciente;
+                              nuevacita.doctor = doctor;
+                              nuevacita.especialidad = especialidad;
+                              nuevacita.horario = horario;
+                              /* Aquí debería ir opentok create session*/
+                              //agregamos el token y la session a la citanueva
+                              await nuevacita.save(function (err) {
+                                if (err) {
+                                  return res.json({
+                                    success: false,
+                                    msg: "Error al guardar la cita",
+                                  });
+                                }
+                                res.json({
+                                  success: true,
+                                  msg: "Exito nueva cita creada.",
+                                });
+                              });
+                              //agregamos la cita para el usuario.
+                              paciente.cita.push(nuevacita);
+                              //agregamos la cita para el doctor
+                              doctor.cita.push(nuevacita);
+                              //guardamos al user con su cita
+                              await paciente.save();
+                              //guardamos al doctor con su cita
+                              await doctor.save();
+                              //guardamos la cita en el horario
+                              horario.cita = nuevacita;
+                              //guardamos al horario con su cita
+                              await horario.save();
+                            }
+
+                            // res.send(nuevacita);  me sale error de cabecera si hago res.send
+                          } else {
+                            logger(chalk.red("HORARIO NO COINCIDE "));
+                            res.json({ msg: "HORARIO NO COINCIDE" });
+                          }
                         }
                       } else {
                         logger(chalk.red("ESPECIALIDAD NO COINCIDE "));
@@ -318,20 +332,18 @@ exports.Actualizar_Citas = async function (req, res) {
                                                                 "El horario se encuentra ocupado",
                                                             });
                                                           } else {
-
-                                                            horario1.ocupado=false;
-                                                            horario1.cita=null;
+                                                            horario1.ocupado = false;
+                                                            horario1.cita = null;
                                                             await horario1.save();
-                                                            
+
                                                             cita.doctor = doctor2;
                                                             cita.especialidad = especialidad;
                                                             cita.horario = horario;
                                                             await cita.save();
 
                                                             horario.ocupado = true;
-                                                            horario.cita=cita;
+                                                            horario.cita = cita;
                                                             await horario.save();
-                                                            mailer.notificarActualizacionDeCita(doctor,doctor2,paciente,horario1,horario);      
                                                             res.json({
                                                               msg:
                                                                 "Cita actualizada",
@@ -394,11 +406,32 @@ exports.Actualizar_Citas = async function (req, res) {
         );
       }
     } else {
-      loggerwin.info("Sin autorizacion");
       return res.status(403).send({ success: false, msg: "Unauthorized." });
     }
   } catch (err) {
-    loggerwin.info(err);
     console.log("ERROR  " + err);
   }
 };
+
+function compare_dates(fecha, fecha2) {
+  var xMonth = fecha.subString(3, 5);
+  var xDay = fecha.subString(0, 2);
+  var xYear = fecha.subString(6, 10);
+  var yMonth = fecha2.subString(3, 5);
+  var yDay = fecha2.subString(0, 2);
+  var yYear = fecha2.subString(6, 10);
+  if (xYear > yYear) {
+    return true;
+  } else {
+    if (xYear == yYear) {
+      if (xMonth > yMonth) {
+        return true;
+      } else {
+        if (xMonth == yMonth) {
+          if (xDay > yDay) return true;
+          else return false;
+        } else return false;
+      }
+    } else return false;
+  }
+}
