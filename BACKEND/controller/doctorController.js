@@ -257,7 +257,7 @@ exports.Agregar_horario_doctor = async function (req, res) {
           var m = n.getMonth() + 1;
           //Día
           var d = n.getDate();
-          const fechaActual = "y-m-d";
+          const fechaActual = y+"-"+m+"-"+d;
           var fechacita = req.body.fecha;
           if(fechaActual>fechacita){
             res.json({msg: "Error, no puede elegir un horario pasado"});

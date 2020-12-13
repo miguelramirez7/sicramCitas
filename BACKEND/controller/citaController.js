@@ -48,7 +48,7 @@ exports.GenerarNuevaCita = async function (req, res) {
                         var m = n.getMonth() + 1;
                         //Día
                         var d = n.getDate();
-                        const fechaActual=('y-m-d');
+                        const fechaActual = y+"-"+m+"-"+d;
                         var fechacita = req.body.fecha;
                         if (fechaActual > fechacita) {
                           res.json({ msg: "Error, fecha pasada" });
@@ -413,25 +413,3 @@ exports.Actualizar_Citas = async function (req, res) {
   }
 };
 
-function compare_dates(fecha, fecha2) {
-  var xMonth = fecha.subString(3, 5);
-  var xDay = fecha.subString(0, 2);
-  var xYear = fecha.subString(6, 10);
-  var yMonth = fecha2.subString(3, 5);
-  var yDay = fecha2.subString(0, 2);
-  var yYear = fecha2.subString(6, 10);
-  if (xYear > yYear) {
-    return true;
-  } else {
-    if (xYear == yYear) {
-      if (xMonth > yMonth) {
-        return true;
-      } else {
-        if (xMonth == yMonth) {
-          if (xDay > yDay) return true;
-          else return false;
-        } else return false;
-      }
-    } else return false;
-  }
-}

@@ -4,6 +4,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var cors = require("cors");
 var logger = require('morgan');
+
 // RUTA DE USUARIOS 
 var indexUserApiRouter = require('./routes/api/indexusr');
 var indexDoctorApiRouter = require('./routes/api/indexct');
@@ -15,6 +16,7 @@ var passport = require('passport');
 var app = express();
 require("./database/database");
 require('./config/userpassport');
+require('./database/evento');
 // view engine setup  
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
