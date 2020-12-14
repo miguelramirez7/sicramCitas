@@ -1,79 +1,80 @@
 <template>
-  <v-card class="carta">
+    <div class="">
+        <v-dialog
+      :value="edit"
+      persistent
+      max-width="600px"
+    >
+    <v-row justify="center">
+    <v-card class="carta">
     <!----CARGADOR---->
     <Loader :dialog="showLoader" />
-    <!----ALERTA---->
+    
     <Alert
       :dialog="showAlert"
       @close="showAlert = false"
       :mensaje="getAlert.mensajeAlerta"
       :tipo="getAlert.tipoAlerta"
-    />
-    <v-card-title class="titulo">Actualizar Datos</v-card-title>
+    /> 
+    <v-card-title class="titulo">Actualizar Dependiente</v-card-title>
     <v-container style="text-transform: uppercase;">
-      <v-form ref="form" lazy-validation @submit.prevent="actualizarPerfil">
+      <v-form ref="form" lazy-validation @submit.prevent="">
         <v-row>
-          <v-col cols="12" md="6">
+          <v-col cols="12" >
             <v-row>
-              <v-col md="3" class="ml-5">
+              <v-col md="4" class="ml-5" >
                 <v-card-text class=" subtitulo">Nombre:</v-card-text>
               </v-col>
-              <v-col md="7" class="mr-5">
+              <v-col md="6" class="mr-1">
                 <v-text-field
                   dense
-                  disabled
                   outlined
                   class="input1"
-                  :value="getPacientePerfil.name.toUpperCase()"
-                  @input="
-                    getPacientePerfil.name = $event.target.value.toUpperCase()
-                  "
+                  disabled
+                  v-model="datos.name"
                 ></v-text-field>
               </v-col>
             </v-row>
           </v-col>
-          <v-col cols="12" md="6">
+          <v-col cols="12" >
             <v-row>
-              <v-col md="3" class="ml-5">
+              <v-col md="4"  class="ml-5">
                 <v-card-text class="subtitulo">Apellido:</v-card-text>
               </v-col>
-              <v-col md="7" class="mr-5">
+              <v-col md="6" class="mr-1" >
                 <v-text-field
                   dense
                   disabled
                   outlined
-                  :value="getPacientePerfil.lastname.toUpperCase()"
-                  @input="
-                    getPacientePerfil.lastname = $event.target.value.toUpperCase()
-                  "
+                 v-model="datos.lastname"
                 ></v-text-field>
               </v-col>
             </v-row>
           </v-col>
         </v-row>
         <v-row>
-          <v-col cols="12" md="6">
+          <v-col cols="12">
             <v-row>
-              <v-col md="3" class="ml-5">
+              <v-col md="4" class="ml-5">
                 <v-card-text class=" subtitulo">DNI:</v-card-text>
               </v-col>
-              <v-col md="7" class="mr-5">
+              <v-col md="6" class="mr-1">
                 <v-text-field
                   dense
                   outlined
                   disabled
                   class="input1"
-                  v-model="getPacientePerfil.dni"
+                 v-model="datos.dni"
                 ></v-text-field>
               </v-col>
             </v-row>
           </v-col>
-          <v-col cols="12" md="6">
+          <v-col cols="12" >
             <v-row>
-              <v-col md="3" class="ml-5">
+              <v-col md="4" class="ml-5">
                 <v-card-text class="subtitulo">Género:</v-card-text>
               </v-col>
-              <v-col md="7" class="mr-5">
+              <v-col md="6" class="mr-1">
                 <v-select
                   dense
                   :items="['MASCULINO', 'FEMENINO']"
@@ -81,19 +82,19 @@
                   required
                   class="input1"
                   :rules="[getReglas.requerido]"
-                  v-model="datos.genero"
+                 v-model="datos.genero"
                 ></v-select>
               </v-col>
             </v-row>
           </v-col>
         </v-row>
         <v-row>
-          <v-col cols="12" md="6">
+          <v-col cols="12" >
             <v-row>
-              <v-col md="3" class="ml-5">
+              <v-col md="4" class="ml-5">
                 <v-card-text class=" subtitulo">Celular:</v-card-text>
               </v-col>
-              <v-col md="7" class="mr-5">
+              <v-col md="6" class="mr-1">
                 <v-text-field
                   dense
                   outlined
@@ -105,12 +106,12 @@
               </v-col>
             </v-row>
           </v-col>
-          <v-col cols="12" md="6">
+          <v-col cols="12" >
             <v-row>
-              <v-col md="3" class="ml-5">
+              <v-col md="4" class="ml-5">
                 <v-card-text class="subtitulo">Edad:</v-card-text>
               </v-col>
-              <v-col md="7" class="mr-5">
+              <v-col md="6" class="mr-1">
                 <v-text-field
                   dense
                   outlined
@@ -123,64 +124,74 @@
           </v-col>
         </v-row>
         <div class="text-center">
-          <v-btn color="teal mt-5" rounded elevation="8" x-large type="submit">
+          <v-btn color="teal mt-5 mr-5"  elevation="8" x-sm type="submit">
             Actualizar
+          </v-btn>
+          <v-btn color="red lighten-1 mt-5 ml-5" @click="close" elevation="8" x-sm type="submit">
+            Cerrar
           </v-btn>
         </div>
       </v-form>
     </v-container>
   </v-card>
+
+    
+      </v-row>
+    </v-dialog>
+    </div>
+    
+  
 </template>
 
 <script>
-import Loader from "@/modals/Loader.vue";
-import Alert from "@/modals/Alert.vue";
 import { mapActions, mapGetters } from "vuex";
-export default {
-  name: "ActualizarDatosPac",
-  components: {
-    Loader,
-    Alert,
-  },
-  data() {
-    return {
-      showLoader: false, //MUESTRA EL CARGADOR DESPUES DE REGISTRAR
+import Loader from '@/modals/Loader.vue'
+import Alert from '@/modals/Alert.vue'
+  export default {
+      name: 'EditarDependiente',
+    data: () => ({
+    showLoader: false, //MUESTRA EL CARGADOR DESPUES DE REGISTRAR
       showAlert: false, //MUESTRA LA ALERTA DESPUES DEL REGISTRO
-      datos: null,
-    };
-  },
-  created (){
-    this.datos = this.getPacientePerfil
-  },
-  computed: {
-    ...mapGetters(["getPacientePerfil", "getReglas", "getAlert", "getUsuario"]),
-  },
-  methods: {
-    ...mapActions(["actualizarPaciente"]),
-    actualizarPerfil() {
-      const data = {
-        edad: this.getPacientePerfil.edad,
-        email: this.getPacientePerfil.email,
-        celular: this.getPacientePerfil.celular,
-      };
-      console.log(data)
-      if (this.$refs.form.validate()) {
-        this.showLoader = true;
-        this.actualizarPaciente({
-          newDatos: data,
-          paciente: this.getUsuario,
-        }).then((res) => {
-          this.showLoader = false;
-          this.showAlert = true;
-        });
-      }
+    }),
+    components:{
+        Loader,
+        Alert
     },
-  },
-};
+    props:{
+        dialog:{
+            type: Boolean,
+            default : false
+        },
+        datos:{
+            type:Object,
+            default:{
+                name: 'jogito',       
+                lastname: 'nuñez',
+                email:'email1@email.com',    //
+                genero: '',
+                edad: '',
+                discapacidad:'ninguna',   //
+                celular:'',
+                direccion: 'ninguna',  //
+                dni: '',
+            }
+        }
+    },
+    computed:{
+        ...mapGetters([ "getReglas", "getAlert"]),
+        edit(){
+            return this.dialog
+        }
+    },
+    methods:{
+        close(){
+            this.$emit('close')
+        }
+    }
+  }
 </script>
 
 <style scoped>
-@import "../../../assets/css/formPaciente.css";
-
+    @import '../../../../assets/css/listarDependiente.css';
 
 </style>

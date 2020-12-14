@@ -12,7 +12,7 @@
 
             <v-card-title class="titulo2">{{ getPacientePerfil.name }} {{ getPacientePerfil.lastname }}</v-card-title>
             <v-card-subtitle class="text-center">
-              Doctor
+              Paciente
             </v-card-subtitle>
           </v-card>
 
@@ -20,7 +20,7 @@
         <v-col cols="12" md="6">
           
             
-              <div class="mt-5">
+              <div class="mt-5 ml-5">
                 <v-row justify="center">
                   <v-expansion-panels accordion v-model="panel">
                     <v-expansion-panel value="true">
