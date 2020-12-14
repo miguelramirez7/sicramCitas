@@ -15,11 +15,14 @@
           <v-card-text>
             <v-form ref="form" lazy-validation @submit.prevent="registrarCita">
               <v-col cols="12" sm="12">
+                <h3>Nueva Cita</h3>
+              </v-col>
+              <v-col cols="12" sm="12">
                 <v-select
                   append-outer-icon="mdi-account-box-multiple"
                   :items="['Titular', 'Dependiente']"
                   label="Tipo de Paciente*"
-                  v-model="tipoPaciente"
+                  v-model="newCita.tipoPaciente"
                   required
                   color="cyan"
                   :rules="[getReglas.requerido]"
@@ -28,11 +31,13 @@
               <v-col cols="12" sm="12">
                 <v-select
                   append-outer-icon="mdi-account-box-multiple"
-                  :items="['Dependiente1', 'Dependiente2']"
+                  :items="dependientes"
+                  return-object
+                  :item-text="(item) => item.name + '  ' + item.lastname"
                   label="Paciente Dependiente*"
                   :disabled="pacientesDependientes"
                   color="cyan"
-                  v-model="dependiente"
+                  v-model="newCita.dependiente"
                 ></v-select>
               </v-col>
               <v-col cols="12" sm="12">
@@ -62,11 +67,6 @@
                   v-model="newCita.doctor"
                 ></v-select>
               </v-col>
-              <v-col cols="12" sm="12" justify-center>
-                <v-btn block color="teal" dark type="submit">
-                  <v-icon>mdi-plus</v-icon>Agregar</v-btn
-                >
-              </v-col>
             </v-form>
           </v-card-text>
         </v-card>
@@ -76,14 +76,25 @@
           <HorarioDoctor
             :dataTime="listaHorarios"
             :doctor="newCita.doctor"
-            :dataCita= "newCita"
+            :dataCita="newCita"
             @recargarHorario="changeHorariosDoctor"
             ref="childComponent"
           />
         </v-card>
       </v-col>
     </v-row>
-    <CitasPendientesPac />
+    <v-row>
+      <v-col cols="12" sm="12">
+        <v-card class="pa-2" tile>
+          <CitasPendientesPacCalendar
+            :paciente="{
+              tipoPaciente: 'titular',
+              datos: {},
+            }"
+          />
+        </v-card>
+      </v-col>
+    </v-row>
   </div>
 </template>
 
@@ -91,12 +102,12 @@
 import Loader from "@/modals/Loader.vue";
 import Alert from "@/modals/Alert.vue";
 import { mapActions, mapGetters } from "vuex";
-import CitasPendientesPac from "./CitasPendientesPac.vue";
+import CitasPendientesPacCalendar from "./CitasPendientesPacCalendar.vue";
 import HorarioDoctor from "./HorarioDoctor.vue";
 export default {
   name: "NuevaCitaPac",
   components: {
-    CitasPendientesPac,
+    CitasPendientesPacCalendar,
     HorarioDoctor,
     Loader,
     Alert,
@@ -111,9 +122,13 @@ export default {
       },
       tipoPaciente: "",
       newCita: {
-        paciente: "",
+        tipoPaciente: "",
+        dependiente: "",
         especialidad: "",
-        doctor: "",
+        doctor: {
+          name: "Nombre",
+          lastname: "Apellido",
+        },
       },
       dependiente: "",
       listaHorarios: [],
@@ -126,9 +141,11 @@ export default {
       "getEspecialidades",
       "getListaDoctoresPorEspecialidad",
       "getHorariosDesocupados",
+      "getListaDependientes",
+      "getUsuario",
     ]),
     pacientesDependientes() {
-      if (this.tipoPaciente === "Dependiente") return false;
+      if (this.newCita.tipoPaciente === "Dependiente") return false;
       return true;
     },
 
@@ -141,6 +158,11 @@ export default {
       if (this.getListaDoctoresPorEspecialidad == null) return [];
       else return this.getListaDoctoresPorEspecialidad;
     },
+
+    dependientes() {
+      if (this.getListaDependientes == null) return [];
+      else return this.getListaDependientes;
+    },
   },
 
   methods: {
@@ -148,35 +170,8 @@ export default {
       "listaEspecialidades",
       "listarDoctoresPorEspecialidad",
       "listarHorariosDoctor",
+      "listarDependientes",
     ]),
-    //PARA REGISTRAR LA CITA
-    registrarCita() {
-      if (this.$refs.form.validate()) {
-        console.log(this.newCita);
-        if (this.tipoPaciente === "Dependiente")
-          this.registrarCitaDependiente();
-        else this.registrarCitaTitular();
-      } else {
-        console.log("registra mal");
-      }
-    },
-
-    //REGISTRA LA CITA DEL DEPENDIENTE
-    registrarCitaDependiente() {
-      if (this.dependiente == "") {
-        this.alerta.mensajeAlerta = "Seleccione un dependiente.";
-        this.alerta.tipoAlerta = "warning";
-        this.showAlert = true;
-      } else {
-        this.newCita.dependiente = this.dependiente;
-        //LLAMA A LA FUNCION DE CREAR CITA PARA EL PACIENTE DEPENDIENTE
-      }
-    },
-
-    //REGISTRA LA CITA DEL TITULAR
-    registrarCitaTitular() {
-      //LLAMA A LA FUNCION DE CREAR CITA DEL TITULAR
-    },
 
     //CAMBIA LA LISTA DE LOS DOCTORES
     changeListaDoctores() {
@@ -187,6 +182,7 @@ export default {
 
     //CAMBIA A UNA LISTA DE LOS HORARIOS DEL DOCTOR
     changeHorariosDoctor() {
+      console.log("la nueva cita es para", this.newCita);
       console.log("EL DOCTOR: ", this.newCita.doctor);
       this.listaHorarios = null;
       this.listarHorariosDoctor({ id: this.newCita.doctor._id }).then((res) => {
@@ -205,6 +201,7 @@ export default {
 
   created() {
     this.listaEspecialidades();
+    this.listarDependientes(this.getUsuario);
   },
 };
 </script>

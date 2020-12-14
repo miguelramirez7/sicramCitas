@@ -1,11 +1,14 @@
 const axios = require('axios')
+//BASE URL POR DEFAULT EN LOCAL HOST 
+//axios.defaults.baseURL = 'http://localhost:3000/api'; 
 axios.defaults.baseURL = 'https://sicramtest.herokuapp.com/api';
 
 const state = {
     doctorPerfil: null, // VARIABLE PARA LOS DATOS DEL DOCTOR
     horariosDesocupados: null, // VARUABLE PARA LOS HORARIOS DEL DOCTOR
     especialidades: null, // VARIABLE PARA LA LISTA DE LAS ESPECIALIDADES
-    listaDoctoresPorEspecialidad : null // VARIABLE PARA LA LISTA DE DOCTORES POR ESPECIALIDAD
+    listaDoctoresPorEspecialidad : null, // VARIABLE PARA LA LISTA DE DOCTORES POR ESPECIALIDAD
+    citasPendientes: null, // VARIABLE PARA LA LISTA DE CITAS PENDIENTES
 };
 
 const getters = {
@@ -26,6 +29,12 @@ const getters = {
 
     getListaDoctoresPorEspecialidad(state){
         return state.listaDoctoresPorEspecialidad
+    },
+
+    //CONSEGUIR LAS CITAS PENDIENTES
+
+    getCitasPendientes(state){
+        return state.citasPendientes
     }
 
 };
@@ -49,6 +58,11 @@ const mutations = {
     //PONE LOS DOCTORES POR ESPECIALIDAD
     setListaDoctoresPorEspecialidad(state,payload){
         state.listaDoctoresPorEspecialidad = payload
+    },
+
+    //PONE LAS CITAS PENDIENTES
+    setCitasPendientes(state,payload){
+        state.citasPendientes=payload
     }
 
 };
@@ -257,6 +271,36 @@ const actions = {
         })
         .catch((e) => {
           console.log(e);
+        });
+    },
+
+    //CONSULTA PARA OBTENER LA LISTA DE CITAS PENDIENTES DEL DOCTOR
+    listarCitasPendientes({commit,dispatch},doctor){
+         return axios
+            .get(`/doctor/cita/listar/${doctor.id}`,
+            {
+                headers: {
+                  Authorization: `${doctor.token}`,
+                },
+              })
+
+        .then((res) => {
+            console.log(res)
+            if(res.data.length!=0){
+                commit('setCitasPendientes',null)
+                console.log("si tiene horarios")
+                commit('setCitasPendientes',res.data)
+                
+            }else{
+              commit('setCitasPendientes',null)
+            
+            }
+            return Promise.resolve(true)
+            
+        })
+        .catch((e) => {
+            console.log(e)
+            return Promise.resolve(false)
         });
     }
 };

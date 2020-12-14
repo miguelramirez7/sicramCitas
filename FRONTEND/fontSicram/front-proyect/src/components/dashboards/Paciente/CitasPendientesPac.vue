@@ -1,162 +1,156 @@
 <template>
   <div>
-    <v-card tile>
-      <v-card-text>
-        <v-data-table
-          :headers="headers"
-          :items="desserts"
-          sort-by="calories"
-          class="elevation-1"
-        >
-          <template v-slot:top>
+    <v-card class="pa-2" tile>
+      <v-row>
+        <v-col sm="12" md="12" class="pb-0">
+          <v-sheet height="64">
             <v-toolbar flat>
-              <v-toolbar-title>Citas pendientes:</v-toolbar-title>
+              <v-toolbar-title style="color:teal">
+                Citas pendientes de : 
+                <v-menu bottom right>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-btn
+                      outlined
+                      color="teal darken-2"
+                      v-bind="attrs"
+                      v-on="on"
+                    >
+                      <span>{{ dependienteSeleccionado.name }} {{ dependienteSeleccionado.lastname }}</span>
+                      <v-icon right>
+                        mdi-menu-down
+                      </v-icon>
+                    </v-btn>
+                  </template>
+                  <v-list>
+                    <v-list-item
+                      @click="seleccionar({ tipoPaciente: 'titular' , datos : getPacientePerfil})"
+                    >
+                      <v-list-item-title
+                        >{{ listaDependientes.usuario.name }}
+                        {{ listaDependientes.usuario.lastname }}
+                      </v-list-item-title>
+                    </v-list-item>
+                    <v-list-item
+                      v-for="(element, index) in listaDependientes.dependientes"
+                      :key="index"
+                      @click="seleccionar({ tipoPaciente: 'dependiente' , datos : element})"
+                    >
+                      <v-list-item-title
+                        >{{ element.name }}
+                        {{ element.lastname }}</v-list-item-title
+                      >
+                    </v-list-item>
+                  </v-list>
+                </v-menu>
+              </v-toolbar-title>
+              <v-spacer></v-spacer>
+              <v-menu bottom right>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn
+                    outlined
+                    color="teal darken-2"
+                    v-bind="attrs"
+                    v-on="on"
+                  >
+                    <span>{{ typeToLabel[type] }}</span>
+                    <v-icon right>
+                      mdi-menu-down
+                    </v-icon>
+                  </v-btn>
+                </template>
+                <v-list>
+                  <v-list-item @click="vistaCalendar">
+                    <v-list-item-title>Calendario</v-list-item-title>
+                  </v-list-item>
+                  <v-list-item @click="vistaLista">
+                    <v-list-item-title>Lista</v-list-item-title>
+                  </v-list-item>
+                </v-list>
+              </v-menu>
             </v-toolbar>
-          </template>
-          <template v-slot:[`item.actions`]="{ item }">
-            <v-icon small class="mr-2" @click="editItem(item)">
-              mdi-pencil
-            </v-icon>
-            <v-icon small @click="deleteItem(item)">
-              mdi-delete
-            </v-icon>
-          </template>
-          <template v-slot:no-data>
-            <v-btn color="primary" @click="initialize">
-              Reset
-            </v-btn>
-          </template>
-        </v-data-table>
-      </v-card-text>
+          </v-sheet>
+        </v-col>
+        <v-col sm="12" md="12" class="pt-0">
+          <component :is="vista" v-bind="propiedades" ref="childComponent"></component>
+        </v-col>
+      </v-row>
     </v-card>
   </div>
 </template>
 
 <script>
+import { mapActions, mapGetters } from "vuex";
+import CitasPendientesPacCalendar from "./CitasPendientesPacCalendar.vue";
+import CitasPendientesPacLista from "./CitasPendientesPacLista.vue";
 export default {
-  data: () => ({
-    dialog: false,
-    dialogDelete: false,
-    headers: [
-      {
-        text: "Dessert (100g serving)",
-        align: "start",
-        sortable: false,
-        value: "name",
+  name: "CitasPendientesPac",
+  components: {
+    CitasPendientesPacCalendar,
+    CitasPendientesPacLista,
+  },
+  data() {
+    return {
+      type: "calendario",
+      typeToLabel: {
+        lista: "Lista",
+        calendario: "Calendario",
       },
-      { text: "Calories", value: "calories" },
-      { text: "Fat (g)", value: "fat" },
-      { text: "Carbs (g)", value: "carbs" },
-      { text: "Protein (g)", value: "protein" },
-      { text: "Actions", value: "actions", sortable: false },
-    ],
-    desserts: [],
-    editedIndex: -1,
-    editedItem: {
-      name: "",
-      calories: 0,
-      fat: 0,
-      carbs: 0,
-      protein: 0,
-    },
-    defaultItem: {
-      name: "",
-      calories: 0,
-      fat: 0,
-      carbs: 0,
-      protein: 0,
-    },
-  }),
-
-  watch: {
-    dialog(val) {
-      val || this.close();
-    },
-    dialogDelete(val) {
-      val || this.closeDelete();
-    },
+      vista: "CitasPendientesPacCalendar",
+      listaDependientes: {
+        usuario: {
+          name: "",
+          lastname: "",
+        },
+        dependientes: [],
+      },
+      dependienteSeleccionado : {},
+      tipoPacienteSeleccionado: "titular"
+    };
   },
-
-  created() {
-    this.initialize();
-  },
-
   methods: {
-    initialize() {
-      this.desserts = [
-        {
-          name: "Frozen Yogurt",
-          calories: 159,
-          fat: 6.0,
-          carbs: 24,
-          protein: 4.0,
-        },
-        {
-          name: "Ice cream sandwich",
-          calories: 237,
-          fat: 9.0,
-          carbs: 37,
-          protein: 4.3,
-        },
-        {
-          name: "Eclair",
-          calories: 262,
-          fat: 16.0,
-          carbs: 23,
-          protein: 6.0,
-        },
-        {
-          name: "Cupcake",
-          calories: 305,
-          fat: 3.7,
-          carbs: 67,
-          protein: 4.3,
-        },
-        {
-          name: "Gingerbread",
-          calories: 356,
-          fat: 16.0,
-          carbs: 49,
-          protein: 3.9,
-        },
-        {
-          name: "Jelly bean",
-          calories: 375,
-          fat: 0.0,
-          carbs: 94,
-          protein: 0.0,
-        },
-        {
-          name: "Lollipop",
-          calories: 392,
-          fat: 0.2,
-          carbs: 98,
-          protein: 0,
-        },
-        {
-          name: "Honeycomb",
-          calories: 408,
-          fat: 3.2,
-          carbs: 87,
-          protein: 6.5,
-        },
-        {
-          name: "Donut",
-          calories: 452,
-          fat: 25.0,
-          carbs: 51,
-          protein: 4.9,
-        },
-        {
-          name: "KitKat",
-          calories: 518,
-          fat: 26.0,
-          carbs: 65,
-          protein: 7,
-        },
-      ];
+    ...mapActions(["listarDependientes"]),
+    vistaLista() {
+      this.type = "lista";
+      this.vista = "CitasPendientesPacLista";
     },
 
+    vistaCalendar() {
+      this.type = "calendario";
+      this.vista = "CitasPendientesPacCalendar";
+    },
+
+    seleccionar(e) {     
+      this.dependienteSeleccionado = e.datos
+      this.tipoPacienteSeleccionado = e.tipoPaciente
+      console.log("LA VARIABLE A PASAR",this.propiedades);
+      this.$refs.childComponent.updateRange;
+    },
+  },
+  computed: {
+    ...mapGetters(["getUsuario", "getPacientePerfil", "getListaDependientes"]),
+    propiedades() {
+      console.log(this.tipoPacienteSeleccionado)
+        return {
+          paciente: {
+            tipoPaciente: this.tipoPacienteSeleccionado,
+            datos: this.dependienteSeleccionado,
+          },
+        };
+      
+    },
+  },
+  created() {
+    this.dependienteSeleccionado = this.getPacientePerfil;
+    this.listaDependientes.usuario = this.getPacientePerfil;
+    this.listarDependientes(this.getUsuario).then((res) => {
+    this.listaDependientes.dependientes = this.getListaDependientes;
+    });
+  },
+
+  inject: {
+    theme: {
+      default: { isDark: false },
+    },
   },
 };
 </script>

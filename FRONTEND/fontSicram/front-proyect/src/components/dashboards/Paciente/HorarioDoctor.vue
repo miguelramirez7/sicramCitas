@@ -6,8 +6,8 @@
     <Alert
       :dialog="showAlert"
       @close="showAlert = false"
-      :mensaje="getAlert.mensajeAlerta"
-      :tipo="getAlert.tipoAlerta"
+      :mensaje="alerta.mensajeAlerta"
+      :tipo="alerta.tipoAlerta"
     />
   <v-row class="fill-height">
     <v-col>
@@ -94,8 +94,7 @@
                 <v-icon>mdi-plus</v-icon>
               </v-btn>
               <v-toolbar-title
-                v-html="'Agregar horario disponible.'"
-              ></v-toolbar-title>
+              > Disponible de {{selectedEvent.inicio}} - {{selectedEvent.fin}}</v-toolbar-title>
               <v-spacer></v-spacer>
               <v-btn icon @click="selectedOpen = false">
                 <v-icon>mdi-close</v-icon>
@@ -146,6 +145,10 @@ export default {
       week: "Semana",
       day: "Día",
     },
+    alerta: {
+        mensajeAlerta: "",
+        tipoAlerta: "",
+    },
     selccion: {},
     selectedEvent: {},
     selectedElement: null,
@@ -167,10 +170,10 @@ export default {
     console.log("los horarios son:", this.events);
   },
   methods: {
-    ...mapActions(['registrarCitaTitular']),
+    ...mapActions(['registrarCitaTitular',"registrarCitaDependiente"]),
     //AGREGAR HORARIO:
     agregar(event) {
-      this.showLoader = true
+      this.selectedOpen = false
       this.selccion = event
       console.log(this.selccion);
       console.log(this.dataCita);
@@ -181,12 +184,34 @@ export default {
         hora_inicio:this.selccion.data.hora_inicio,
         hora_fin: this.selccion.data.hora_fin,
       }
+      this.camposCorrectos(datos)
+    },
+
+
+    //PARA REGISTRAR LA CITA AL PACIENTE TITULAR DE LA CUENTA
+    citaPacienteTitular(datos){
       this.registrarCitaTitular({
         paciente: this.getUsuario,
         cita: datos,
       })
       .then(res=>{
         if(res==true) this.recargarHorario()
+        this.alerta = this.getAlert
+        this.showLoader = false
+        this.showAlert = true
+      })
+    },
+
+    //PARA REGISTRAR LA CITA AL PACIENTE FAMILIAR DEL TITULAR
+    citaPacienteDependiente(datos){
+      this.registrarCitaDependiente({
+        paciente: this.getUsuario,
+        cita: datos,
+        id_dependiente : this.dataCita.dependiente._id
+      })
+      .then(res=>{
+        if(res==true) this.recargarHorario()
+        this.alerta = this.getAlert
         this.showLoader = false
         this.showAlert = true
       })
@@ -194,6 +219,30 @@ export default {
 
     recargarHorario(){
       this.$emit("recargarHorario")
+    },
+   
+    camposCorrectos(datos){
+      switch(this.dataCita.tipoPaciente){
+        case 'Dependiente':
+          if(this.dataCita.dependiente == ""){  
+            this.alerta.mensajeAlerta = "Seleccione el paciente dependiente.";
+            this.alerta.tipoAlerta = "warning";
+            this.showAlert = true;
+          }else{
+            this.showLoader = true
+            this.citaPacienteDependiente(datos)
+          }
+          break;
+        case 'Titular':
+          this.showLoader = true
+          this.citaPacienteTitular(datos)
+          break;
+        default:
+          this.alerta.mensajeAlerta = "Seleccione el tipo de Paciente.";
+          this.alerta.tipoAlerta = "warning";
+          this.showAlert = true;
+          break;
+      }
     },
 
     viewDay({ date }) {
@@ -248,6 +297,8 @@ export default {
           end: second,
           color: this.colors[this.rnd(0, this.colors.length - 1)],
           data:  data,
+          inicio :  this.dataTime[i].hora_inicio,
+          fin: this.dataTime[i].hora_fin
         });
       }
 
