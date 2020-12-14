@@ -183,5 +183,6 @@ export default {
 </script>
 
 <style scoped>
-    @import "../../../assets/css/paciente.css";
+    
+@import "../../../assets/css/formPaciente.css";
 </style>

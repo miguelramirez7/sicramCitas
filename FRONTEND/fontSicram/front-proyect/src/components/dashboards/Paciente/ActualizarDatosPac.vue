@@ -180,7 +180,5 @@ export default {
 </script>
 
 <style scoped>
-@import "../../../assets/css/formPaciente.css";
-
-
+@import "../../../assets/css/paciente.css";
 </style>
