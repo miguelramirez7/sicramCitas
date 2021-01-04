@@ -134,7 +134,7 @@ exports.SignoutDoctor = function (req, res) {
   req.logout();
   res.json({ success: true, msg: "Sign out Doctor EXITOSA." });
 };
-
+// Actualizar datos del doctor por post
 exports.Actualizar_datos_doctor = async function (req, res) {
   try {
     var token = getToken(req.headers);
@@ -257,37 +257,48 @@ exports.Agregar_horario_doctor = async function (req, res) {
           var m = n.getMonth() + 1;
           //Día
           var d = n.getDate();
-          const fechaActual = y+"-"+m+"-"+d;
+          const fechaActual = new Date(y, m, d);
+
           var fechacita = req.body.fecha;
-          if(fechaActual>fechacita){
-            res.json({msg: "Error, no puede elegir un horario pasado"});
-          }else{
-            console.log("Puede poner horario");
-          //nuevo horario agarramos por body los datos
-          var newhorario = new Horario({
-            fecha: req.body.fecha,
-            hora_inicio: req.body.hora_inicio,
-            hora_fin: req.body.hora_fin,
-          });
-          //agregamos el doctor del horario gracias al token
-          newhorario.doctor = doctor;
-          console.log("Nuevo horario: " + newhorario);
-          //guardamos horario
-          await newhorario.save((err, horario) => {
-            if (err) {
-              console.log("Error al guardar horario");
-              res.send("error al guardar al horario :" + err);
-            } else {
-              console.log("Horario guardado");
-              res.status(200).json({ msg: "nuevo horario guardado" });
-            }
-          });
-          //pusheamos el areglo de horarios del doctor
-          doctor.horario.push(newhorario);
-          //guardamos dooctor actualizado
-          await doctor.save();
+          // Para la citas
+          var cy = fechacita.substring(0, 4);
+          var cm = fechacita.substring(5, 7);
+          var cd = fechacita.substring(8, 10);
+
+          const fechacitanueva = new Date(req.body.fecha);
+          console.log("ffff" +fechacitanueva);
+          const fechacitac = new Date(cy, cm, cd);
+          console.log("Fecha actual: " + fechaActual);
+          console.log("Fecha cita: " + fechacitac);
+
+          if (fechaActual > fechacitac) {
+            res.json({ msg: "Error, no puede elegir un horario pasado" });
+          } else {
+            //nuevo horario agarramos por body los datos
+
+            var newhorario = new Horario({
+              fecha: req.body.fecha,
+              hora_inicio: req.body.hora_inicio,
+              hora_fin: req.body.hora_fin,
+            });
+            //agregamos el doctor del horario gracias al token
+            newhorario.doctor = doctor;
+            console.log("Nuevo horario: " + newhorario);
+            //guardamos horario
+            await newhorario.save((err, horario) => {
+              if (err) {
+                console.log("Error al guardar horario");
+                res.send("error al guardar al horario :" + err);
+              } else {
+                console.log("Horario guardado");
+                res.status(200).json({ msg: "nuevo horario guardado" });
+              }
+            });
+            //pusheamos el areglo de horarios del doctor
+            doctor.horario.push(newhorario);
+            //guardamos dooctor actualizado
+            await doctor.save();
           }
-          
         }
       } else {
         console.log("No es el usuario");
