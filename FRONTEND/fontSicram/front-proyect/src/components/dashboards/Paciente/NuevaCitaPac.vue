@@ -13,7 +13,7 @@
       <v-col cols="12" sm="4">
         <v-card class="pa-2" tile height="480">
           <v-card-text>
-            <v-form ref="form" lazy-validation @submit.prevent="registrarCita">
+            <v-form ref="form" lazy-validation>
               <v-col cols="12" sm="12">
                 <h3>Nueva Cita</h3>
               </v-col>
@@ -78,7 +78,7 @@
             :doctor="newCita.doctor"
             :dataCita="newCita"
             @recargarHorario="changeHorariosDoctor"
-            ref="childComponent"
+            ref="componenteHijo"
           />
         </v-card>
       </v-col>
@@ -89,7 +89,8 @@
           <CitasPendientesPacCalendar
             :paciente="{
               tipoPaciente: 'titular',
-              datos: {},
+              datos: null,
+              vista: 'nuevaCita'
             }"
           />
         </v-card>
@@ -116,12 +117,12 @@ export default {
     return {
       showLoader: false, //MUESTRA EL CARGADOR DESPUES DE REGISTRAR
       showAlert: false, //MUESTRA LA ALERTA DESPUES DEL REGISTRO
-      alerta: {
+      listaDoctores : null, //MUESTRA LA LISTA DE DOCTORES
+      alerta: { //VARIABLE PARA EL TIPO Y EL MENSAJE DE ALERTA
         mensajeAlerta: "",
         tipoAlerta: "",
       },
-      tipoPaciente: "",
-      newCita: {
+      newCita: { //VARIABLE PARA SELECCIONAR EL TIPO DE CITA A REGISTRAR
         tipoPaciente: "",
         dependiente: "",
         especialidad: "",
@@ -130,35 +131,39 @@ export default {
           lastname: "Apellido",
         },
       },
-      dependiente: "",
-      listaHorarios: [],
+      listaHorarios: [], // LISTA LOS HORARIOS DEL DOCTOR SELECCIONADO
     };
   },
 
   computed: {
     ...mapGetters([
-      "getReglas",
+      "getReglas", 
       "getEspecialidades",
       "getListaDoctoresPorEspecialidad",
       "getHorariosDesocupados",
       "getListaDependientes",
       "getUsuario",
     ]),
+
+    //PARA SELECCIONAR EL TIPO DE PACIENTE AL QUE SE QUIERE PONER LA CITA
     pacientesDependientes() {
       if (this.newCita.tipoPaciente === "Dependiente") return false;
       return true;
     },
 
+    //LISTA DE ESPECIALIDADES
     especialidades() {
       if (this.getEspecialidades == null) return [];
       else return this.getEspecialidades;
     },
 
+    //LISTA DE DOCTORES POR ESPECIALIDAD
     doctores() {
       if (this.getListaDoctoresPorEspecialidad == null) return [];
       else return this.getListaDoctoresPorEspecialidad;
     },
 
+    //LISTA DE DEPENDIENTES
     dependientes() {
       if (this.getListaDependientes == null) return [];
       else return this.getListaDependientes;
@@ -175,9 +180,10 @@ export default {
 
     //CAMBIA LA LISTA DE LOS DOCTORES
     changeListaDoctores() {
-      //console.log(this.newCita.especialidad)
+      //this.listaDoctores = null;
       this.listarDoctoresPorEspecialidad(this.newCita.especialidad);
       console.log(this.getListaDoctoresPorEspecialidad);
+      
     },
 
     //CAMBIA A UNA LISTA DE LOS HORARIOS DEL DOCTOR
@@ -194,7 +200,7 @@ export default {
           this.showAlert = true;
         }
         console.log("ACTIVAR HORARIOS DOCTOR");
-        this.$refs.childComponent.updateRange;
+        this.$refs.componenteHijo.updateRange;
       });
     },
   },

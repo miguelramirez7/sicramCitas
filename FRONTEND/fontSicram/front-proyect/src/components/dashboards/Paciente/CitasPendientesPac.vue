@@ -134,6 +134,7 @@ export default {
           paciente: {
             tipoPaciente: this.tipoPacienteSeleccionado,
             datos: this.dependienteSeleccionado,
+            vista: "Bandeja"
           },
         };
       

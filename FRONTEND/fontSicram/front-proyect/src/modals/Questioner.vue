@@ -42,7 +42,7 @@ export default {
     },
     message: {
       type: String,
-      defauly: "MENSAJasdasdasdsdE",
+      default: "MENSAJasdasdasdsdE",
     },
   },
   computed: {

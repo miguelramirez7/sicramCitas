@@ -8,11 +8,19 @@
           <v-icon>mdi-close</v-icon>
         </v-btn>
       </v-toolbar>
+      <v-card-text class="pa-0" v-if="this.getHorariosDesocupados == null">
+        <v-container >
+          <h4>
+            El doctor con el que tiene registrada esta cita ya no cuenta con
+            horarios disponibles.
+          </h4>
+        </v-container>
+      </v-card-text>
       <EditarHorarioPacienteDoc
         @recargarHorario="changeHorariosDoctor"
-        @recargarCalendario ="recargaCalendar"
+        @recargarCalendario="recargaCalendar"
         class="pa-5"
-        v-if="cita.doctor._id != null"
+        v-if="cita.doctor._id != null && this.getHorariosDesocupados != null"
         :dataTime="listaHorarios"
         refs="childComponent2"
         :dataCita="cita"
@@ -85,13 +93,13 @@ export default {
             this.showAlert = true;
           }
           console.log("ACTIVAR HORARIOS DOCTOR");
-          this.$refs.childComponent2.updateRange
+          this.$refs.childComponent2.updateRange;
         });
       }
     },
-    recargaCalendar(){
-      this.$emit("recargaCalendar")
-    }
+    recargaCalendar() {
+      this.$emit("recargaCalendar");
+    },
   },
   watch: {
     cita: {

@@ -1,5 +1,5 @@
 <template>
-  <v-card class="carta">
+  <v-card class=" mt-1" >
     <!----CARGADOR---->
     <Loader :dialog="showLoader" />
     <!----ALERTA---->
@@ -9,14 +9,14 @@
       :mensaje="getAlert.mensajeAlerta"
       :tipo="getAlert.tipoAlerta"
     />
-    <v-card-title class="titulo">Actualizar Datos</v-card-title>
-    <v-container style="text-transform: uppercase;">
+    <v-card-title ><h3 class="titulo-perfil-pac">ACTUALIZAR DATOS</h3></v-card-title>
+    <v-container  class="letra-modal-actualizar">
       <v-form ref="form" lazy-validation @submit.prevent="actualizarPerfil">
-        <v-row>
+        <v-row no-gutters>
           <v-col cols="12" md="6">
             <v-row>
               <v-col md="3" class="ml-5">
-                <v-card-text class=" subtitulo">Nombre:</v-card-text>
+               Nombre:
               </v-col>
               <v-col md="7" class="mr-5">
                 <v-text-field
@@ -35,7 +35,7 @@
           <v-col cols="12" md="6">
             <v-row>
               <v-col md="3" class="ml-5">
-                <v-card-text class="subtitulo">Apellido:</v-card-text>
+                Apellido:
               </v-col>
               <v-col md="7" class="mr-5">
                 <v-text-field
@@ -55,7 +55,7 @@
           <v-col cols="12" md="6">
             <v-row>
               <v-col md="3" class="ml-5">
-                <v-card-text class=" subtitulo">DNI:</v-card-text>
+                DNI:
               </v-col>
               <v-col md="7" class="mr-5">
                 <v-text-field
@@ -71,7 +71,7 @@
           <v-col cols="12" md="6">
             <v-row>
               <v-col md="3" class="ml-5">
-                <v-card-text class="subtitulo">Género:</v-card-text>
+                Género:
               </v-col>
               <v-col md="7" class="mr-5">
                 <v-select
@@ -91,7 +91,7 @@
           <v-col cols="12" md="6">
             <v-row>
               <v-col md="3" class="ml-5">
-                <v-card-text class=" subtitulo">Celular:</v-card-text>
+                Celular:
               </v-col>
               <v-col md="7" class="mr-5">
                 <v-text-field
@@ -108,7 +108,7 @@
           <v-col cols="12" md="6">
             <v-row>
               <v-col md="3" class="ml-5">
-                <v-card-text class="subtitulo">Edad:</v-card-text>
+               Edad:
               </v-col>
               <v-col md="7" class="mr-5">
                 <v-text-field
@@ -123,8 +123,11 @@
           </v-col>
         </v-row>
         <div class="text-center">
-          <v-btn color="teal mt-5" rounded elevation="8" x-large type="submit">
+          <v-btn color="orange darken-2 mb-5" elevation="8" x-large type="submit" dark >
             Actualizar
+            <v-icon class="ml-1">
+              mdi-account-edit
+            </v-icon>
           </v-btn>
         </div>
       </v-form>
@@ -180,5 +183,12 @@ export default {
 </script>
 
 <style scoped>
-@import "../../../assets/css/paciente.css";
+.titulo-perfil-pac {
+  color: teal;
+}
+.letra-modal-actualizar{
+  font-size: 16px;
+  text-transform: uppercase;
+  color: black;
+}
 </style>

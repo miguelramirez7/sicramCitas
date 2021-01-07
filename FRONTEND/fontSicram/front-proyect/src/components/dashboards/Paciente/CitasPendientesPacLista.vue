@@ -1,9 +1,12 @@
 <template>
   <div>
+    <!---MODALS------->
+    <editar-cita-pendiente :dialog="showEdit" :cita="citaEditar" @close="showEdit = false" />
+    <registrar-sintomas :dialog="showSintomas" @close="showSintomas = false"/>
     <!----CARGADOR---->
-    <Loader :dialog="showLoader" />
+    <loader :dialog="showLoader" />
     <!----ALERTA---->
-    <Alert
+    <alert
       :dialog="showAlert"
       @close="showAlert = false"
       :mensaje="getAlert.mensajeAlerta"
@@ -12,7 +15,7 @@
     <!---MODAL PARA EDITAR EL HORARIO---->
 
     <!----PREGUNTA---->
-    <Questioner
+    <questioner
       :dialog="showQuestion"
       @close="showQuestion = false"
       @accept="eliminarItem()"
@@ -40,7 +43,7 @@
         <v-icon small class="mr-2" @click="elimiar(item)">
           mdi-delete
         </v-icon>
-        <v-icon small @click="elimiar(item)">mdi-import</v-icon>
+        <v-icon small @click="ingresar(item)">mdi-import</v-icon>
       </template>
     </v-data-table>
   </div>
@@ -49,6 +52,8 @@
 import Loader from "@/modals/Loader.vue";
 import Alert from "@/modals/Alert.vue";
 import Questioner from "@/modals/Questioner.vue";
+import RegistrarSintomas from "./modals/RegistrarSintomas.vue"
+import EditarCitaPendiente from "./modals/EditarCitaPendiente.vue";
 import { mapActions, mapGetters } from "vuex";
 export default {
   name: "CitasPendientesPacLista",
@@ -56,6 +61,8 @@ export default {
     Questioner,
     Loader,
     Alert,
+    EditarCitaPendiente,
+    RegistrarSintomas,
   },
 
   props: {
@@ -69,13 +76,21 @@ export default {
   },
 
   data: () => ({
+    citaEditar: {
+      doctor: {
+        name: "Nombre",
+        lastname: "Apellido",
+      },
+    },
+    showSintomas : false, //MUESTRA EL MODAL PARA REGISTRAR SINTOMAS
+    showEdit: false, //MUESTRA EL MODAL DE EDITAR CITA
+    dataPacientes: null,
     mensajeEliminar: {
       titulo: "Eliminar Horario.",
       mensaje: "¿Está seguro que desea eliminar este horario?",
     },
     showLoader: false, //MUESTRA EL CARGADOR DESPUES DE REGISTRAR
     showAlert: false, //MUESTRA LA ALERTA DESPUES DEL REGISTRO
-    showEdit: false, //MUESTRA EL MODAL PARA EDITAR EL HORARIO
     showQuestion: false, //MUESTRA LA PREGUNTA ANTES DE ELIMNAR UN HORARIO
     itemToDelete: null, //ES EL HORARIO A ELIMINAR
     item: null,
@@ -107,6 +122,11 @@ export default {
       "listarCitasPendientesTitular",
       "listarCitasPendientesDependiente",
     ]),
+    //MUESTRA EL MODAL DE REGISTRAR SINTOMAS
+    ingresar(e){
+      console.log("Cita:",e)
+      this.showSintomas = true;
+    },
     //TIPO DE USUARIO
     userType() {
       this.dataPacientes = null;
@@ -124,7 +144,12 @@ export default {
         });
       }
     },
-    editarItem(e) {},
+    editarItem(e) {
+      this.citaEditar = e;
+      this.showEdit = true;
+      console.log(this.citaEditar);
+      console.log(e)
+    },
     elimiar(e) {},
     eliminarItem() {},
   },

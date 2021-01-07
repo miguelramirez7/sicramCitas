@@ -1,19 +1,24 @@
 <template>
-  <div>
+  <!--<div>
     <Loader :dialog="showLoader" />
     <input type="file" id="file" @change="readFile" />
     <button @click="buclDni">DNI EN BUCLE</button>
     <button @click="ponerCSV">ELCSV</button>
     
+  </div>-->
+  <div>
+    <session/>
   </div>
 </template>
 
 <script>
+import Session from "@/components/dashboards/Session.vue"
 import Loader from "@/modals/Loader.vue"; 
 export default {
   name: "prueba",
   components: {
     Loader,
+    Session
   },
   data() {
     return {

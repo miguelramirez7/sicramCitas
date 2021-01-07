@@ -86,36 +86,37 @@
           ></v-calendar>
           <v-menu
             v-model="selectedOpen"
-            :close-on-content-click="false"
             :activator="selectedElement"
             offset-x
           >
             <v-card color="grey lighten-4" width="500px" flat class="pa-0">
               <v-toolbar :color="selectedEvent.color" dark class="pa-0">
-                <v-toolbar-title
-                  v-html="'CITA PENDIENTE'"
-                ></v-toolbar-title>
+                <v-toolbar-title v-html="'CITA PENDIENTE'"></v-toolbar-title>
                 <v-spacer></v-spacer>
                 <v-btn icon @click="selectedOpen = false">
                   <v-icon>mdi-close</v-icon>
                 </v-btn>
               </v-toolbar>
-              <v-card-text >
+              <v-card-text>
                 <v-row>
                   <v-col sm="5" md="5" style="color: black;">
-                    Paciente:  
+                    Paciente:
                   </v-col>
                   <v-col sm="7" md="7" style="color: black;">
-                    {{selectedEvent.paciente}}
+                    {{ selectedEvent.paciente }}
                   </v-col>
                   <v-col sm="5" md="5" style="color: black;">
                     Horario:
                   </v-col>
                   <v-col sm="7" md="7" style="color: black;">
-                    {{selectedEvent.horario}}
+                    {{ selectedEvent.horario }}
                   </v-col>
                   <v-col sm="12" md="12" class="d-flex justify-center">
-                    <v-btn  :color="selectedEvent.color" style="color:white;">
+                    <v-btn
+                      :color="selectedEvent.color"
+                      style="color:white;"
+                      @click="ingresarCita(selectedEvent)"
+                    >
                       Ingresar
                       <v-icon>mdi-import</v-icon>
                     </v-btn>
@@ -167,26 +168,38 @@ export default {
     ],
   }),
   mounted() {
-    this.userType()
+    this.userType();
     console.log("los horarios son:");
-    
   },
   methods: {
-    ...mapActions(["listarCitasPendientes"]),
+    ...mapActions(["listarCitasPendientes", "save_idCita"]),
+    //INGRESA A LA CITA SELECCIONADA
+    ingresarCita(e) {
+      this.showLoader = true;
+      setTimeout(() => {
+        this.showLoader = false;
+        console.log(e);
+        this.save_idCita(e.data._id);
+        this.$router.push({
+          name: "CitaDoctor",
+          params: { id: e.data.user._id },
+        });
+      }, 1500);
+
+      //this.idDoctor = e.data.doctor._id
+    },
     //TIPO DE USUARIO
-    userType(){
-      this.dataPacientes = null
-      this.listarCitasPendientes(this.getUsuario)
-      .then(res=>{
-          this.dataPacientes = this.getCitasPendientes
-      })
+    userType() {
+      this.dataPacientes = null;
+      this.listarCitasPendientes(this.getUsuario).then((res) => {
+        this.dataPacientes = this.getCitasPendientes;
+      });
     },
     //AGREGAR HORARIO:
     agregar(event) {
       this.selectedOpen = false;
       this.selccion = event;
       console.log(this.selccion);
-      
     },
 
     viewDay({ date }) {
@@ -237,15 +250,18 @@ export default {
         const second =
           dataTime[i].horario.fecha + " " + dataTime[i].horario.hora_fin;
         const data = dataTime[i];
-        
+
         events.push({
           name: "Cita pendiente",
           start: first,
           end: second,
           color: this.colors[this.rnd(0, this.colors.length - 1)],
           data: data,
-          paciente: dataTime[i].user.name + ' ' + dataTime[i].user.lastname,
-          horario: dataTime[i].horario.hora_inicio + ' - ' + dataTime[i].horario.hora_fin,
+          paciente: dataTime[i].user.name + " " + dataTime[i].user.lastname,
+          horario:
+            dataTime[i].horario.hora_inicio +
+            " - " +
+            dataTime[i].horario.hora_fin,
         });
       }
 

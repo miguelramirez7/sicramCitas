@@ -1,11 +1,12 @@
 <template>
   <div>
     <!---MODALS------->
-    <EditarCitaPendiente :dialog="showEdit" :cita="citaEditar" @close="showEdit = false" @recargaCalendar="recargar"/>
+    <editar-cita-pendiente :dialog="showEdit" :cita="citaEditar" @close="showEdit = false" @recargaCalendar="recargar"/>
+    <registrar-sintomas :dialog="showSintomas" @close="showSintomas = false" :idDoctor="idDoctor" :idCita="idCita"/>
     <!----CARGADOR---->
-    <Loader :dialog="showLoader" />
+    <loader :dialog="showLoader" />
     <!----ALERTA---->
-    <Alert
+    <alert
       :dialog="showAlert"
       @close="showAlert = false"
       :mensaje="getAlert.mensajeAlerta"
@@ -122,7 +123,7 @@
                     {{ selectedEvent.especialidad }}
                   </v-col>
                   <v-col sm="12" md="12" class="d-flex justify-center">
-                    <v-btn :color="selectedEvent.color" style="color:white;">
+                    <v-btn :color="selectedEvent.color" style="color:white;" @click="ingresarCita(selectedEvent)">
                       Ingresar
                       <v-icon>mdi-import</v-icon>
                     </v-btn>
@@ -141,31 +142,36 @@ import Loader from "@/modals/Loader.vue";
 import Alert from "@/modals/Alert.vue";
 import EditarCitaPendiente from "./modals/EditarCitaPendiente.vue";
 import { mapActions, mapGetters } from "vuex";
+import RegistrarSintomas from './modals/RegistrarSintomas.vue';
 
 export default {
   name: "CitasPendientesPacCalendar",
   components: {
-    Loader,
-    Alert,
     EditarCitaPendiente,
+    RegistrarSintomas,
+    Alert,
+    Loader,
   },
   props: {
     paciente: {
       type: Object,
       default: {
-        tipoPaciente: "titular",
-        datos: {},
+        tipoPaciente: 'titular',
+        datos: null,
       },
     },
   },
   data: () => ({
+    idCita: null,
+    idDoctor: null,
     citaEditar: {
       doctor: {
         name: "Nombre",
         lastname: "Apellido",
       },
     },
-    showEdit: null, //MUESTRA EL MODAL DE EDITAR CITA
+    showSintomas : false, //MUESTRA EL MODAL PARA REGISTRAR SINTOMAS
+    showEdit: false, //MUESTRA EL MODAL DE EDITAR CITA
     dataPacientes: null,
     showLoader: false, //MUESTRA EL CARGADOR DESPUES DE REGISTRAR
     showAlert: false, //MUESTRA LA ALERTA DESPUES DEL REGISTRO
@@ -200,12 +206,20 @@ export default {
       "listarCitasPendientesTitular",
       "listarCitasPendientesDependiente",
     ]),
+    //INGRESA A LA CITA SELECCIONADA
+    ingresarCita(e){
+      this.idCita = e.data._id
+      this.showSintomas = true
+      console.log(e.data.doctor._id)
+      this.idDoctor = e.data.doctor._id
+
+    },
     //TIPO DE USUARIO
     userType() {
       this.dataPacientes = null;
       //console.log("asdasd",this.paciente)
       if (this.paciente.tipoPaciente == "titular") {
-        this.listarCitasPendientesTitular(this.getUsuario).then((res) => {
+          this.listarCitasPendientesTitular(this.getUsuario).then((res) => {
           this.dataPacientes = this.getCitasPendientesTitular;
         });
       } else {
@@ -267,7 +281,7 @@ export default {
     },
 
     updateRange({ start, end }) {
-      console.log("los horarios son:", this.events);
+      //console.log("los horarios son:", this.events);
       this.$refs.calendar.checkChange();
       this.$refs.calendar.scrollToTime("08:00");
       const dataTime = this.dataPacientes;
@@ -313,8 +327,12 @@ export default {
   watch: {
     paciente: {
       handler: function(val, oldVal) {
-        this.userType();
-        this.updateRange; // call it in the context of your component object
+        console.log("nuevo:",val)
+        console.log("viejo:",oldVal)
+        if(val.vista == "Bandeja"){
+          this.userType();
+          this.updateRange; // call it in the context of your component object
+        }
       },
     },
   },

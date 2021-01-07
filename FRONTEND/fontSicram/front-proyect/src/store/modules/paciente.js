@@ -85,7 +85,7 @@ const actions = {
             .then((res) => {
                 console.log("DATOS PACIENTE: ", res.data)
                 commit('setPacientePerfil', res.data)
-                dispatch('leerUsuario', null, { root: true });
+                //dispatch('leerUsuario', null, { root: true });
             })
             .catch((e) => {
                 console.log(e)
@@ -168,6 +168,34 @@ const actions = {
             console.log(e)
             return Promise.resolve(false)
         });
+    },
+
+    //CONSULTA PARA EDITARFAMILIAR
+    editarFamiliar({commit,dispatch},datos){
+      return axios
+            .post(`/user/dependiente/modificar/${datos.paciente.id}`, {...datos.dependiente }, {
+                headers: {
+                    Authorization: `${datos.paciente.token}`,
+                },
+            })
+            .then((res) => {
+                console.log(res.data)
+               /* if (res.data.msg == "Nuevo dependiente guardado") {
+                    dispatch('mensajeTipoAlert', { mensajeAlerta: res.data.msg, tipoAlerta: 'success' }, { root: true })
+                } else {
+                    dispatch('mensajeTipoAlert', { mensajeAlerta: res.data.msg, tipoAlerta: 'warning' }, { root: true })
+                }*/
+
+                return Promise.resolve(true)
+            })
+            .catch((e) => {
+
+                console.log(e)
+              /*  dispatch('mensajeTipoAlert', { mensajeAlerta: 'OCURRIO UN ERROR', tipoAlerta: 'error' }, { root: true })
+
+*/
+                return Promise.resolve(false)
+            })
     },
 
     //CONSULTA PARA REGISTRAR UN HORARIO AL PACIENTE TITULAR

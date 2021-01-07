@@ -18,7 +18,8 @@
       :message="mensajeEliminar.mensaje"
     />
     <!---------------->
-    <v-row class="fill-height">
+
+    <v-row class="fill-height" >
       <v-col>
         <h4>
           Horarios disponibles del Dr. {{dataCita.doctor.name}} {{dataCita.doctor.lastname}}

@@ -102,7 +102,7 @@ const actions = {
             .then((res) => {
                 console.log("DATOS DOCTOR: ", res.data)
                 commit('setDoctorPerfil', res.data)
-                dispatch('leerUsuario', null, { root: true });
+                //dispatch('leerUsuario', null, { root: true });
             })
             .catch((e) => {
                 console.log(e)

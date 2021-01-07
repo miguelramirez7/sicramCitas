@@ -109,21 +109,30 @@ const actions = {
     },
 
     //VER SI USUARIO SE ENCUENTRA LOGEADO
-    leerUsuario({commit,dispatch}){
+    leerUsuario({commit,dispatch}){ 
         const user = JSON.parse(localStorage.getItem('user'))
         const tipoUser =  localStorage.getItem('tipoUser')
-        //if(user){
+        if(user){
             dispatch('guardarUsuario',user)
             dispatch('guardarTipoDeUsuario',tipoUser)
-          //  switch(tipoUser){
-          //    case 'paciente' : dispatch('getPerfilPaciente', user , { root: true }); break;
-            //    case 'doctor':  dispatch('perfilDoctor', user , { root: true });break;
-            //    case 'organizacion':  dispatch('perfilOrganizacion', user , { root: true });break;
-            //}
-        //}else{
-        //    commit('setUsuario',null)
-        //    commit('setTipoUsuario',null)
-        //}*/
+            switch(tipoUser){
+              case 'paciente' : dispatch('perfilPaciente', user , { root: true }); break;
+              case 'doctor':  dispatch('perfilDoctor', user , { root: true });break;
+              case 'organizacion':  dispatch('perfilOrganizacion', user , { root: true });break;
+            }
+        }else{
+            commit('setUsuario',null)
+            commit('setTipoUsuario',null)
+        }
+    },
+
+    //CERRAR SESION DEL USUARIO 
+    cerrarSesion({commit}){
+        localStorage.removeItem('user')
+        localStorage.removeItem('tipoUser')
+        commit('setUsuario',null)
+        commit('setTipoUsuario',null)
+        window.location.assign("/");
     },
 };
 
