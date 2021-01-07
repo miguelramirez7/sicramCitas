@@ -4,6 +4,7 @@ var Cita = require("../models/cita");
 var Doctor = require("../models/doctor");
 var Especialidad = require("../models/especialidad");
 var Horario = require("../models/horario");
+var Diagnostico = require("../models/diagnostico");
 const chalk = require("chalk");
 const logger = console.log;
 
@@ -41,63 +42,77 @@ exports.GenerarNuevaCita = async function (req, res) {
                       );
                       //si especialidad es la del doctor
                       if (doctor.especialidad.equals(especialidad._id)) {
-                        var horario = await Horario.findOne({
-                          fecha: req.body.fecha,
-                          hora_inicio: req.body.hora_inicio,
-                          hora_fin: req.body.hora_fin,
-                          doctor: doctor,
-                        });
-                        //si horario exisete
-                        if (horario) {
-                          if (horario.cita) {
-                            logger(chalk.red("HORARIO USADO"));
-                            res.json({
-                              msg: "HORARIO YA ESTA USADO ",
-                              cita: horario.cita,
-                            });
-                          } else {
-                            logger(
-                              chalk.blue("HORARIO: ") + chalk.green(horario)
-                            );
-                            //horario estara ocupado
-                            horario.ocupado = true;
-                            //agregando el doctor y el usuario a la nueva cita
-                            nuevacita.user = paciente;
-                            nuevacita.doctor = doctor;
-                            nuevacita.especialidad = especialidad;
-                            nuevacita.horario = horario;
-                            /* Aquí debería ir opentok create session*/
-                            //agregamos el token y la session a la citanueva
-                            await nuevacita.save(function (err) {
-                              if (err) {
-                                return res.json({
-                                  success: false,
-                                  msg: "Error al guardar la cita",
-                                });
-                              }
-                              res.json({
-                                success: true,
-                                msg: "Exito nueva cita creada.",
-                              });
-                            });
-                            //agregamos la cita para el usuario.
-                            paciente.cita.push(nuevacita);
-                            //agregamos la cita para el doctor
-                            doctor.cita.push(nuevacita);
-                            //guardamos al user con su cita
-                            await paciente.save();
-                            //guardamos al doctor con su cita
-                            await doctor.save();
-                            //guardamos la cita en el horario
-                            horario.cita = nuevacita;
-                            //guardamos al horario con su cita
-                            await horario.save();
-                          }
-
-                          // res.send(nuevacita);  me sale error de cabecera si hago res.send
+                        const n = new Date();
+                        //Año
+                        var y = n.getFullYear();
+                        //Mes
+                        var m = n.getMonth() + 1;
+                        //Día
+                        var d = n.getDate();
+                        const fechaActual = y + "-" + m + "-" + d;
+                        var fechacita = req.body.fecha;
+                        if (fechaActual > fechacita) {
+                          res.json({ msg: "Error, fecha pasada" });
                         } else {
-                          logger(chalk.red("HORARIO NO COINCIDE "));
-                          res.json({ msg: "HORARIO NO COINCIDE" });
+                          console.log(fechaActual + " " + fechacita);
+                          var horario = await Horario.findOne({
+                            fecha: req.body.fecha,
+                            hora_inicio: req.body.hora_inicio,
+                            hora_fin: req.body.hora_fin,
+                            doctor: doctor,
+                          });
+                          //si horario exisete
+                          if (horario) {
+                            if (horario.cita) {
+                              logger(chalk.red("HORARIO USADO"));
+                              res.json({
+                                msg: "HORARIO YA ESTA USADO ",
+                                cita: horario.cita,
+                              });
+                            } else {
+                              logger(
+                                chalk.blue("HORARIO: ") + chalk.green(horario)
+                              );
+                              //horario estara ocupado
+                              horario.ocupado = true;
+                              //agregando el doctor y el usuario a la nueva cita
+                              nuevacita.user = paciente;
+                              nuevacita.doctor = doctor;
+                              nuevacita.especialidad = especialidad;
+                              nuevacita.horario = horario;
+                              /* Aquí debería ir opentok create session*/
+                              //agregamos el token y la session a la citanueva
+                              await nuevacita.save(function (err) {
+                                if (err) {
+                                  return res.json({
+                                    success: false,
+                                    msg: "Error al guardar la cita",
+                                  });
+                                }
+                                res.json({
+                                  success: true,
+                                  msg: "Exito nueva cita creada.",
+                                });
+                              });
+                              //agregamos la cita para el usuario.
+                              paciente.cita.push(nuevacita);
+                              //agregamos la cita para el doctor
+                              doctor.cita.push(nuevacita);
+                              //guardamos al user con su cita
+                              await paciente.save();
+                              //guardamos al doctor con su cita
+                              await doctor.save();
+                              //guardamos la cita en el horario
+                              horario.cita = nuevacita;
+                              //guardamos al horario con su cita
+                              await horario.save();
+                            }
+
+                            // res.send(nuevacita);  me sale error de cabecera si hago res.send
+                          } else {
+                            logger(chalk.red("HORARIO NO COINCIDE "));
+                            res.json({ msg: "HORARIO NO COINCIDE" });
+                          }
                         }
                       } else {
                         logger(chalk.red("ESPECIALIDAD NO COINCIDE "));
@@ -318,20 +333,18 @@ exports.Actualizar_Citas = async function (req, res) {
                                                                 "El horario se encuentra ocupado",
                                                             });
                                                           } else {
-
-                                                            horario1.ocupado=false;
-                                                            horario1.cita=null;
+                                                            horario1.ocupado = false;
+                                                            horario1.cita = null;
                                                             await horario1.save();
-                                                            
+
                                                             cita.doctor = doctor2;
                                                             cita.especialidad = especialidad;
                                                             cita.horario = horario;
                                                             await cita.save();
 
                                                             horario.ocupado = true;
-                                                            horario.cita=cita;
+                                                            horario.cita = cita;
                                                             await horario.save();
-                                                            mailer.notificarActualizacionDeCita(doctor,doctor2,paciente,horario1,horario);      
                                                             res.json({
                                                               msg:
                                                                 "Cita actualizada",
@@ -394,11 +407,216 @@ exports.Actualizar_Citas = async function (req, res) {
         );
       }
     } else {
-      loggerwin.info("Sin autorizacion");
       return res.status(403).send({ success: false, msg: "Unauthorized." });
     }
   } catch (err) {
-    loggerwin.info(err);
     console.log("ERROR  " + err);
+  }
+};
+
+// DURANTE EL MEETING
+
+//El medico puede ver el historial de diagnosticos de un paciente en plena cita
+exports.Ver_Historial_Paciente = async function (req, res) {
+  try {
+    var token = getToken(req.headers);
+    if (token) {
+      if (req.user.id == req.params.id) {
+        //verificar que sea el mismo usuario del token y el de params en la ruta
+        await Cita.findById(req.body.id_cita, async (err, cita) => {
+          if (err) {
+            res.json({ msg: "Cita no encontrada" });
+          } else {
+            await User.findById(cita.user, async (err, paciente) => {
+              if (err) {
+                res.json({ msg: "No se encontraron recetas para esta cita" });
+              } else {
+                await Diagnostico.find(
+                  { user: paciente },
+                  async (err, diagnosticos) => {
+                    if (!diagnosticos) {
+                      res.json({
+                        msg:
+                          "No se encontraron diagnósticos para este paciente",
+                      });
+                    } else {
+                      res.json(diagnosticos);
+                    }
+                  }
+                );
+              }
+            });
+          }
+        });
+      } else {
+        logger(
+          chalk.blue("NO es el usuario ") +
+            chalk.green(req.user.id) +
+            chalk.blue("comparado con ") +
+            chalk.magenta(req.params.id)
+        );
+        res.send(
+          "NO ES EL USUARIO   " +
+            req.user.id +
+            " comparando con " +
+            req.params.id
+        );
+      }
+    }
+  } catch (err) {
+    console.log(err);
+    res.json(err);
+  }
+};
+
+//Que el médico vea el diagnostico de cada cita pasada que tenga
+exports.Ver_diagnostico_doctor = async function (req, res) {
+  try {
+    var token = getToken(req.headers);
+    if (token) {
+      if (req.user.id == req.params.id) {
+        //verificar que sea el mismo usuario del token y el de params en la ruta
+        await Cita.findById(req.body.id_cita, async (err, cita) => {
+          if (!cita) {
+            res.json({ msg: "Cita no encontrada" });
+          } else {
+            await Diagnostico.findById(
+              cita.diagnostico,
+              async (err, diagnostico) => {
+                if (!diagnostico) {
+                  res.json({
+                    msg: "No se encontró el diagnóstico de esta cita",
+                  });
+                } else {
+                  res.json(diagnostico);
+                }
+              }
+            );
+          }
+        });
+      } else {
+        logger(
+          chalk.blue("NO es el usuario ") +
+            chalk.green(req.user.id) +
+            chalk.blue("comparado con ") +
+            chalk.magenta(req.params.id)
+        );
+        res.send(
+          "NO ES EL USUARIO   " +
+            req.user.id +
+            " comparando con " +
+            req.params.id
+        );
+      }
+    }
+  } catch (err) {
+    console.log(err);
+    res.json(err);
+  }
+};
+
+//registrar diagnostico en la cita
+exports.Registrar_Diagnostico = async function (req, res) {
+  try {
+    var token = getToken(req.headers);
+    if (token) {
+      if (req.user.id == req.params.id) {
+        await Doctor.findById(req.user.id, async (err, doctor) => {
+          if (!doctor) {
+            res.json({ msg: "No se encontró al doctor" });
+          } else {
+            await Cita.findById(req.body.id_cita, async (err, cita) => {
+              if (err) {
+                res.json({ msg: "No se encontró la cita" });
+              } else {
+                await Diagnostico.findOne(
+                  { cita: cita._id },
+                  async (err, diagnostico) => {
+                    if (!diagnostico) {
+                      await Horario.findById(
+                        cita.horario,
+                        async (err, horario) => {
+                          if (!horario) {
+                            res.json({
+                              msg: "No se encuentra un horario para esta cita",
+                            });
+                          } else {
+                            await User.findById(
+                              cita.user,
+                              async (err, paciente) => {
+                                if (err) {
+                                  res.json({
+                                    msg:
+                                      "No se encontró al paciente de la cita",
+                                  });
+                                } else {
+                                  try {
+                                    var newdiagnostico = new Diagnostico({
+                                      dni: paciente.dni,
+                                      nombres_apellidos:
+                                        paciente.name + " " + paciente.lastname,
+                                      genero: paciente.genero,
+                                      fecha: horario.fecha,
+                                      nombres_medico:
+                                        doctor.name + " " + doctor.lastname,
+                                      edad: paciente.edad,
+                                      diagnostico: req.body.diagnostico,
+                                      resultados_labo: req.body.resultados_labo,
+                                      tratamiento: req.body.tratamiento,
+                                      anamnesis: req.body.anamnesis,
+                                    });
+
+                                    newdiagnostico.cita = cita;
+                                    newdiagnostico.user = paciente;
+                                    await newdiagnostico.save();
+                                    //Introducimos el diagnostico a la cita
+                                    cita.diagnostico = newdiagnostico;
+                                    await cita.save();
+
+                                    paciente.diagnostico.push(newdiagnostico);
+                                    await paciente.save();
+                                    res.json({
+                                      msg: "Nuevo diagnóstico guardado",
+                                    });
+                                  } catch (err) {
+                                    res.json(err);
+                                  }
+                                }
+                              }
+                            );
+                          }
+                        }
+                      );
+                    } else {
+                      res.json({
+                        msg: "Ya existe un diagnóstico para esta cita",
+                      });
+                    }
+                  }
+                );
+              }
+            });
+          }
+        });
+      } else {
+        logger(
+          chalk.blue("NO es el usuario ") +
+            chalk.green(req.user.id) +
+            chalk.blue("comparado con ") +
+            chalk.magenta(req.params.id)
+        );
+        res.send(
+          "NO ES EL USUARIO   " +
+            req.user.id +
+            " comparando con " +
+            req.params.id
+        );
+      }
+    } else {
+      return res.status(403).send({ success: false, msg: "Unauthorized." });
+    }
+  } catch (err) {
+    logger(chalk.red("ERROR: ") + chalk.white(err));
+    res.send({ msg: "ERROR: " + err });
   }
 };

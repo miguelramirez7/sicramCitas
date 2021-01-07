@@ -180,7 +180,7 @@ exports.Eliminar_Dependiente = async function (req, res) {
                 if (!dependiente) {
                   res.json({ msg: "No se encontro dependiente" });
                 } else {
-                  if (dependiente.cita.length>0) {
+                  if (dependiente.cita.length > 0) {
                     res.json({
                       msg: "No puede eliminar un dependiente con citas",
                     });
@@ -251,8 +251,8 @@ exports.Agregar_Cita_Dependiente = async function (req, res) {
           if (!dependiente) {
             res.json({ msg: "No se encontró los dependientes" });
           } else {
-              console.log(dependiente);
-            
+            console.log(dependiente);
+
             //creando nueva cita
             var nuevacita = new Cita();
             //encontrando al usuario por parametro
@@ -276,60 +276,73 @@ exports.Agregar_Cita_Dependiente = async function (req, res) {
               );
               //si especialidad es la del doctor
               if (doctor.especialidad.equals(especialidad._id)) {
-                var horario = await Horario.findOne({
-                  fecha: req.body.fecha,
-                  hora_inicio: req.body.hora_inicio,
-                  hora_fin: req.body.hora_fin,
-                  doctor: doctor,
-                });
-                //si horario es true
-                if (horario) {
-                  if (horario.cita) {
-                    logger(chalk.red("Horario en uso"));
-                    res.json({
-                      msg: "HORARIO YA ESTA USADO ",
-                      cita: horario.cita,
-                    });
-                  } else {
-                    logger(chalk.blue("HORARIO: ") + chalk.green(horario));
-                    //horario estara ocupado
-                    horario.ocupado = true;
-                    //agregando el doctor y el usuario a la nueva cita
-                    nuevacita.user = paciente;
-                    nuevacita.doctor = doctor;
-                    nuevacita.especialidad = especialidad;
-                    nuevacita.horario = horario;
-                    //guardamos nueva cita con su doctor y su usuario respectivo
-                    await nuevacita.save(function (err) {
-                      if (err) {
-                        return res.json({
-                          success: false,
-                          msg: "Error al guardar la cita",
-                        });
-                      }
-                      res.json({
-                        success: true,
-                        msg: "Exito nueva cita creada.",
-                      });
-                    });
-                    //agregamos la cita para el usuario.
-                    paciente.cita.push(nuevacita);
-                    dependiente.cita.push(nuevacita);
-                    //agregamos la cita para el doctor
-                    doctor.cita.push(nuevacita);
-                    //guardamos al user con su cita
-                    await paciente.save();
-                    await dependiente.save();
-                    //guardamos al doctor con su cita
-                    await doctor.save();
-                    //guardamos la cita en el horario
-                    horario.cita = nuevacita;
-                    //guardamos al horario con su cita
-                    await horario.save();
-                  }
+                const n = new Date();
+                //Año
+                var y = n.getFullYear();
+                //Mes
+                var m = n.getMonth() + 1;
+                //Día
+                var d = n.getDate();
+                const fechaActual = y + "-" + m + "-" + d;
+                var fechacita = req.body.fecha;
+                if (fechaActual > fechacita) {
+                  res.json({ msg: "Error, fecha pasada" });
                 } else {
-                  logger(chalk.red("HORARIO NO COINCIDE "));
-                  res.json({ msg: "HORARIO NO COINCIDE" });
+                  var horario = await Horario.findOne({
+                    fecha: req.body.fecha,
+                    hora_inicio: req.body.hora_inicio,
+                    hora_fin: req.body.hora_fin,
+                    doctor: doctor,
+                  });
+                  //si horario es true
+                  if (horario) {
+                    if (horario.cita) {
+                      logger(chalk.red("Horario en uso"));
+                      res.json({
+                        msg: "HORARIO YA ESTA USADO ",
+                        cita: horario.cita,
+                      });
+                    } else {
+                      logger(chalk.blue("HORARIO: ") + chalk.green(horario));
+                      //horario estara ocupado
+                      horario.ocupado = true;
+                      //agregando el doctor y el usuario a la nueva cita
+                      nuevacita.user = paciente;
+                      nuevacita.doctor = doctor;
+                      nuevacita.especialidad = especialidad;
+                      nuevacita.horario = horario;
+                      //guardamos nueva cita con su doctor y su usuario respectivo
+                      await nuevacita.save(function (err) {
+                        if (err) {
+                          return res.json({
+                            success: false,
+                            msg: "Error al guardar la cita",
+                          });
+                        }
+                        res.json({
+                          success: true,
+                          msg: "Exito nueva cita creada.",
+                        });
+                      });
+                      //agregamos la cita para el usuario.
+                      paciente.cita.push(nuevacita);
+                      dependiente.cita.push(nuevacita);
+                      //agregamos la cita para el doctor
+                      doctor.cita.push(nuevacita);
+                      //guardamos al user con su cita
+                      await paciente.save();
+                      await dependiente.save();
+                      //guardamos al doctor con su cita
+                      await doctor.save();
+                      //guardamos la cita en el horario
+                      horario.cita = nuevacita;
+                      //guardamos al horario con su cita
+                      await horario.save();
+                    }
+                  } else {
+                    logger(chalk.red("HORARIO NO COINCIDE "));
+                    res.json({ msg: "HORARIO NO COINCIDE" });
+                  }
                 }
               } else {
                 logger(chalk.red("ESPECIALIDAD NO COINCIDE "));
@@ -339,8 +352,6 @@ exports.Agregar_Cita_Dependiente = async function (req, res) {
               logger(chalk.red("ESPECIALIDAD NO ENCONTRADA "));
               res.status(400).json({ msg: "especialidad no encontrada" });
             }
-
-            
           }
         }
       );
@@ -357,16 +368,24 @@ exports.Obtener_citas_dependiente = async function (req, res) {
   try {
     var token = getToken(req.headers);
     if (token) {
-      var dependiente = await Dependiente.findById(req.params.id).populate(
-        "cita"
-      );
-      res.json(dependiente.cita);
+      await Dependiente.findById(req.params.id, async (err, dependiente) => {
+        await Cita.find({ _id: dependiente.cita }, async (err, citas) => {
+          if (err) {
+            return res.status(500).json({ok: false, err});
+          }
+          if (citas) {
+            res.json(citas);
+          } else {
+            return res.status(400).json({ ok: false, err:{msg: "No se encontraron citas"}});
+          }
+        }).populate("horario")
+              .populate("especialidad")
+              .populate("doctor");;
+      });
     } else {
-      loggerwin.info("Sin autorizacion");
       return res.status(403).send({ success: false, msg: "Unauthorized." });
     }
   } catch (err) {
-    loggerwin.info(err);
     logger(chalk.red("ERROR  ") + chalk.white(err));
   }
 };
