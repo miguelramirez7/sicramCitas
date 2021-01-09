@@ -1,5 +1,19 @@
 <template>
   <v-card>
+    <loader :dialog="showLoader" />
+    <alert
+      :dialog="showAlert"
+      @close="showAlert = false"
+      :mensaje="getAlert.mensajeAlerta"
+      :tipo="getAlert.tipoAlerta"
+    />
+    <questioner
+      :dialog="showQuestioner"
+      @close="showQuestioner = false"
+      :title="'ELIMINAR FAMILIAR'"
+      :message="'¿Está seguro de que desea aliminar este familiar?'"
+      @accept="eliminarItem"
+    />
     <!---------------MODALES---------------------->
     <EditarDependiente
       :dialog="editarDependienteDialog"
@@ -64,7 +78,13 @@
           </v-tooltip>
           <v-tooltip left>
             <template v-slot:activator="{ on, attrs }">
-              <v-icon x-large color="orange darken-4" v-bind="attrs" v-on="on">
+              <v-icon
+                x-large
+                color="red"
+                v-bind="attrs"
+                v-on="on"
+                @click="eliminar(item)"
+              >
                 mdi-delete
               </v-icon>
             </template>
@@ -77,12 +97,19 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex';
+import { mapActions, mapGetters } from "vuex";
+import Alert from "@/modals/Alert.vue";
+import Loader from "@/modals/Loader.vue";
+import Questioner from "@/modals/Questioner.vue";
 import EditarDependiente from "./modals/EditarDependiente.vue";
 export default {
   data() {
     return {
+      showAlert: false,
+      showLoader: false,
+      showQuestioner: false,
       editarDependienteDialog: false,
+      familiarItem: null,
       dependiente: {
         name: "jorge",
         lastname: "nuñez",
@@ -95,58 +122,60 @@ export default {
         dni: "98655421",
       },
       headers: [
-        { text: "Género", value: "genero", sortable: false  },
-        { text: "NombreFamiliar", value: "name" , sortable: false  },
-        { text: "ApellidoFamiliar", value: "lastname" , sortable: false },
-        { text: "DNI", value: "dni" , sortable: false },
-        { text: "celular", value: "celular" , sortable: false },
-        { text: "Edad", value: "edad" , sortable: false },
+        { text: "Género", value: "genero", sortable: false },
+        { text: "NombreFamiliar", value: "name", sortable: false },
+        { text: "ApellidoFamiliar", value: "lastname", sortable: false },
+        { text: "DNI", value: "dni", sortable: false },
+        { text: "celular", value: "celular", sortable: false },
+        { text: "Edad", value: "edad", sortable: false },
         { text: "Actions", value: "actions", sortable: false },
-      ],
-      items: [
-        {
-          genero: "MASCULINO",
-          name: "LUIS ENRIQUE",
-          lastname: "MEDINA CASTILLO",
-          dni: "789456213",
-          celular: "973834496",
-          edad: "21",
-        },
-        {
-          genero: "FEMENINO",
-          name: "GRETA MURIEL",
-          lastname: "ZAVALETA DEXTRE",
-          dni: "789456213",
-          celular: "973834496",
-          edad: "22",
-        },
       ],
     };
   },
   components: {
     EditarDependiente,
+    Loader,
+    Questioner,
+    Alert,
   },
   methods: {
-      ...mapActions(['listarDependientes']),
+    ...mapActions(["listarDependientes", "eliminarFamiliar"]),
     editar(elemento) {
-      this.editarDependienteDialog = !this.editarDependienteDialog
-      console.log(elemento)
-      this.dependiente = elemento
+      this.editarDependienteDialog = !this.editarDependienteDialog;
+      console.log(elemento);
+      this.dependiente = elemento;
+    },
+    eliminar(e) {
+      this.familiarItem = e;
+      this.showQuestioner = true;
+      console.log("FAMILIAR A ELIMINAR", this.familiarItem);
+    },
+    eliminarItem() {
+      this.showQuestioner = false;
+      this.showLoader = true;
+      const datos = {
+        paciente: this.getUsuario,
+        id_dependiente: this.familiarItem._id,
+      };
+      this.eliminarFamiliar(datos).then((res) => {
+        this.showAlert = true;
+        this.showLoader = false;
+        this.listarDependientes(this.getUsuario)
+      });
     },
   },
   computed: {
-      ...mapGetters(['getListaDependientes','getUsuario']),
-    listaDependientes(){
-        if(this.getListaDependientes === null) return []
-        else return this.getListaDependientes
-    }
+    ...mapGetters(["getListaDependientes", "getUsuario", "getAlert"]),
+    listaDependientes() {
+      if (this.getListaDependientes === null) return [];
+      else return this.getListaDependientes;
+    },
   },
-  created(){
-      this.listarDependientes(this.getUsuario)
-      .then(res=>{
-          console.log(this.getListaDependientes)
-      })
-  }
+  created() {
+    this.listarDependientes(this.getUsuario).then((res) => {
+      console.log(this.getListaDependientes);
+    });
+  },
 };
 </script>
 

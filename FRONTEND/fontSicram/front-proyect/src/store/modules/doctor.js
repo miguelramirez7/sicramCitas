@@ -1,7 +1,7 @@
 const axios = require('axios')
 //BASE URL POR DEFAULT EN LOCAL HOST 
-//axios.defaults.baseURL = 'http://localhost:3000/api'; 
-axios.defaults.baseURL = 'https://sicramtest.herokuapp.com/api';
+axios.defaults.baseURL = 'http://localhost:3000/api'; 
+//axios.defaults.baseURL = 'https://sicramtest.herokuapp.com/api';
 
 const state = {
     doctorPerfil: null, // VARIABLE PARA LOS DATOS DEL DOCTOR

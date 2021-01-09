@@ -12,7 +12,7 @@
     <v-card class="mb-5">
       <v-form ref="form" lazy-validation @submit.prevent="regitrarHorario">
         <v-container fluid>
-          <v-card-title class="titulo"> Nuevo Horario </v-card-title>
+         <v-card-title ><h3 class="titulo-perfil-pac">NUEVO HORARIO</h3></v-card-title>
           <v-card-text>
             <v-row>
               <v-col class="pl-4 pr-4" cols="12" md="4">
@@ -53,10 +53,13 @@
                 ></v-select>
               </v-col>
               <v-col cols="12" md="4">
-                <div class="text-center">
-                  <v-btn elevation="7" color="teal" type="submit"
-                    >Agregar</v-btn
+                <div class="text-center" >
+                  <v-btn elevation="7" color="orange darken-1" type="submit" dark x-large
+                    >Agregar <v-icon class="ml-1">
+                    mdi-alarm-plus
+                  </v-icon></v-btn
                   >
+                  
                 </div>
               </v-col>
             </v-row>
@@ -209,12 +212,7 @@ export default {
   font-size: 16px;
 }
 
-.titulo {
-  font-size: 30px;
-  display: flex;
-  justify-content: center;
-  margin-bottom: 40px;
-  background: #f2f2f2;
-  color: rgb(0, 92, 128);
+.titulo-perfil-pac {
+  color: teal;
 }
 </style>

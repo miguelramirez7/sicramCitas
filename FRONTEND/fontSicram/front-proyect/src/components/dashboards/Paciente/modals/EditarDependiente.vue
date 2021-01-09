@@ -182,26 +182,32 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['editarFamiliar']),
+    ...mapActions(['editarFamiliar','listarDependientes']),
     close() {
       this.$emit("close");
     },
     editar(){
+      this.showLoader = true
       const dependiente = {
-        email: "email1@email.com", //
+        email: "email1@emaila.com", //
         edad: this.datos.edad,
         discapacidad: "ninguna", //
         celular:this.datos.celular,
         direccion: "ninguna", //
-        id_paciente: this.datos._id
+        id_dependiente: this.datos._id
       }
       console.log(this.datos)
-      const datos = {
+      const data = {
         paciente : this.getUsuario,
         dependiente: dependiente,
       }
-      console.log(datos)
-      this.editarFamiliar(datos)
+      console.log(data)
+      this.editarFamiliar(data)
+      .then(res=>{
+        this.showLoader = false
+        this.showAlert = true
+        this.listarDependientes(this.getUsuario)
+      })
     }
   },
 };

@@ -1,8 +1,8 @@
 <template>
-  <div> 
+  <div>
     <!----CARGADOR---->
     <Loader :dialog="showLoader" />
-    <!----ALERTA----> 
+    <!----ALERTA---->
     <Alert
       :dialog="showAlert"
       @close="showAlert = false"
@@ -34,12 +34,34 @@
         </v-toolbar>
       </template>
       <template v-slot:[`item.actions`]="{ item }">
-        <v-icon small class="mr-2" @click="editarItem(item)">
-          mdi-pencil
-        </v-icon>
-        <v-icon small @click="elimiar(item)">
-          mdi-delete
-        </v-icon>
+        <v-tooltip left>
+          <template v-slot:activator="{ on, attrs }">
+            <v-icon
+              x-large
+              color="green"
+              v-bind="attrs"
+              v-on="on"
+              @click="editarItem(item)"
+            >
+              mdi-pencil
+            </v-icon>
+          </template>
+          <span>Editar Horario</span>
+        </v-tooltip>
+        <v-tooltip left>
+          <template v-slot:activator="{ on, attrs }">
+            <v-icon
+              x-large
+              color="red"
+              v-bind="attrs"
+              v-on="on"
+              @click="elimiar(item)"
+            >
+              mdi-delete
+            </v-icon>
+          </template>
+          <span>Editar Horario</span>
+        </v-tooltip>
       </template>
     </v-data-table>
   </div>
@@ -79,13 +101,13 @@ export default {
   }),
 
   computed: {
-    ...mapGetters(["getHorariosDesocupados", "getUsuario","getAlert"]),
+    ...mapGetters(["getHorariosDesocupados", "getUsuario", "getAlert"]),
   },
   created() {
     this.listarHorariosDoctor(this.getUsuario);
   },
   methods: {
-    ...mapActions(["listarHorariosDoctor","eliminarHorario"]),
+    ...mapActions(["listarHorariosDoctor", "eliminarHorario"]),
     editarItem(e) {
       console.log(this.showEdit);
       console.log(e);
@@ -96,23 +118,22 @@ export default {
     elimiar(e) {
       console.log(e);
       this.showQuestion = true;
-      this.itemToDelete = e
+      this.itemToDelete = e;
     },
-    eliminarItem(){
-      this.showLoader = true
+    eliminarItem() {
+      this.showLoader = true;
       let datos = {
         doctor: this.getUsuario,
         id_horario: this.itemToDelete._id,
       };
-      console.log(this.itemToDelete._id)
+      console.log(this.itemToDelete._id);
       this.showQuestion = false;
-      this.eliminarHorario(datos)
-      .then((res)=>{
-        this.listarHorariosDoctor(this.getUsuario)
-        this.showLoader = false
-        this.showAlert = true
-      })
-    }
+      this.eliminarHorario(datos).then((res) => {
+        this.listarHorariosDoctor(this.getUsuario);
+        this.showLoader = false;
+        this.showAlert = true;
+      });
+    },
   },
 };
 </script>

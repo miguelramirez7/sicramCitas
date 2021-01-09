@@ -68,7 +68,7 @@
           </v-menu>
         </v-toolbar>
       </v-sheet>
-      <v-sheet height="350" v-if="dataTime != null">
+      <v-sheet height="300" v-if="dataTime != null">
         <v-calendar
           ref="calendar"
           v-model="focus"

@@ -105,7 +105,7 @@ const actions = {
             )
             .then((res) => {
                 console.log(res)
-                dispatch('mensajeTipoAlert', { mensajeAlerta: res.data.msg, tipoAlerta: 'success' }, { root: true })
+                dispatch('mensajeTipoAlert', { mensajeAlerta: 'Datos actualizados correctamente.', tipoAlerta: 'success' }, { root: true })
                 return Promise.resolve(true)
             })
             .catch((e) => {
@@ -179,21 +179,47 @@ const actions = {
                 },
             })
             .then((res) => {
-                console.log(res.data)
-               /* if (res.data.msg == "Nuevo dependiente guardado") {
-                    dispatch('mensajeTipoAlert', { mensajeAlerta: res.data.msg, tipoAlerta: 'success' }, { root: true })
+                console.log(res)
+                if (res.data.msg == "Familiar actualizado.") {
+                    dispatch('mensajeTipoAlert', { mensajeAlerta: "Familiar actualizado correctamente.", tipoAlerta: 'success' }, { root: true })
                 } else {
                     dispatch('mensajeTipoAlert', { mensajeAlerta: res.data.msg, tipoAlerta: 'warning' }, { root: true })
-                }*/
+                }
 
                 return Promise.resolve(true)
             })
             .catch((e) => {
 
                 console.log(e)
-              /*  dispatch('mensajeTipoAlert', { mensajeAlerta: 'OCURRIO UN ERROR', tipoAlerta: 'error' }, { root: true })
+                dispatch('mensajeTipoAlert', { mensajeAlerta: 'OCURRIO UN ERROR', tipoAlerta: 'error' }, { root: true })
 
-*/
+                return Promise.resolve(false)
+            })
+    },
+
+    //CONSULTA PARA ELIMINAR AL FAMILIAR SELECCIONADO
+    eliminarFamiliar({commit,dispatch},datos){
+      return axios
+            .post(`/user/dependiente/eliminar/${datos.paciente.id}`, { id_dependiente : datos.id_dependiente }, {
+                headers: {
+                    Authorization: `${datos.paciente.token}`,
+                },
+            })
+            .then((res) => {
+                console.log(res)
+                if (res.data.msg == "No puede eliminar un dependiente con citas") {
+                    dispatch('mensajeTipoAlert', { mensajeAlerta: "No se puede eliminar a un familiar con citas pendientes.", tipoAlerta: 'warning' }, { root: true })
+                } else {
+                    dispatch('mensajeTipoAlert', { mensajeAlerta: res.data.msg, tipoAlerta: 'success' }, { root: true })
+                }
+
+                return Promise.resolve(true)
+            })
+            .catch((e) => {
+
+                console.log(e)
+                dispatch('mensajeTipoAlert', { mensajeAlerta: 'OCURRIO UN ERROR', tipoAlerta: 'error' }, { root: true })
+
                 return Promise.resolve(false)
             })
     },
