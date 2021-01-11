@@ -1,0 +1,51 @@
+const{Schema,model}= require("mongoose");
+var DependienteSchema = new Schema({
+    name:  {
+        type: String,
+        required: true,
+    },
+    lastname: {
+            type: String,
+            required: true,
+    },
+    genero: {
+        type:String,
+    },    
+    email:  {
+            type: String,
+            required: true,
+    },
+    dni: {
+            type: Number,
+            required: true,
+            minlength: 8,
+    },
+    edad:{
+            type: Number,
+            required: true,
+    },
+    discapacidad:  {
+            type: String,
+            required: true,
+    },
+    celular: {
+            type: Number,
+            required: true,
+    },
+    direccion:{
+            type: String,
+            required: true,
+    },
+    cita:[{
+        type: Schema.Types.ObjectId,
+        ref:'Cita'
+    }],
+    user:{
+        type: Schema.Types.ObjectId,
+        ref: 'User'
+    }, 
+});
+
+
+
+module.exports = model('Dependiente',DependienteSchema);

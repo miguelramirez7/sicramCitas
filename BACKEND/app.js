@@ -2,26 +2,41 @@ var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
+var cors = require("cors");
 var logger = require('morgan');
+var bodyParser = require('body-parser')
 
-var indexRouter = require('./routes/index');
+// RUTA DE USUARIOS 
+var indexUserApiRouter = require('./routes/api/indexusr');
+var indexDoctorApiRouter = require('./routes/api/indexct');
+var indexOrgApiRouter = require('./routes/api/indexorg');
 var usersRouter = require('./routes/users');
-
+var cmpScrapApiRouter = require('./routes/api/scrap');
+var passport = require('passport');
+// INICIANDO LA APP
 var app = express();
-
-// view engine setup
+require("./database/database");
+require('./config/userpassport');
+require('./database/evento');
+// view engine setup  
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
-app.use(logger('dev'));
-app.use(express.json());
+// Cors para dividir los svv
+app.use(cors());
+app.use(express.json({ limit: '50mb' }));
+app.use(bodyParser.json({ limit: '50mb' }))
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-
-app.use('/', indexRouter);
+//----------------------------------------------------------------
+//            AGREGANDO RUTAS PADRES
+//----------------------------------------------------------------
+app.use('/api', indexUserApiRouter);
 app.use('/users', usersRouter);
-
+app.use('/api', indexDoctorApiRouter);
+app.use('/api', indexOrgApiRouter);
+app.use('/cmp', cmpScrapApiRouter);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
@@ -37,5 +52,6 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
 
 module.exports = app;
