@@ -4,6 +4,9 @@ var express = require("express");
 var router = express.Router();
 var doctorController = require("../../controller/doctorController");
 var citaController = require("../../controller/citaController");
+const multer = require("multer");
+var path = require("path");
+
 //crera un nuevo usuario REGISTANDOTE
 router.post("/signupdoctor", doctorController.SignupDoctor);
 //LOGEARTE una vez ya tengas tu CUENTA REGISTRADA
@@ -92,5 +95,84 @@ router.post(
   passport.authenticate("doctor", { session: false }),
   citaController.Ver_diagnostico_doctor
 );
+
+// GENERAR RECETA - id de la CITA
+
+var storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "public/api/uploads");
+  },
+  filename: function (req, file, cb) {
+    cb(
+      null,
+      file.fieldname + "-" + Date.now() + path.extname(file.originalname)
+    );
+  },
+});
+
+var upload = multer({ storage: storage });
+
+router.post("/uploadImage", upload.single("firma"), (req, res, next) => {
+  const file = req.file;
+  if (!file) {
+    const error = new Error("Please upload a file");
+    error.httpStatusCode = 400;
+    return next(error);
+  }
+  res.send(file);
+});
+
+router.post(
+  "/doctor/generar-receta/:id",
+
+  citaController.Generar_Receta
+  // passport.authenticate("doctor", { session: false })
+);
+
+// GENERAR Sintomas - id de la CITA
+router.post(
+  "/doctor/generar-sintomas/:id",
+  citaController.Generar_Sintoma
+  // passport.authenticate("doctor", { session: false })
+);
+
+// GENERAR INFORME MEDICO - id de la CITA
+router.post(
+  "/doctor/generar-informe/:id",
+  citaController.Generar_Informe
+  // passport.authenticate("doctor", { session: false })
+);
+
+// BUSCA INFORME MEDICO EN BASE A LA CITA
+router.get(
+  "/doctor/obtener-informe/:id",
+  citaController.Buscar_Informe
+  // passport.authenticate("doctor", { session: false })
+);
+
+// BUSCA INFORME MEDICO EN BASE A LA CITA
+router.get(
+  "/doctor/obtener-sintoma/:id",
+  citaController.Buscar_Sintoma
+  // passport.authenticate("doctor", { session: false })
+);
+
+// BUSCA RECETA EN BASE A LA CITA
+router.get(
+  "/doctor/obtener-receta/:id",
+  citaController.Buscar_Receta
+  // passport.authenticate("doctor", { session: false })
+);
+
+// router.post('/uploadfile', upload.single('myFile'), (req, res, next) => {
+//   const file = req.file
+//   // if (!file) {
+//   //   const error = new Error('Please upload a file')
+//   //   error.httpStatusCode = 400
+//   //   return next(error)
+//   // }
+//   //   res.send(file.filename)
+
+// })
 
 module.exports = router;

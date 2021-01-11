@@ -4,6 +4,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var cors = require("cors");
 var logger = require('morgan');
+var bodyParser = require('body-parser')
 
 // RUTA DE USUARIOS 
 var indexUserApiRouter = require('./routes/api/indexusr');
@@ -23,7 +24,8 @@ app.set('view engine', 'pug');
 
 // Cors para dividir los svv
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
+app.use(bodyParser.json({ limit: '50mb' }))
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));

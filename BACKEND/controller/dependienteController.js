@@ -15,7 +15,6 @@ exports.Agregar_Dependiente = async function (req, res) {
         logger(chalk.blue("USUARIO:   ") + chalk.green(req.user.id));
         //encontramos al usuario
         var user = await User.findById(req.params.id);
-        console.log(user);
         //nuevo dependiente
         var newDependiente = new Dependiente({
           name: req.body.name,
