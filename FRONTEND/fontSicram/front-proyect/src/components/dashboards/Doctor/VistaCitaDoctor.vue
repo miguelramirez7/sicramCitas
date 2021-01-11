@@ -229,17 +229,17 @@ export default {
                   ? response.data.especialidadBuscada.especialidad.toUpperCase()
                   : "",
                 fecha: "11 Dic 2020",
-                sintomas: response.data.sintomaBuscado
-                  ? response.data.sintomaBuscado.sintomas
+                sintomas: response.data.citaBuscada && response.data.citaBuscada.detalle_sintomas
+                  ? response.data.citaBuscada.detalle_sintomas.sintomas
                   : "",
-                alergias: response.data.sintomaBuscado
-                  ? response.data.sintomaBuscado.alergias
+                alergias: response.data.citaBuscada && response.data.citaBuscada.detalle_sintomas
+                  ? response.data.citaBuscada.detalle_sintomas.alergias
                   : "",
-                last_atention: response.data.sintomaBuscado
-                  ? response.data.sintomaBuscado.last_atention
+                last_atention: response.data.citaBuscada && response.data.citaBuscada.detalle_sintomas
+                  ? response.data.citaBuscada.detalle_sintomas.last_atention
                   : false,
-                some_allergy: response.data.sintomaBuscado
-                  ? response.data.sintomaBuscado.some_allergy
+                some_allergy: response.data.citaBuscada && response.data.citaBuscada.detalle_sintomas
+                  ? response.data.citaBuscada.detalle_sintomas.some_allergy
                   : false,
               };
             });

@@ -144,12 +144,12 @@ export default {
     },
     searchSintomas(idCita) {
       axios.get(`/doctor/obtener-sintoma/${idCita}`).then((res) => {
-        if (res.data.sintomaBuscado) {
+        if (res.data.citaBuscada && res.data.citaBuscada.detalle_sintomas) {
           this.form = {
-            sintomas: res.data.sintomaBuscado.sintomas,
-            last_atention: res.data.sintomaBuscado.last_atention,
-            some_allergy: res.data.sintomaBuscado.some_allergy,
-            alergias: res.data.sintomaBuscado.alergias,
+            sintomas: res.data.citaBuscada.detalle_sintomas.sintomas,
+            last_atention: res.data.citaBuscada.detalle_sintomas.last_atention,
+            some_allergy: res.data.citaBuscada.detalle_sintomas.some_allergy,
+            alergias: res.data.citaBuscada.detalle_sintomas.alergias,
           };
         }
       });

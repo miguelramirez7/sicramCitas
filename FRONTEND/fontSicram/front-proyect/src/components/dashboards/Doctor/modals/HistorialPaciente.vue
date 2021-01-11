@@ -203,11 +203,11 @@ export default {
             apellido: response.usuarioBuscado.lastname,
             especialidad: response.especialidadBuscada.especialidad,
             fecha: e.fecha,
-            sintomas: response.sintomaBuscado
-              ? response.sintomaBuscado.sintomas
+            sintomas: response.data.citaBuscada && response.data.citaBuscada.detalle_sintomas
+              ? response.data.citaBuscada.detalle_sintomas.sintomas
               : "",
-            alergias: response.sintomaBuscado
-              ? response.sintomaBuscado.alergias
+            alergias: response.data.citaBuscada && response.data.citaBuscada.detalle_sintomas
+              ? response.data.citaBuscada.detalle_sintomas.alergias
               : "",
           };
         });
