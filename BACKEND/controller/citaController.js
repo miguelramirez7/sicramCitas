@@ -683,7 +683,7 @@ exports.Generar_Receta = async function (req, res) {
 };
 
 // Generar Sintomas
-exports.Generar_Sintoma = async function (req, res) {
+exports.Generar_Sintom = async function (req, res) {
   try {
     const { fecha, sintomas, alergias, last_atention, some_allergy } = req.body;
 
@@ -742,6 +742,74 @@ exports.Generar_Sintoma = async function (req, res) {
         res.json({ msg: "Sintoma creado exitosamente" });
       });
     }
+  } catch (err) {
+    console.log("ERROR AL GENERAR SINTOMA: " + err);
+  }
+};
+// Generar Sintomas
+exports.Generar_Sintoma = async function (req, res) {
+  try {
+    const { fecha, sintomas, alergias, last_atention, some_allergy } = req.body;
+
+    var cita = await Cita.findById(req.params.id);
+
+    cita.detalle_sintomas = {
+      sintomas,
+      alergias,
+      last_atention,
+      some_allergy,
+    };
+
+    await cita.save((err, resultCita) => {
+      if (err) {
+        return res.status(500).json({ ok: false, err });
+      }
+      if (!resultCita) {
+        return res.status(400).json({ ok: false, err });
+      }
+
+      res.json({ msg: "Cita Sintoma actualizado exitosamente", resultCita });
+    });
+
+    // BUSCARA SI EXISTE YA UN Sintoma CON ESA CITA
+    // let sintomaBuscado = await Sintomas.findOne({ cita: req.params.id });
+
+    // ACTUALIZA LOS SINTOMAS EN LA CITA
+
+    // if (sintomaBuscado) {
+    //   sintomaBuscado.fecha = fecha;
+    //   sintomaBuscado.doctor = doctor;
+    //   sintomaBuscado.user = user;
+    //   sintomaBuscado.alergias = alergias;
+    //   sintomaBuscado.sintomas = sintomas;
+    //   sintomaBuscado.last_atention = last_atention;
+    //   sintomaBuscado.some_allergy = some_allergy;
+
+    //   await sintomaBuscado.save((err, nuevaRec) => {
+    //     if (err) {
+    //       return res.status(500).json({ ok: false, err });
+    //     }
+    //     if (!nuevaRec) {
+    //       return res.status(400).json({ ok: false, err });
+    //     }
+
+    //     res.json({ msg: "Sintoma actualizado exitosamente", nuevaRec });
+    //   });
+    // }
+
+    // CREA LOS SINTOMAS
+    // else {
+    //   await newSintoma.save((err, nuevaRec) => {
+    //     if (err) {
+    //       return res.status(500).json({ ok: false, err });
+    //     }
+    //     if (!nuevaRec) {
+    //       return res.status(400).json({ ok: false, err });
+    //     }
+
+    //     res.json({ msg: "Sintoma creado exitosamente" });
+    //   });
+    // }
   } catch (err) {
     console.log("ERROR AL GENERAR SINTOMA: " + err);
   }
@@ -822,7 +890,7 @@ exports.Buscar_Informe = async (req, res) => {
 };
 
 // LLAMA AL SINTOMA CON BASE A UNA CITA
-exports.Buscar_Sintoma = async (req, res) => {
+exports.Buscar_Sintom = async (req, res) => {
   try {
     let sintomaBuscado = await Sintomas.findOne({ cita: req.params.id });
     let citaBuscada = await Cita.findById(req.params.id);
@@ -837,6 +905,33 @@ exports.Buscar_Sintoma = async (req, res) => {
 
     const resultado = {
       sintomaBuscado,
+      citaBuscada,
+      usuarioBuscado,
+      especialidadBuscada,
+    };
+
+    res.json(resultado);
+  } catch (err) {
+    console.log("ERROR AL BUSCAR sintoma: " + err);
+  }
+};
+
+// LLAMA AL SINTOMA CON BASE A UNA CITA
+exports.Buscar_Sintoma = async (req, res) => {
+  try {
+    let citaBuscada = await Cita.findById(req.params.id);
+    let sintomas = citaBuscada.detalle_sintomas;
+    let usuarioBuscado =
+      citaBuscada && citaBuscada.user
+        ? await User.findById(citaBuscada.user)
+        : null;
+    let especialidadBuscada =
+      citaBuscada && citaBuscada.especialidad
+        ? await Especialidad.findById(citaBuscada.especialidad)
+        : null;
+
+    const resultado = {
+      sintomas,
       citaBuscada,
       usuarioBuscado,
       especialidadBuscada,
