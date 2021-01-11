@@ -290,7 +290,14 @@ export default {
       date2: null,
       menu1: false,
       menu2: false,
-      infoReceta: null,
+      infoReceta: {
+        nombre: "",
+        apellido: "",
+        medicamentos: [],
+        fechaExpedicion: "",
+        fechaVencimiento: "",
+        firma: null
+      },
       imgTemp: "",
     };
   },

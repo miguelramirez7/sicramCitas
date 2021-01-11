@@ -191,7 +191,9 @@ export default {
                 apellido: response.data.usuarioBuscado
                   ? response.data.usuarioBuscado.lastname.toUpperCase()
                   : "",
-                especialidad: response.data.especialidadBuscada.especialidad.toUpperCase(),
+                especialidad: response.data.especialidadBuscada
+                  ? response.data.especialidadBuscada.especialidad.toUpperCase()
+                  : "",
                 fecha: "11 Dic 2020",
                 anamnesis: response.data.informeBuscado
                   ? response.data.informeBuscado.anamnesis
@@ -223,7 +225,9 @@ export default {
                 apellido: response.data.usuarioBuscado
                   ? response.data.usuarioBuscado.lastname.toUpperCase()
                   : "",
-                especialidad: response.data.especialidadBuscada.especialidad.toUpperCase(),
+                especialidad: response.data.especialidadBuscada
+                  ? response.data.especialidadBuscada.especialidad.toUpperCase()
+                  : "",
                 fecha: "11 Dic 2020",
                 sintomas: response.data.sintomaBuscado
                   ? response.data.sintomaBuscado.sintomas
@@ -231,6 +235,12 @@ export default {
                 alergias: response.data.sintomaBuscado
                   ? response.data.sintomaBuscado.alergias
                   : "",
+                last_atention: response.data.sintomaBuscado
+                  ? response.data.sintomaBuscado.last_atention
+                  : false,
+                some_allergy: response.data.sintomaBuscado
+                  ? response.data.sintomaBuscado.some_allergy
+                  : false,
               };
             });
 
@@ -252,23 +262,37 @@ export default {
                 apellido: response.data.usuarioBuscado
                   ? response.data.usuarioBuscado.lastname.toUpperCase()
                   : "",
-                medicamentos: response.data.recetaBuscada && response.data.recetaBuscada.medicamentos
-                  ? response.data.recetaBuscada.medicamentos
-                  : [],
+                medicamentos:
+                  response.data.recetaBuscada &&
+                  response.data.recetaBuscada.medicamentos
+                    ? response.data.recetaBuscada.medicamentos
+                    : [],
                 fecha: "11 Dic 2020",
-                fechaExpedicion: response.data.recetaBuscada && response.data.recetaBuscada.fechaExpedicion
-                  ? response.data.recetaBuscada.fechaExpedicion.substring(0, 10)
-                  : null,
-                fechaVencimiento: response.data.recetaBuscada && response.data.recetaBuscada.fechaVencimiento
-                  ? response.data.recetaBuscada.fechaVencimiento.substring(
-                      0,
-                      10
-                    )
-                  : null,
-                firma: response.data.recetaBuscada && response.data.recetaBuscada.firma,
+                fechaExpedicion:
+                  response.data.recetaBuscada &&
+                  response.data.recetaBuscada.fechaExpedicion
+                    ? response.data.recetaBuscada.fechaExpedicion.substring(
+                        0,
+                        10
+                      )
+                    : null,
+                fechaVencimiento:
+                  response.data.recetaBuscada &&
+                  response.data.recetaBuscada.fechaVencimiento
+                    ? response.data.recetaBuscada.fechaVencimiento.substring(
+                        0,
+                        10
+                      )
+                    : null,
+                firma:
+                  response.data.recetaBuscada &&
+                  response.data.recetaBuscada.firma,
               };
 
-              if (response.data.recetaBuscada && response.data.recetaBuscada.firma) {
+              if (
+                response.data.recetaBuscada &&
+                response.data.recetaBuscada.firma
+              ) {
                 let firmaEntero = axios
                   .get(`/uploads/${response.data.recetaBuscada.firma}`)
                   .then((imagen) => {
