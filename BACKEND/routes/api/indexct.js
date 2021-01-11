@@ -100,7 +100,7 @@ router.post(
 
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "public/uploads");
+    cb(null, "public/api/uploads");
   },
   filename: function (req, file, cb) {
     cb(
@@ -112,9 +112,18 @@ var storage = multer.diskStorage({
 
 var upload = multer({ storage: storage });
 
+router.post("/uploadImage", upload.single("firma"), (req, res, next) => {
+  const file = req.file;
+  if (!file) {
+    const error = new Error("Please upload a file");
+    error.httpStatusCode = 400;
+    return next(error);
+  }
+  res.send(file);
+});
+
 router.post(
   "/doctor/generar-receta/:id",
-  upload.single("firma"),
 
   citaController.Generar_Receta
   // passport.authenticate("doctor", { session: false })

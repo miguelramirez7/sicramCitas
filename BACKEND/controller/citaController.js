@@ -627,9 +627,7 @@ exports.Registrar_Diagnostico = async function (req, res) {
 // Generar Receta
 exports.Generar_Receta = async function (req, res) {
   try {
-    const { medicamentos, fechaExpedicion, fechaVencimiento } = req.body;
-
-    const firma = req.file.filename;
+    const { medicamentos, fechaExpedicion, fechaVencimiento, firma } = req.body;
 
     var cita = await Cita.findById(req.params.id);
 
