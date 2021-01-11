@@ -20,6 +20,12 @@ var SymptomSchema = new Schema({
   alergias: {
     type: String,
   },
+  last_atention: {
+    type: Boolean
+  },
+  some_allergy: {
+    type: Boolean
+  },
   cita: {
     type: Schema.Types.ObjectId,
     ref: "Cita",

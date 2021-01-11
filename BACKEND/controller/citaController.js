@@ -685,7 +685,7 @@ exports.Generar_Receta = async function (req, res) {
 // Generar Sintomas
 exports.Generar_Sintoma = async function (req, res) {
   try {
-    const { fecha, sintomas, alergias } = req.body;
+    const { fecha, sintomas, alergias, last_atention, some_allergy } = req.body;
 
     var cita = await Cita.findById(req.params.id);
 
@@ -699,6 +699,8 @@ exports.Generar_Sintoma = async function (req, res) {
       sintomas,
       alergias,
       cita,
+      last_atention,
+      some_allergy,
     });
 
     // BUSCARA SI EXISTE YA UN Sintoma CON ESA CITA
@@ -712,6 +714,8 @@ exports.Generar_Sintoma = async function (req, res) {
       sintomaBuscado.user = user;
       sintomaBuscado.alergias = alergias;
       sintomaBuscado.sintomas = sintomas;
+      sintomaBuscado.last_atention = last_atention;
+      sintomaBuscado.some_allergy = some_allergy;
 
       await sintomaBuscado.save((err, nuevaRec) => {
         if (err) {
@@ -802,10 +806,12 @@ exports.Buscar_Informe = async (req, res) => {
   try {
     let informeBuscado = await Informe.findOne({ cita: req.params.id });
     let citaBuscada = await Cita.findById(req.params.id);
-    let usuarioBuscado = await User.findById(citaBuscada.user);
-    let especialidadBuscada = await Especialidad.findById(
-      citaBuscada.especialidad
-    );
+    let usuarioBuscado =
+      citaBuscada && citaBuscada.user
+        ? await User.findById(citaBuscada.user)
+        : null;
+    let especialidadBuscada =
+      citaBuscada && (await Especialidad.findById(citaBuscada.especialidad));
 
     const resultado = { informeBuscado, usuarioBuscado, especialidadBuscada };
 
@@ -820,10 +826,14 @@ exports.Buscar_Sintoma = async (req, res) => {
   try {
     let sintomaBuscado = await Sintomas.findOne({ cita: req.params.id });
     let citaBuscada = await Cita.findById(req.params.id);
-    let usuarioBuscado = await User.findById(citaBuscada.user);
-    let especialidadBuscada = await Especialidad.findById(
-      citaBuscada.especialidad
-    );
+    let usuarioBuscado =
+      citaBuscada && citaBuscada.user
+        ? await User.findById(citaBuscada.user)
+        : null;
+    let especialidadBuscada =
+      citaBuscada && citaBuscada.especialidad
+        ? await Especialidad.findById(citaBuscada.especialidad)
+        : null;
 
     const resultado = {
       sintomaBuscado,
@@ -843,10 +853,14 @@ exports.Buscar_Receta = async (req, res) => {
   try {
     let recetaBuscada = await Receta.findOne({ cita: req.params.id });
     let citaBuscada = await Cita.findById(req.params.id);
-    let usuarioBuscado = await User.findById(citaBuscada.user);
-    let especialidadBuscada = await Especialidad.findById(
-      citaBuscada.especialidad
-    );
+    let usuarioBuscado =
+      citaBuscada && citaBuscada.user
+        ? await User.findById(citaBuscada.user)
+        : null;
+    let especialidadBuscada =
+      citaBuscada && citaBuscada.especialidad
+        ? await Especialidad.findById(citaBuscada.especialidad)
+        : null;
 
     const resultado = {
       recetaBuscada,
