@@ -13,8 +13,8 @@
       :data="dataInforme"
     />
     <!--SINTOMAS PACIENTE-->
-    <sintomas 
-    :dialog="showSintomas"
+    <sintomas
+      :dialog="showSintomas"
       @close="showSintomas = false"
       :data="dataSintomas"
     />
@@ -77,7 +77,7 @@
                   v-bind="attrs"
                   v-on="on"
                 >
-                  mdi-clipboard-account-outline 
+                  mdi-clipboard-account-outline
                 </v-icon>
               </template>
               <span>Receta médica</span>
@@ -92,7 +92,12 @@
 <script>
 import Informe from "./Informe.vue";
 import Receta from "./Receta.vue";
-import Sintomas from './Sintomas.vue';
+import Sintomas from "./Sintomas.vue";
+
+const axios = require("axios");
+//BASE URL POR DEFAULT EN LOCAL HOST
+axios.defaults.baseURL = "http://localhost:3000/api";
+
 export default {
   components: { Receta, Informe, Sintomas },
   name: "HistorialPaciente",
@@ -104,10 +109,10 @@ export default {
   },
   data() {
     return {
-      showSintomas : false,
+      showSintomas: false,
       showReceta: false,
       showInforme: false,
-      dataSintomas : null,
+      dataSintomas: null,
       dataInforme: null,
       dataReceta: null,
       headers: [
@@ -175,29 +180,46 @@ export default {
         });
     },
     abrirInforme(e) {
-      this.showInforme = true,
-        this.dataInforme = {
+      (this.showInforme = true),
+        (this.dataInforme = {
           nombre: e.nombre,
           apellido: e.apellido,
           fecha: e.fecha,
           especialidad: e.especialidad,
-          anamnesis: "asdasasdkapsdjasdasdasdjklklasdjklasdjkasdjkasdjklasdjklasdklklasdjklasdjklsdjklasdjkld",
+          anamnesis:
+            "asdasasdkapsdjasdasdasdjklklasdjklasdjkasdjkasdjklasdjklasdklklasdjklasdjklsdjklasdjkld",
           tratamiento: "puta la wea",
           diagnostico: "aasdasdasd12123",
           ultima_evolucion: "asdñasdjkl123123ñasdjklasd",
-        }
+        });
     },
-    abrirSintomas(e){
-        this.showSintomas = true,
-        this.dataSintomas = {
-          nombre: e.nombre,
-          apellido: e.apellido,
-          fecha: e.fecha,
-          especialidad: e.especialidad,
-          sintomas: "ME DUELE MUCHO LA PANZA LA PTM",
-          alergias: "Ninguna",
-        }
-    }
+    abrirSintomas(e) {
+      this.showSintomas = true;
+      let result = axios
+        .get(`/doctor/obtener-sintoma/${this.$route.params.id}`)
+        .then((response) => {
+          this.dataSintomas = {
+            nombre: response.usuarioBuscado.name,
+            apellido: response.usuarioBuscado.lastname,
+            especialidad: response.especialidadBuscada.especialidad,
+            fecha: e.fecha,
+            sintomas: response.sintomaBuscado
+              ? response.sintomaBuscado.sintomas
+              : "",
+            alergias: response.sintomaBuscado
+              ? response.sintomaBuscado.alergias
+              : "",
+          };
+        });
+      // this.dataSintomas = {
+      //   nombre: e.nombre,
+      //   apellido: e.apellido,
+      //   fecha: e.fecha,
+      //   especialidad: e.especialidad,
+      //   sintomas: "ME DUELE MUCHO LA PANZA LA PTM",
+      //   alergias: "Ninguna",
+      // }
+    },
   },
 };
 </script>

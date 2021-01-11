@@ -11,12 +11,20 @@
       "
     />
     <!--MODALES-->
-    <nueva-receta :dialog="modalReceta" @close="modalReceta = false" />
+    <nueva-receta
+      :dialog="modalReceta"
+      :data="dataReceta"
+      @close="modalReceta = false"
+    />
     <historial-paciente
       :dialog="modalHistorial"
       @close="modalHistorial = false"
     />
-    <nuevo-informe :dialog="modalInforme" @close="modalInforme = false" />
+    <nuevo-informe
+      :data="dataInforme"
+      :dialog="modalInforme"
+      @close="modalInforme = false"
+    />
     <sintomas
       :dialog="modalSintomas"
       @close="modalSintomas = false"
@@ -118,6 +126,10 @@ import HistorialPaciente from "./modals/HistorialPaciente.vue";
 import NuevaReceta from "./modals/NuevaReceta.vue";
 import NuevoInforme from "./modals/NuevoInforme.vue";
 import Sintomas from "./modals/Sintomas.vue";
+
+const axios = require("axios");
+//BASE URL POR DEFAULT EN LOCAL HOST
+axios.defaults.baseURL = "http://localhost:3000/api";
 export default {
   name: "VistaCitaDoctor",
   components: {
@@ -140,6 +152,8 @@ export default {
       modalSintomas: false,
       showQuestion: false,
       dataSintomas: null,
+      dataInforme: null,
+      dataReceta: null,
     };
   },
 
@@ -166,24 +180,90 @@ export default {
       switch (e) {
         case "informe":
           this.modalInforme = true;
+
+          let result = axios
+            .get(`/doctor/obtener-informe/${this.$route.params.id}`)
+            .then((response) => {
+              this.dataInforme = {
+                nombre: response.data.usuarioBuscado.name.toUpperCase(),
+                apellido: response.data.usuarioBuscado.lastname.toUpperCase(),
+                especialidad: response.data.especialidadBuscada.especialidad.toUpperCase(),
+                fecha: "11 Dic 2020",
+                anamnesis: response.data.informeBuscado
+                  ? response.data.informeBuscado.anamnesis
+                  : "",
+                diagnostico: response.data.informeBuscado
+                  ? response.data.informeBuscado.diagnostico
+                  : "",
+                tratamiento: response.data.informeBuscado
+                  ? response.data.informeBuscado.tratamiento
+                  : "",
+                ultimaEvolucion: response.data.informeBuscado
+                  ? response.data.informeBuscado.ultimaEvolucion
+                  : "",
+              };
+            });
+
           break;
         case "sintomas":
           this.modalSintomas = true;
-          this.dataSintomas = {
-            nombre: "GRETA MURIEL",
-            apellido: "ZAVALETA DEXTRE",
-            fecha: "2020-20-21",
-            especialidad: "Fisioterapia",
-            sintomas:
-              "ME DUELE MUCHO LA PANZA LA PTM ay mi pancita :ccccccccccccccccccccccccccccccc",
-            alergias: "Ninguna",
-          };
+          result = axios
+            .get(`/doctor/obtener-sintoma/${this.$route.params.id}`)
+            .then((response) => {
+              this.dataSintomas = {
+                nombre: response.data.usuarioBuscado.name.toUpperCase(),
+                apellido: response.data.usuarioBuscado.lastname.toUpperCase(),
+                especialidad: response.data.especialidadBuscada.especialidad.toUpperCase(),
+                fecha: "11 Dic 2020",
+                sintomas: response.data.sintomaBuscado
+                  ? response.data.sintomaBuscado.sintomas
+                  : "",
+                alergias: response.data.sintomaBuscado
+                  ? response.data.sintomaBuscado.alergias
+                  : "",
+              };
+            });
+
           break;
         case "historial":
           this.modalHistorial = true;
           break;
         case "receta":
           this.modalReceta = true;
+
+          result = axios
+            .get(`/doctor/obtener-receta/${this.$route.params.id}`)
+            .then((response) => {
+              this.dataReceta = {
+                nombre: response.data.usuarioBuscado.name.toUpperCase(),
+                apellido: response.data.usuarioBuscado.lastname.toUpperCase(),
+                medicamentos: response.data.recetaBuscada.medicamentos
+                  ? response.data.recetaBuscada.medicamentos
+                  : [],
+                fecha: "11 Dic 2020",
+                fechaExpedicion: response.data.recetaBuscada.fechaExpedicion
+                  ? response.data.recetaBuscada.fechaExpedicion.substring(0, 10)
+                  : null,
+                fechaVencimiento: response.data.recetaBuscada.fechaVencimiento
+                  ? response.data.recetaBuscada.fechaVencimiento.substring(
+                      0,
+                      10
+                    )
+                  : null,
+                firma: response.data.recetaBuscada.firma,
+              };
+
+              if (response.data.recetaBuscada.firma) {
+                let firmaEntero = axios
+                  .get(`/uploads/${response.data.recetaBuscada.firma}`)
+                  .then((imagen) => {
+                    this.dataReceta = {
+                      ...this.dataReceta,
+                      firmaEntera: imagen,
+                    };
+                  });
+              }
+            });
           break;
       }
     },

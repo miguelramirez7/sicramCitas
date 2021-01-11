@@ -39,7 +39,7 @@
           </v-col>
           <v-col class="text-center" md="3" sm="3">NOMBRES Y APELLIDOS </v-col>
           <v-col class="text-center" md="9" sm="9">
-            LUIS ENRIQUE MEDINA CASTILLO
+            {{ infoInforme.nombre }} {{ infoInforme.apellido }}
           </v-col>
         </v-row>
 
@@ -57,6 +57,7 @@
                 :rules="[getReglas.requerido]"
                 dense
                 rows="1"
+                v-model="infoInforme.anamnesis"
                 outlined
                 no-resize
                 color="teal"
@@ -70,6 +71,8 @@
                 :rules="[getReglas.requerido]"
                 dense
                 no-resize
+                v-model="infoInforme.tratamiento"
+
                 rows="1"
                 outlined
                 color="teal"
@@ -83,6 +86,8 @@
                 :rules="[getReglas.requerido]"
                 dense
                 no-resize
+                v-model="infoInforme.diagnostico"
+
                 rows="1"
                 outlined
                 color="teal"
@@ -96,6 +101,8 @@
                 :rules="[getReglas.requerido]"
                 dense
                 rows="1"
+                v-model="infoInforme.ultimaEvolucion"
+
                 no-resize
                 outlined
                 color="teal"
@@ -104,7 +111,7 @@
           </v-row>
           <v-row no-gutters class="text-right ">
             <v-col>
-              <v-btn type="submit" class="mr-5" color="blue " dark>
+              <v-btn @click="saveInform" type="submit" class="mr-5" color="blue " dark>
                 Registrar
                 <v-icon right dark>
                   mdi-file-upload
@@ -120,6 +127,7 @@
           </v-row>
         </v-form>
       </v-card-text>
+      
     </v-card>
   </v-dialog>
 </template>
@@ -130,6 +138,10 @@ import Alert from "@/modals/Alert.vue";
 import Loader from "@/modals/Loader.vue";
 import Questioner from "@/modals/Questioner.vue";
 import Firma from "./Firma.vue";
+
+const axios = require("axios");
+//BASE URL POR DEFAULT EN LOCAL HOST
+axios.defaults.baseURL = "http://localhost:3000/api";
 export default {
   components: { Firma, Loader, Questioner, Alert },
   name: "NuevoInforme",
@@ -137,6 +149,20 @@ export default {
     dialog: {
       type: Boolean,
       default: false,
+    },
+    data: {
+      type: Object,
+      required: false,
+      default: {
+        nombre: "NOMBRE DOCTOR",
+        apellido: "APELLIDO DOCTOR",
+        fecha: "2020-20-20",
+        especialidad: "",
+        anamnesis: "",
+        diagnostico: "",
+        tratamiento: "",
+        ultimaEvolucion: "",
+      },
     },
   },
   data() {
@@ -149,6 +175,7 @@ export default {
       showAlert: false,
       showQuestioner: false,
       showLoader: false,
+      infoInforme: null,
     };
   },
   computed: {
@@ -157,9 +184,28 @@ export default {
       return this.dialog;
     },
   },
+  watch: {
+    data: {
+      deep: true,
+      handler(val) {
+        this.infoInforme = val;
+      },
+    },
+  },
   methods: {
     close() {
       this.$emit("close");
+    },
+    saveInform(){
+      axios
+        .post(
+          `/doctor/generar-informe/${this.$route.params.id}`,
+          this.infoInforme
+        )
+        .then((response) => {
+          console.log("Fue generado");
+          this.close();
+        });
     },
     agregarMedicamento() {
       if (this.numMedicamentos == this.maxMedicamentos) {

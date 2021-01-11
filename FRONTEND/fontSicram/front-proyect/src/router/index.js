@@ -51,7 +51,7 @@ const routes = [{
         name: 'CitaDoctor',
         component: () =>
             import ( /* webpackChunkName: "ORGANIZACION" */ '../views/CitaDoctor.vue'),
-            meta: {requireAuth: true}
+          
     },
     {
         path: '/prueba',
