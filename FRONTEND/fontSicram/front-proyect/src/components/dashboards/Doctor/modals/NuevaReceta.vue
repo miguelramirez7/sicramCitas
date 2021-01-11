@@ -215,6 +215,12 @@
             </v-col>
           </v-row>
 
+          <v-row no-gutters class="text-center mb-7" v-show="imgTemp">
+            <v-col>
+              <img class="signature" :src="imgTemp" alt="" />
+            </v-col>
+          </v-row>
+
           <v-row no-gutters class="text-right ">
             <v-col>
               <v-btn @click="showFirma = true" class="mr-5" color="blue" dark>
@@ -284,7 +290,15 @@ export default {
       date2: null,
       menu1: false,
       menu2: false,
-      infoReceta: null,
+      infoReceta: {
+        nombre: "",
+        apellido: "",
+        medicamentos: [],
+        fechaExpedicion: "",
+        fechaVencimiento: "",
+        firma: null
+      },
+      imgTemp: "",
     };
   },
   computed: {
@@ -298,6 +312,10 @@ export default {
       deep: true,
       handler(val) {
         this.infoReceta = val;
+        this.numMedicamentos= val.medicamentos.length
+
+        // SI LA RECETA TRAIDA POSEE UNA FIRMA
+        this.imgTemp = `http://localhost:3000/api/uploads/${val.firma}`;
       },
     },
   },
@@ -306,7 +324,17 @@ export default {
       this.$emit("close");
     },
     subido(event) {
+      var input = event.target;
+
       this.infoReceta.firma = event;
+
+      let reader = new FileReader();
+
+      reader.onload = (e) => {
+        this.imgTemp = e.target.result;
+      };
+
+      reader.readAsDataURL(event);
     },
     agregarMedicamento() {
       if (this.numMedicamentos == this.maxMedicamentos) {
@@ -330,7 +358,7 @@ export default {
         this.infoReceta.medicamentos.splice(index, 1);
       }
     },
-    registrarReceta() {
+    async registrarReceta() {
       this.showQuestioner = false;
       if (this.numMedicamentos == 0) {
         this.alert.tipo = "warning";
@@ -342,24 +370,25 @@ export default {
 
         bodyFormData.append("firma", this.infoReceta.firma);
 
+        if (typeof this.infoReceta.firma == "object") {
+          let fileResponse = await axios({
+            method: "post",
+            url: `/uploadImage`,
+            data: bodyFormData,
+            headers: { "Content-Type": "multipart/form-data" },
+          });
+
+          this.infoReceta.firma = `${fileResponse.data.filename}`;
+        }
         axios({
           method: "post",
-          url: `/uploadImage`,
-          data: bodyFormData,
-          headers: { "Content-Type": "multipart/form-data" },
-        }).then((fileResponse) => {
-          this.infoReceta.firma = `${fileResponse.data.filename}`;
-
-          axios({
-            method: "post",
-            url: `/doctor/generar-receta/${this.$route.params.id}`,
-            data: this.infoReceta,
-            // headers: { "Content-Type": "multipart/form-data" },
-          }).then((response) => {
-            console.log(response);
-            console.log("Fue generado");
-            this.close();
-          });
+          url: `/doctor/generar-receta/${this.$route.params.id}`,
+          data: this.infoReceta,
+          // headers: { "Content-Type": "multipart/form-data" },
+        }).then((response) => {
+          console.log(response);
+          console.log("Fue generado");
+          this.close();
         });
 
         return;
@@ -372,6 +401,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.signature {
+  height: 150px;
+  width: 150px;
+  object-fit: contain;
+  border: rgb(141, 89, 226) solid 2px;
+}
 .input-medicamentos {
   max-height: 10px !important;
 }

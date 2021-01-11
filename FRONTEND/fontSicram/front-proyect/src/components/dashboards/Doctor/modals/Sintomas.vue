@@ -101,7 +101,14 @@ export default {
   },
   data() {
     return {
-      infoSintoma: null,
+      infoSintoma: {
+        nombre: "",
+        apellido: "",
+        fecha: "",
+        sintomas: "",
+        alergias: "",
+        especialidad: ""
+      },
       headers: [
         { text: "Medicamento", value: "medicamento" },
         { text: "Concentración", value: "concentración" },

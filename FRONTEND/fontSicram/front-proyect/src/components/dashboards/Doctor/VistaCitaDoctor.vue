@@ -185,9 +185,15 @@ export default {
             .get(`/doctor/obtener-informe/${this.$route.params.id}`)
             .then((response) => {
               this.dataInforme = {
-                nombre: response.data.usuarioBuscado.name.toUpperCase(),
-                apellido: response.data.usuarioBuscado.lastname.toUpperCase(),
-                especialidad: response.data.especialidadBuscada.especialidad.toUpperCase(),
+                nombre: response.data.usuarioBuscado
+                  ? response.data.usuarioBuscado.name.toUpperCase()
+                  : "",
+                apellido: response.data.usuarioBuscado
+                  ? response.data.usuarioBuscado.lastname.toUpperCase()
+                  : "",
+                especialidad: response.data.especialidadBuscada
+                  ? response.data.especialidadBuscada.especialidad.toUpperCase()
+                  : "",
                 fecha: "11 Dic 2020",
                 anamnesis: response.data.informeBuscado
                   ? response.data.informeBuscado.anamnesis
@@ -207,20 +213,34 @@ export default {
           break;
         case "sintomas":
           this.modalSintomas = true;
+
           result = axios
             .get(`/doctor/obtener-sintoma/${this.$route.params.id}`)
             .then((response) => {
+              console.log(response);
               this.dataSintomas = {
-                nombre: response.data.usuarioBuscado.name.toUpperCase(),
-                apellido: response.data.usuarioBuscado.lastname.toUpperCase(),
-                especialidad: response.data.especialidadBuscada.especialidad.toUpperCase(),
+                nombre: response.data.usuarioBuscado
+                  ? response.data.usuarioBuscado.name.toUpperCase()
+                  : "",
+                apellido: response.data.usuarioBuscado
+                  ? response.data.usuarioBuscado.lastname.toUpperCase()
+                  : "",
+                especialidad: response.data.especialidadBuscada
+                  ? response.data.especialidadBuscada.especialidad.toUpperCase()
+                  : "",
                 fecha: "11 Dic 2020",
-                sintomas: response.data.sintomaBuscado
-                  ? response.data.sintomaBuscado.sintomas
+                sintomas: response.data.citaBuscada && response.data.citaBuscada.detalle_sintomas
+                  ? response.data.citaBuscada.detalle_sintomas.sintomas
                   : "",
-                alergias: response.data.sintomaBuscado
-                  ? response.data.sintomaBuscado.alergias
+                alergias: response.data.citaBuscada && response.data.citaBuscada.detalle_sintomas
+                  ? response.data.citaBuscada.detalle_sintomas.alergias
                   : "",
+                last_atention: response.data.citaBuscada && response.data.citaBuscada.detalle_sintomas
+                  ? response.data.citaBuscada.detalle_sintomas.last_atention
+                  : false,
+                some_allergy: response.data.citaBuscada && response.data.citaBuscada.detalle_sintomas
+                  ? response.data.citaBuscada.detalle_sintomas.some_allergy
+                  : false,
               };
             });
 
@@ -234,26 +254,45 @@ export default {
           result = axios
             .get(`/doctor/obtener-receta/${this.$route.params.id}`)
             .then((response) => {
+              console.log(response);
               this.dataReceta = {
-                nombre: response.data.usuarioBuscado.name.toUpperCase(),
-                apellido: response.data.usuarioBuscado.lastname.toUpperCase(),
-                medicamentos: response.data.recetaBuscada.medicamentos
-                  ? response.data.recetaBuscada.medicamentos
-                  : [],
+                nombre: response.data.usuarioBuscado
+                  ? response.data.usuarioBuscado.name.toUpperCase()
+                  : "",
+                apellido: response.data.usuarioBuscado
+                  ? response.data.usuarioBuscado.lastname.toUpperCase()
+                  : "",
+                medicamentos:
+                  response.data.recetaBuscada &&
+                  response.data.recetaBuscada.medicamentos
+                    ? response.data.recetaBuscada.medicamentos
+                    : [],
                 fecha: "11 Dic 2020",
-                fechaExpedicion: response.data.recetaBuscada.fechaExpedicion
-                  ? response.data.recetaBuscada.fechaExpedicion.substring(0, 10)
-                  : null,
-                fechaVencimiento: response.data.recetaBuscada.fechaVencimiento
-                  ? response.data.recetaBuscada.fechaVencimiento.substring(
-                      0,
-                      10
-                    )
-                  : null,
-                firma: response.data.recetaBuscada.firma,
+                fechaExpedicion:
+                  response.data.recetaBuscada &&
+                  response.data.recetaBuscada.fechaExpedicion
+                    ? response.data.recetaBuscada.fechaExpedicion.substring(
+                        0,
+                        10
+                      )
+                    : null,
+                fechaVencimiento:
+                  response.data.recetaBuscada &&
+                  response.data.recetaBuscada.fechaVencimiento
+                    ? response.data.recetaBuscada.fechaVencimiento.substring(
+                        0,
+                        10
+                      )
+                    : null,
+                firma:
+                  response.data.recetaBuscada &&
+                  response.data.recetaBuscada.firma,
               };
 
-              if (response.data.recetaBuscada.firma) {
+              if (
+                response.data.recetaBuscada &&
+                response.data.recetaBuscada.firma
+              ) {
                 let firmaEntero = axios
                   .get(`/uploads/${response.data.recetaBuscada.firma}`)
                   .then((imagen) => {

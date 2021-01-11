@@ -210,7 +210,6 @@ export default {
     ingresarCita(e){
       this.idCita = e.data._id
       this.showSintomas = true
-      console.log(e.data.doctor._id)
       this.idDoctor = e.data.doctor._id
 
     },

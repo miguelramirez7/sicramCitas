@@ -2,7 +2,7 @@
   <div>
     <!---MODALS------->
     <editar-cita-pendiente :dialog="showEdit" :cita="citaEditar" @close="showEdit = false" />
-    <registrar-sintomas :dialog="showSintomas" @close="showSintomas = false"/>
+    <registrar-sintomas :dialog="showSintomas" @close="showSintomas = false" :idDoctor="idDoctor" :idCita="idCita"/>
     <!----CARGADOR---->
     <loader :dialog="showLoader" />
     <!----ALERTA---->
@@ -82,6 +82,8 @@ export default {
         lastname: "Apellido",
       },
     },
+     idCita: null,
+    idDoctor: null,
     showSintomas : false, //MUESTRA EL MODAL PARA REGISTRAR SINTOMAS
     showEdit: false, //MUESTRA EL MODAL DE EDITAR CITA
     dataPacientes: null,
@@ -102,7 +104,7 @@ export default {
       { text: "Hora inicio", value: "horario.hora_inicio" },
       { text: "Hora fin", value: "horario.hora_fin" },
       { text: "Estado", value: "estado" },
-      { text: "Actions", value: "actions", sortable: false },
+      { text: "Acciones", value: "actions", sortable: false },
     ],
   }),
 
@@ -124,7 +126,9 @@ export default {
     ]),
     //MUESTRA EL MODAL DE REGISTRAR SINTOMAS
     ingresar(e){
-      console.log("Cita:",e)
+      console.log(e);
+       this.idCita = e._id
+      this.idDoctor = e.doctor._id
       this.showSintomas = true;
     },
     //TIPO DE USUARIO

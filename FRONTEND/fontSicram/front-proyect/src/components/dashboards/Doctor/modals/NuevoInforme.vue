@@ -72,7 +72,6 @@
                 dense
                 no-resize
                 v-model="infoInforme.tratamiento"
-
                 rows="1"
                 outlined
                 color="teal"
@@ -87,7 +86,6 @@
                 dense
                 no-resize
                 v-model="infoInforme.diagnostico"
-
                 rows="1"
                 outlined
                 color="teal"
@@ -102,7 +100,6 @@
                 dense
                 rows="1"
                 v-model="infoInforme.ultimaEvolucion"
-
                 no-resize
                 outlined
                 color="teal"
@@ -111,7 +108,13 @@
           </v-row>
           <v-row no-gutters class="text-right ">
             <v-col>
-              <v-btn @click="saveInform" type="submit" class="mr-5" color="blue " dark>
+              <v-btn
+                @click="saveInform"
+                type="submit"
+                class="mr-5"
+                color="blue "
+                dark
+              >
                 Registrar
                 <v-icon right dark>
                   mdi-file-upload
@@ -127,7 +130,6 @@
           </v-row>
         </v-form>
       </v-card-text>
-      
     </v-card>
   </v-dialog>
 </template>
@@ -175,7 +177,16 @@ export default {
       showAlert: false,
       showQuestioner: false,
       showLoader: false,
-      infoInforme: null,
+      infoInforme: {
+        nombre: "",
+        apellido: "",
+        fecha: "",
+        especialidad: "",
+        anamnesis: "",
+        diagnostico: "",
+        tratamiento: "",
+        ultimaEvolucion: "",
+      },
     };
   },
   computed: {
@@ -196,7 +207,7 @@ export default {
     close() {
       this.$emit("close");
     },
-    saveInform(){
+    saveInform() {
       axios
         .post(
           `/doctor/generar-informe/${this.$route.params.id}`,
