@@ -627,7 +627,9 @@ exports.Registrar_Diagnostico = async function (req, res) {
 // Generar Receta
 exports.Generar_Receta = async function (req, res) {
   try {
-    const { medicamentos, fechaExpedicion, fechaVencimiento, firma } = req.body;
+    const { medicamentos, fechaExpedicion, fechaVencimiento } = req.body;
+
+    const firma = req.file.filename;
 
     var cita = await Cita.findById(req.params.id);
 
@@ -674,7 +676,7 @@ exports.Generar_Receta = async function (req, res) {
           return res.status(400).json({ ok: false, err });
         }
 
-        res.json({ msg: "Receta creada exitosamente" });
+        res.json({ msg: "Receta creada exitosamente", nuevaRec });
       });
     }
   } catch (err) {
@@ -794,5 +796,69 @@ exports.Generar_Informe = async function (req, res) {
     }
   } catch (err) {
     console.log("ERROR AL GENERAR INFORME: " + err);
+  }
+};
+
+// LLAMA AL INFORME MEDICO CON BASE A UNA CITA
+exports.Buscar_Informe = async (req, res) => {
+  try {
+    let informeBuscado = await Informe.findOne({ cita: req.params.id });
+    let citaBuscada = await Cita.findById(req.params.id);
+    let usuarioBuscado = await User.findById(citaBuscada.user);
+    let especialidadBuscada = await Especialidad.findById(
+      citaBuscada.especialidad
+    );
+
+    const resultado = { informeBuscado, usuarioBuscado, especialidadBuscada };
+
+    res.json(resultado);
+  } catch (err) {
+    console.log("ERROR AL BUSCAR INFORME: " + err);
+  }
+};
+
+// LLAMA AL SINTOMA CON BASE A UNA CITA
+exports.Buscar_Sintoma = async (req, res) => {
+  try {
+    let sintomaBuscado = await Sintomas.findOne({ cita: req.params.id });
+    let citaBuscada = await Cita.findById(req.params.id);
+    let usuarioBuscado = await User.findById(citaBuscada.user);
+    let especialidadBuscada = await Especialidad.findById(
+      citaBuscada.especialidad
+    );
+
+    const resultado = {
+      sintomaBuscado,
+      citaBuscada,
+      usuarioBuscado,
+      especialidadBuscada,
+    };
+
+    res.json(resultado);
+  } catch (err) {
+    console.log("ERROR AL BUSCAR sintoma: " + err);
+  }
+};
+
+// LLAMA LA RECETA CON BASE A UNA CITA
+exports.Buscar_Receta = async (req, res) => {
+  try {
+    let recetaBuscada = await Receta.findOne({ cita: req.params.id });
+    let citaBuscada = await Cita.findById(req.params.id);
+    let usuarioBuscado = await User.findById(citaBuscada.user);
+    let especialidadBuscada = await Especialidad.findById(
+      citaBuscada.especialidad
+    );
+
+    const resultado = {
+      recetaBuscada,
+      citaBuscada,
+      usuarioBuscado,
+      especialidadBuscada,
+    };
+
+    res.json(resultado);
+  } catch (err) {
+    console.log("ERROR AL BUSCAR receta: " + err);
   }
 };

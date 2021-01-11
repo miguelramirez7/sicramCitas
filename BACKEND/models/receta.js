@@ -43,8 +43,7 @@ var RecipeSchema = new Schema({
     required: true,
   },
   firma: {
-    data: Buffer,
-    contentType: String,
+    type: String
   },
   cita : {
     type: Schema.Types.ObjectId,
