@@ -34,7 +34,15 @@
         </v-toolbar>
       </template>
       <template v-slot:[`item.actions`]="{ item }">
-        <v-icon small @click="elimiar(item)">mdi-import</v-icon>
+        <router-link :to="{ name: 'CitaDoctor', params: { id: item._id } }">
+          <v-tooltip top>
+            <template v-slot:activator="{ on }">
+              <v-icon v-on="on">mdi-video-plus</v-icon>
+            </template>
+            <span>Ir a la llamada</span>
+          </v-tooltip>
+        </router-link>
+        <v-icon class="ml-2" small @click="elimiar(item)">mdi-import</v-icon>
       </template>
     </v-data-table>
   </div>
@@ -66,42 +74,34 @@ export default {
     dataPacientes: null,
     headers: [
       { text: "Fecha", value: "horario.fecha" },
-      { text: "PacienteNombre", value: 'user.name' },
-      { text: "PacienteApellido", value: 'user.lastname' },
+      { text: "PacienteNombre", value: "user.name" },
+      { text: "PacienteApellido", value: "user.lastname" },
       { text: "Hora inicio", value: "horario.hora_inicio" },
       { text: "Hora fin", value: "horario.hora_fin" },
       { text: "Estado", value: "estado" },
-      { text: "Actions", value: "actions", sortable: false },
+      { text: "Acciones", value: "actions", sortable: false },
     ],
   }),
 
   computed: {
-    ...mapGetters([
-      "getUsuario",
-      "getAlert",
-      "getCitasPendientes",
-    ]),
+    ...mapGetters(["getUsuario", "getAlert", "getCitasPendientes"]),
   },
   created() {
     this.userType();
   },
   methods: {
-    ...mapActions([
-      "listarCitasPendientes"
-    ]),
+    ...mapActions(["listarCitasPendientes"]),
     //TIPO DE USUARIO
     userType() {
-      this.dataPacientes = null
-      this.listarCitasPendientes(this.getUsuario)
-      .then(res=>{
-          this.dataPacientes = this.getCitasPendientes
-      })
+      this.dataPacientes = null;
+      this.listarCitasPendientes(this.getUsuario).then((res) => {
+        this.dataPacientes = this.getCitasPendientes;
+      });
     },
     editarItem(e) {},
     elimiar(e) {},
     eliminarItem() {},
   },
-
 };
 </script>
 

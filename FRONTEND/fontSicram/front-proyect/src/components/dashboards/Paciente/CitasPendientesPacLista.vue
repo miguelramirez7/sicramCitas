@@ -102,7 +102,7 @@ export default {
       { text: "Hora inicio", value: "horario.hora_inicio" },
       { text: "Hora fin", value: "horario.hora_fin" },
       { text: "Estado", value: "estado" },
-      { text: "Actions", value: "actions", sortable: false },
+      { text: "Acciones", value: "actions", sortable: false },
     ],
   }),
 
