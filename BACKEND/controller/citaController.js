@@ -5,6 +5,9 @@ var Doctor = require("../models/doctor");
 var Especialidad = require("../models/especialidad");
 var Horario = require("../models/horario");
 var Diagnostico = require("../models/diagnostico");
+var Sintomas = require("../models/sintomas");
+var Informe = require("../models/informe");
+var Receta = require("../models/receta");
 const chalk = require("chalk");
 const logger = console.log;
 
@@ -618,5 +621,178 @@ exports.Registrar_Diagnostico = async function (req, res) {
   } catch (err) {
     logger(chalk.red("ERROR: ") + chalk.white(err));
     res.send({ msg: "ERROR: " + err });
+  }
+};
+
+// Generar Receta
+exports.Generar_Receta = async function (req, res) {
+  try {
+    const { medicamentos, fechaExpedicion, fechaVencimiento, firma } = req.body;
+
+    var cita = await Cita.findById(req.params.id);
+
+    var doctor = cita.doctor;
+    var user = cita.user;
+
+    let newReceta = new Receta({
+      doctor,
+      user,
+      medicamentos,
+      fechaExpedicion,
+      fechaVencimiento,
+      firma,
+      cita,
+    });
+
+    // BUSCARA SI EXISTE YA UNA RECETA CON ESA CITA
+    let recetaBuscada = await Receta.findOne({ cita: req.params.id });
+
+    if (recetaBuscada) {
+      recetaBuscada.doctor = doctor;
+      recetaBuscada.user = user;
+      recetaBuscada.medicamentos = medicamentos;
+      recetaBuscada.fechaExpedicion = fechaExpedicion;
+      recetaBuscada.firma = firma;
+      recetaBuscada.fechaVencimiento = fechaVencimiento;
+
+      await recetaBuscada.save((err, nuevaRec) => {
+        if (err) {
+          return res.status(500).json({ ok: false, err });
+        }
+        if (!nuevaRec) {
+          return res.status(400).json({ ok: false, err });
+        }
+
+        res.json({ msg: "Receta actualizado exitosamente", nuevaRec });
+      });
+    } else {
+      await newReceta.save((err, nuevaRec) => {
+        if (err) {
+          return res.status(500).json({ ok: false, err });
+        }
+        if (!nuevaRec) {
+          return res.status(400).json({ ok: false, err });
+        }
+
+        res.json({ msg: "Receta creada exitosamente" });
+      });
+    }
+  } catch (err) {
+    console.log("ERROR AL GENERAR RECETA: " + err);
+  }
+};
+
+// Generar Sintomas
+exports.Generar_Sintoma = async function (req, res) {
+  try {
+    const { fecha, sintomas, alergias } = req.body;
+
+    var cita = await Cita.findById(req.params.id);
+
+    var doctor = cita.doctor;
+    var user = cita.user;
+
+    let newSintoma = new Sintomas({
+      fecha,
+      doctor,
+      user,
+      sintomas,
+      alergias,
+      cita,
+    });
+
+    // BUSCARA SI EXISTE YA UN Sintoma CON ESA CITA
+    let sintomaBuscado = await Sintomas.findOne({ cita: req.params.id });
+
+    // ACTUALIZA LOS SINTOMAS
+
+    if (sintomaBuscado) {
+      sintomaBuscado.fecha = fecha;
+      sintomaBuscado.doctor = doctor;
+      sintomaBuscado.user = user;
+      sintomaBuscado.alergias = alergias;
+      sintomaBuscado.sintomas = sintomas;
+
+      await sintomaBuscado.save((err, nuevaRec) => {
+        if (err) {
+          return res.status(500).json({ ok: false, err });
+        }
+        if (!nuevaRec) {
+          return res.status(400).json({ ok: false, err });
+        }
+
+        res.json({ msg: "Sintoma actualizado exitosamente", nuevaRec });
+      });
+    }
+
+    // CREA LOS SINTOMAS
+    else {
+      await newSintoma.save((err, nuevaRec) => {
+        if (err) {
+          return res.status(500).json({ ok: false, err });
+        }
+        if (!nuevaRec) {
+          return res.status(400).json({ ok: false, err });
+        }
+
+        res.json({ msg: "Sintoma creado exitosamente" });
+      });
+    }
+  } catch (err) {
+    console.log("ERROR AL GENERAR SINTOMA: " + err);
+  }
+};
+
+// Generar Informe
+exports.Generar_Informe = async function (req, res) {
+  try {
+    const { anamnesis, tratamiento, diagnostico, ultimaEvolucion } = req.body;
+
+    var cita = await Cita.findById(req.params.id);
+
+    let newInforme = new Informe({
+      anamnesis,
+      tratamiento,
+      diagnostico,
+      ultimaEvolucion,
+      cita,
+    });
+
+    // BUSCARA SI EXISTE YA UN INFORME CON ESA CITA
+    let informeBuscado = await Informe.findOne({ cita: req.params.id });
+
+    // ACTUALIZA EL INFORME
+    if (informeBuscado) {
+      informeBuscado.anamnesis = newInforme.anamnesis;
+      informeBuscado.tratamiento = newInforme.tratamiento;
+      informeBuscado.diagnostico = newInforme.diagnostico;
+      informeBuscado.ultimaEvolucion = newInforme.ultimaEvolucion;
+      await informeBuscado.save((err, nuevaRec) => {
+        if (err) {
+          return res.status(500).json({ ok: false, err });
+        }
+        if (!nuevaRec) {
+          return res.status(400).json({ ok: false, err });
+        }
+
+        res.json({ msg: "Informe actualizado exitosamente", nuevaRec });
+      });
+    }
+
+    // CREA EN CASO DE NO HALLAR
+    else {
+      await newInforme.save((err, nuevaRec) => {
+        if (err) {
+          return res.status(500).json({ ok: false, err });
+        }
+        if (!nuevaRec) {
+          return res.status(400).json({ ok: false, err });
+        }
+
+        res.json({ msg: "Informe creado exitosamente" });
+      });
+    }
+  } catch (err) {
+    console.log("ERROR AL GENERAR INFORME: " + err);
   }
 };

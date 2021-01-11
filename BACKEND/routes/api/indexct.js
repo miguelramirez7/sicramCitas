@@ -93,4 +93,25 @@ router.post(
   citaController.Ver_diagnostico_doctor
 );
 
+// GENERAR RECETA - id de la CITA
+router.post(
+  "/doctor/generar-receta/:id",
+  citaController.Generar_Receta
+  // passport.authenticate("doctor", { session: false })
+);
+
+// GENERAR Sintomas - id de la CITA
+router.post(
+  "/doctor/generar-sintomas/:id",
+  citaController.Generar_Sintoma
+  // passport.authenticate("doctor", { session: false })
+);
+
+// GENERAR INFORME MEDICO - id de la CITA
+router.post(
+  "/doctor/generar-informe/:id",
+  citaController.Generar_Informe
+  // passport.authenticate("doctor", { session: false })
+);
+
 module.exports = router;

@@ -6,6 +6,7 @@ var Doctor = require("../models/doctor");
 var Especialidad = require("../models/especialidad");
 var Horario = require("../models/horario");
 var Cita = require("../models/cita");
+
 const chalk = require("chalk");
 var pup = require("../tools/scrapers");
 const logger = console.log;
@@ -266,7 +267,7 @@ exports.Agregar_horario_doctor = async function (req, res) {
           var cd = fechacita.substring(8, 10);
 
           const fechacitanueva = new Date(req.body.fecha);
-          console.log("ffff" +fechacitanueva);
+          console.log("ffff" + fechacitanueva);
           const fechacitac = new Date(cy, cm, cd);
           console.log("Fecha actual: " + fechaActual);
           console.log("Fecha cita: " + fechacitac);
@@ -675,3 +676,4 @@ getToken = function (headers) {
     return null;
   }
 };
+

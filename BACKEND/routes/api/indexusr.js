@@ -6,6 +6,7 @@ var userController = require("../../controller/usersCrontroller");
 var especialidadController = require("../../controller/especialidadController");
 var dependienteCotroller = require('../../controller/dependienteController');
 var citaController = require('../../controller/citaController');
+
 router.get('/', function (req, res) {
   res.render("index", { title: "SICRAM" });
 });
