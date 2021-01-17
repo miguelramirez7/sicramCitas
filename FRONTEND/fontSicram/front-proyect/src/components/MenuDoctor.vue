@@ -3,7 +3,7 @@
     <template >
       <v-app-bar app dark color="teal lighten-2" clipped-left>
         <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
-        <v-toolbar-title>SICRAM</v-toolbar-title>
+        <v-toolbar-title>BIENVENIDO DOCTOR</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-btn icon>
           <v-icon>mdi-export</v-icon>
@@ -21,7 +21,7 @@
             </v-list-item-avatar>
             <v-list-item-content>
               <v-list-item-title>
-                Nombre Doctor
+                {{nombreDoctor}}
               </v-list-item-title>
             </v-list-item-content>
           </v-list-item>
@@ -62,7 +62,7 @@
 
           <v-divider />
 
-          <v-list-item link>
+          <v-list-item link @click="cerrarSesion">
             <v-list-item-action>
               <v-icon color="red">mdi-export</v-icon>
             </v-list-item-action>
@@ -137,8 +137,15 @@ export default {
     },
   },
   methods: {
-    ...mapActions(["cambiarComponenteDoctor"]),
+    ...mapActions(["cambiarComponenteDoctor","cerrarSesion"]),
   },
+  computed:{
+    ...mapGetters(['getDoctorPerfil']),
+    nombreDoctor(){
+      if(this.getDoctorPerfil == null) return 'NOMBRE DOCTOR'
+      else return  this.getDoctorPerfil.lastname
+    }
+  }
 };
 </script>
 

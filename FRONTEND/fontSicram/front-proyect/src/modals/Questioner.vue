@@ -42,7 +42,7 @@ export default {
     },
     message: {
       type: String,
-      defauly: "MENSAJasdasdasdsdE",
+      default: "MENSAJasdasdasdsdE",
     },
   },
   computed: {
@@ -52,7 +52,7 @@ export default {
   },
   methods: {
     //CIERRA EL MODAL
-    close() {
+    close() { 
       this.$emit("close");
     },
     //EMITIR FUNCION DEL PADRE AL PONER ACEPTAR

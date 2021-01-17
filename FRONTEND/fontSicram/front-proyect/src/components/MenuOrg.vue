@@ -55,7 +55,7 @@
       <v-divider />
 
       <v-list-item-group color='pink'>
-      <v-list-item link> 
+      <v-list-item link @click="cerrarSesion"> 
           <v-list-item-action>
             <v-icon color="red">mdi-export</v-icon>
           </v-list-item-action>
@@ -132,7 +132,7 @@ import { mapActions } from 'vuex';
       },
     },
     methods:{
-      ...mapActions(['cambiarComponenteOrganizacion'])
+      ...mapActions(['cambiarComponenteOrganizacion',"cerrarSesion"])
     }
   };
 </script>

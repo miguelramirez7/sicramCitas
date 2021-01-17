@@ -29,9 +29,10 @@ var CitaSchema = new Schema({
         ref: 'Receta'
     },*/
   detalle_sintomas: {
-    sintoma: String,
-    tratamiento_reciente: { type: Boolean, default: false },
-    alergia: { type: Boolean, default: false },
+    sintomas: String,
+    some_allergy: { type: Boolean, default: false },
+    last_atention: { type: Boolean, default: false },
+    alergias: { type: String, default: "" },
   },
   
   diagnostico: {

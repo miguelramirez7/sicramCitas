@@ -4,10 +4,10 @@
         <h3>Consultorio de citas médicas</h3>
         <v-container>
             <v-row>
-                <v-col cols="12" md="6" class="imagenBienvenida">
+                <v-col cols="12" md="6" class="imagenBienvenida pr-3" >
                     <img src="../../../assets/bienvenida.jpg" alt="">
                 </v-col>
-                <v-col cols="12" md="6" class="contenidoBienvenida">
+                <v-col cols="12" md="6" class="contenidoBienvenida ">
                     <div class="">
                         <p><span class="guinBienvenida">-</span> <span class="font-weight-bold">¿Quiénes somos?</span> </p>
                     <span  class="letrasIni">En 2020, el virus covid-19 afecto a gran parte del Perú,provocando a escala nacional una pandemia.Debido a esto junto con 6 estudiantes desarrolladores de software decidimos crear el grupo SICRAM, el cual reunía los años de experiencia e ideas de innovación para crear software enfocado en el sector salud que pueda ayudar a la sociedad afectada. El equipo SICRAM se encuentra formado por 6 estudiantes de la UNMSM de la carrera de ingeniería de software con experiencia en desarrollo y innovación de software garantizado por el historial académico que proporciona la universidad.</span>
