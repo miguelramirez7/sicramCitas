@@ -49,19 +49,24 @@ exports.GenerarNuevaCita = async function (req, res) {
                         var m = n.getMonth() + 1;
                         //Día
                         var d = n.getDate();
-                        const fechaActual = y + "-" + m + "-" + d;
+                        const fechaActual = new Date(y, m, d);
+
                         var fechacita = req.body.fecha;
-                        if (fechaActual > fechacita) {
+                        var cy = fechacita.substring(0, 4);
+                        var cm = fechacita.substring(5, 7);
+                        var cd = fechacita.substring(8, 10);
+
+                        const fechacitac = new Date(cy, cm, cd);
+                        if (fechaActual > fechacitac) {
                           res.json({ msg: "Error, fecha pasada" });
                         } else {
-                          console.log(fechaActual + " " + fechacita);
                           var horario = await Horario.findOne({
                             fecha: req.body.fecha,
                             hora_inicio: req.body.hora_inicio,
                             hora_fin: req.body.hora_fin,
                             doctor: doctor,
                           });
-                          //si horario exisete
+                          //si horario existe
                           if (horario) {
                             if (horario.cita) {
                               logger(chalk.red("HORARIO USADO"));
@@ -562,8 +567,7 @@ exports.Registrar_Diagnostico = async function (req, res) {
                                       edad: paciente.edad,
                                       diagnostico: req.body.diagnostico,
                                       resultados_labo: req.body.resultados_labo,
-                                      tratamiento: req.body.tratamiento,
-                                      anamnesis: req.body.anamnesis,
+                                      tratamiento: req.body.tratamiento
                                     });
 
                                     newdiagnostico.cita = cita;
