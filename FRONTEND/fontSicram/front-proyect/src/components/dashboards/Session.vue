@@ -90,7 +90,7 @@ export default {
     return {
       collapseOnScroll: true,
 
-      vista1: "PruebaVista",
+      vista1: "PruebaVista", 
       vista2: "PruebaVista2",
       apiKey: "46815904",
       sessionID:
