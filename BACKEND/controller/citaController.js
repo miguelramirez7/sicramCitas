@@ -4,11 +4,11 @@ var Cita = require("../models/cita");
 var Doctor = require("../models/doctor");
 var Especialidad = require("../models/especialidad");
 var Horario = require("../models/horario");
-var Diagnostico = require("../models/diagnostico");
-var Sintomas = require("../models/sintomas");
-var Informe = require("../models/informe");
 var Receta = require("../models/receta");
+var optk = require("../tools/opentok");
+var Diagnostico = require("../models/diagnostico");
 const chalk = require("chalk");
+const mailer = require("../mail/mediador_mailer");
 const logger = console.log;
 
 //generar nueva citas
@@ -424,6 +424,47 @@ exports.Actualizar_Citas = async function (req, res) {
 
 // DURANTE EL MEETING
 
+//Registrar los sintomas del paciente
+exports.Registrar_Sintomas = async function (req, res) {
+  try {
+    var token = getToken(req.headers);
+    if (token) {
+      if (req.user.id == req.params.id) {
+        await Cita.findById(req.body.id_cita, async (err, cita) => {
+          if (!cita) {
+            res.json({ msg: "No se encontró la cita" });
+          } else {
+            cita.detalle_sintomas.sintoma = req.body.sintoma;
+            cita.detalle_sintomas.tratamiento_reciente =
+              req.body.tratamiento_reciente;
+            cita.detalle_sintomas.alergia = req.body.alergia;
+            await cita.save();
+
+            res.json("Sintomas agregados");
+          }
+        });
+      } else {
+        logger(
+          chalk.blue("NO es el usuario ") +
+            chalk.green(req.user.id) +
+            chalk.blue("comparado con ") +
+            chalk.magenta(req.params.id)
+        );
+        res.send(
+          "NO ES EL USUARIO   " +
+            req.user.id +
+            " comparando con " +
+            req.params.id
+        );
+      }
+    } else {
+      return res.status(403).send({ success: false, msg: "Unauthorized." });
+    }
+  } catch (err) {
+    res.json(err);
+  }
+};
+
 //El medico puede ver el historial de diagnosticos de un paciente en plena cita
 exports.Ver_Historial_Paciente = async function (req, res) {
   try {
@@ -523,6 +564,51 @@ exports.Ver_diagnostico_doctor = async function (req, res) {
   }
 };
 
+// EL paciente puede ver el diagnostico de una cita pasada
+exports.Ver_Diagnostico_Paciente = async function (req, res) {
+  try {
+    var token = getToken(req.headers);
+    if (token) {
+      if (req.user.id == req.params.id) {
+        //verificar que sea el mismo usuario del token y el de params en la ruta
+        await Cita.findById(req.body.id_cita, async (err, cita) => {
+          if (!cita) {
+            res.json({ msg: "Cita no encontrada" });
+          } else {
+            await Diagnostico.findById(
+              cita.diagnostico,
+              async (err, diagnostico) => {
+                if (!diagnostico) {
+                  res.json({
+                    msg: "No se encontró un diagnóstico para esta cita",
+                  });
+                } else {
+                  res.json(diagnostico);
+                }
+              }
+            );
+          }
+        });
+      } else {
+        logger(
+          chalk.blue("NO es el usuario ") +
+            chalk.green(req.user.id) +
+            chalk.blue("comparado con ") +
+            chalk.magenta(req.params.id)
+        );
+        res.send(
+          "NO ES EL USUARIO   " +
+            req.user.id +
+            " comparando con " +
+            req.params.id
+        );
+      }
+    }
+  } catch (err) {
+    console.log(err);
+    res.json(err);
+  }
+};
 //registrar diagnostico en la cita
 exports.Registrar_Diagnostico = async function (req, res) {
   try {
@@ -583,7 +669,7 @@ exports.Registrar_Diagnostico = async function (req, res) {
                                     paciente.diagnostico.push(newdiagnostico);
                                     await paciente.save();
                                     res.json({
-                                      msg: "Nuevo diagnóstico guardado",
+                                      msg: "Nuevo diagnóstico guardado"
                                     });
                                   } catch (err) {
                                     res.json(err);
@@ -628,348 +714,86 @@ exports.Registrar_Diagnostico = async function (req, res) {
   }
 };
 
-// Generar Receta
-exports.Generar_Receta = async function (req, res) {
+
+////////////// PARA LAS RECETAS-----------------
+//El paciente puede ver su receta
+exports.Ver_receta_paciente = async function (req, res) {
   try {
-    const { medicamentos, fechaExpedicion, fechaVencimiento, firma } = req.body;
-
-    var cita = await Cita.findById(req.params.id);
-
-    var doctor = cita.doctor;
-    var user = cita.user;
-
-    let newReceta = new Receta({
-      doctor,
-      user,
-      medicamentos,
-      fechaExpedicion,
-      fechaVencimiento,
-      firma,
-      cita,
-    });
-
-    // BUSCARA SI EXISTE YA UNA RECETA CON ESA CITA
-    let recetaBuscada = await Receta.findOne({ cita: req.params.id });
-
-    if (recetaBuscada) {
-      recetaBuscada.doctor = doctor;
-      recetaBuscada.user = user;
-      recetaBuscada.medicamentos = medicamentos;
-      recetaBuscada.fechaExpedicion = fechaExpedicion;
-      recetaBuscada.firma = firma;
-      recetaBuscada.fechaVencimiento = fechaVencimiento;
-
-      await recetaBuscada.save((err, nuevaRec) => {
-        if (err) {
-          return res.status(500).json({ ok: false, err });
-        }
-        if (!nuevaRec) {
-          return res.status(400).json({ ok: false, err });
-        }
-
-        res.json({ msg: "Receta actualizado exitosamente", nuevaRec });
-      });
-    } else {
-      await newReceta.save((err, nuevaRec) => {
-        if (err) {
-          return res.status(500).json({ ok: false, err });
-        }
-        if (!nuevaRec) {
-          return res.status(400).json({ ok: false, err });
-        }
-
-        res.json({ msg: "Receta creada exitosamente", nuevaRec });
-      });
-    }
-  } catch (err) {
-    console.log("ERROR AL GENERAR RECETA: " + err);
-  }
-};
-
-// Generar Sintomas
-exports.Generar_Sintom = async function (req, res) {
-  try {
-    const { fecha, sintomas, alergias, last_atention, some_allergy } = req.body;
-
-    var cita = await Cita.findById(req.params.id);
-
-    var doctor = cita.doctor;
-    var user = cita.user;
-
-    let newSintoma = new Sintomas({
-      fecha,
-      doctor,
-      user,
-      sintomas,
-      alergias,
-      cita,
-      last_atention,
-      some_allergy,
-    });
-
-    // BUSCARA SI EXISTE YA UN Sintoma CON ESA CITA
-    let sintomaBuscado = await Sintomas.findOne({ cita: req.params.id });
-
-    // ACTUALIZA LOS SINTOMAS
-
-    if (sintomaBuscado) {
-      sintomaBuscado.fecha = fecha;
-      sintomaBuscado.doctor = doctor;
-      sintomaBuscado.user = user;
-      sintomaBuscado.alergias = alergias;
-      sintomaBuscado.sintomas = sintomas;
-      sintomaBuscado.last_atention = last_atention;
-      sintomaBuscado.some_allergy = some_allergy;
-
-      await sintomaBuscado.save((err, nuevaRec) => {
-        if (err) {
-          return res.status(500).json({ ok: false, err });
-        }
-        if (!nuevaRec) {
-          return res.status(400).json({ ok: false, err });
-        }
-
-        res.json({ msg: "Sintoma actualizado exitosamente", nuevaRec });
-      });
-    }
-
-    // CREA LOS SINTOMAS
-    else {
-      await newSintoma.save((err, nuevaRec) => {
-        if (err) {
-          return res.status(500).json({ ok: false, err });
-        }
-        if (!nuevaRec) {
-          return res.status(400).json({ ok: false, err });
-        }
-
-        res.json({ msg: "Sintoma creado exitosamente" });
-      });
-    }
-  } catch (err) {
-    console.log("ERROR AL GENERAR SINTOMA: " + err);
-  }
-};
-// Generar Sintomas
-exports.Generar_Sintoma = async function (req, res) {
-  try {
-    const { fecha, sintomas, alergias, last_atention, some_allergy } = req.body;
-
-    var cita = await Cita.findById(req.params.id);
-
-    cita.detalle_sintomas = {
-      sintomas,
-      alergias,
-      last_atention,
-      some_allergy,
-    };
-
-    await cita.save((err, resultCita) => {
-      if (err) {
-        return res.status(500).json({ ok: false, err });
+    var token = getToken(req.headers);
+    if (token) {
+      if (req.user.id == req.params.id) {
+        //verificar que sea el mismo usuario del token y el de params en la ruta
+        await Cita.findById(req.body.id_cita, async (err, cita) => {
+          if (!cita) {
+            res.json({ msg: "Cita no encontrada" });
+          } else {
+            await Receta.findById(cita.receta, async (err, receta) => {
+              if (!receta) {
+                res.json({ msg: "No se encontraron recetas para esta cita" });
+              } else {
+                res.json(receta);
+              }
+            });
+          }
+        });
+      } else {
+        logger(
+          chalk.blue("NO es el usuario ") +
+            chalk.green(req.user.id) +
+            chalk.blue("comparado con ") +
+            chalk.magenta(req.params.id)
+        );
+        res.send(
+          "NO ES EL USUARIO   " +
+            req.user.id +
+            " comparando con " +
+            req.params.id
+        );
       }
-      if (!resultCita) {
-        return res.status(400).json({ ok: false, err });
+    }
+  } catch (err) {
+    console.log(err);
+    res.json(err);
+  }
+};
+
+//Ver receta por parte del médico, el médico ve la receta clickeando "Receta" dentro de su historial de citas pasadas, el paciente accede a la receta desde otra ruta
+exports.Ver_receta_doctor = async function (req, res) {
+  try {
+    var token = getToken(req.headers);
+    if (token) {
+      if (req.user.id == req.params.id) {
+        //verificar que sea el mismo usuario del token y el de params en la ruta
+        await Cita.findById(req.body.id_cita, async (err, cita) => {
+          if (!cita) {
+            res.json({ msg: "Cita no encontrada" });
+          } else {
+            await Receta.findById(cita.receta, async (err, receta) => {
+              if (!receta) {
+                res.json({ msg: "No se encontraron recetas para esta cita" });
+              } else {
+                res.json(receta);
+              }
+            });
+          }
+        });
+      } else {
+        logger(
+          chalk.blue("NO es el usuario ") +
+            chalk.green(req.user.id) +
+            chalk.blue("comparado con ") +
+            chalk.magenta(req.params.id)
+        );
+        res.send(
+          "NO ES EL USUARIO   " +
+            req.user.id +
+            " comparando con " +
+            req.params.id
+        );
       }
-
-      res.json({ msg: "Cita Sintoma actualizado exitosamente", resultCita });
-    });
-
-    // BUSCARA SI EXISTE YA UN Sintoma CON ESA CITA
-    // let sintomaBuscado = await Sintomas.findOne({ cita: req.params.id });
-
-    // ACTUALIZA LOS SINTOMAS EN LA CITA
-
-    // if (sintomaBuscado) {
-    //   sintomaBuscado.fecha = fecha;
-    //   sintomaBuscado.doctor = doctor;
-    //   sintomaBuscado.user = user;
-    //   sintomaBuscado.alergias = alergias;
-    //   sintomaBuscado.sintomas = sintomas;
-    //   sintomaBuscado.last_atention = last_atention;
-    //   sintomaBuscado.some_allergy = some_allergy;
-
-    //   await sintomaBuscado.save((err, nuevaRec) => {
-    //     if (err) {
-    //       return res.status(500).json({ ok: false, err });
-    //     }
-    //     if (!nuevaRec) {
-    //       return res.status(400).json({ ok: false, err });
-    //     }
-
-    //     res.json({ msg: "Sintoma actualizado exitosamente", nuevaRec });
-    //   });
-    // }
-
-    // CREA LOS SINTOMAS
-    // else {
-    //   await newSintoma.save((err, nuevaRec) => {
-    //     if (err) {
-    //       return res.status(500).json({ ok: false, err });
-    //     }
-    //     if (!nuevaRec) {
-    //       return res.status(400).json({ ok: false, err });
-    //     }
-
-    //     res.json({ msg: "Sintoma creado exitosamente" });
-    //   });
-    // }
-  } catch (err) {
-    console.log("ERROR AL GENERAR SINTOMA: " + err);
-  }
-};
-
-// Generar Informe
-exports.Generar_Informe = async function (req, res) {
-  try {
-    const { anamnesis, tratamiento, diagnostico, ultimaEvolucion } = req.body;
-
-    var cita = await Cita.findById(req.params.id);
-
-    let newInforme = new Informe({
-      anamnesis,
-      tratamiento,
-      diagnostico,
-      ultimaEvolucion,
-      cita,
-    });
-
-    // BUSCARA SI EXISTE YA UN INFORME CON ESA CITA
-    let informeBuscado = await Informe.findOne({ cita: req.params.id });
-
-    // ACTUALIZA EL INFORME
-    if (informeBuscado) {
-      informeBuscado.anamnesis = newInforme.anamnesis;
-      informeBuscado.tratamiento = newInforme.tratamiento;
-      informeBuscado.diagnostico = newInforme.diagnostico;
-      informeBuscado.ultimaEvolucion = newInforme.ultimaEvolucion;
-      await informeBuscado.save((err, nuevaRec) => {
-        if (err) {
-          return res.status(500).json({ ok: false, err });
-        }
-        if (!nuevaRec) {
-          return res.status(400).json({ ok: false, err });
-        }
-
-        res.json({ msg: "Informe actualizado exitosamente", nuevaRec });
-      });
-    }
-
-    // CREA EN CASO DE NO HALLAR
-    else {
-      await newInforme.save((err, nuevaRec) => {
-        if (err) {
-          return res.status(500).json({ ok: false, err });
-        }
-        if (!nuevaRec) {
-          return res.status(400).json({ ok: false, err });
-        }
-
-        res.json({ msg: "Informe creado exitosamente" });
-      });
     }
   } catch (err) {
-    console.log("ERROR AL GENERAR INFORME: " + err);
-  }
-};
-
-// LLAMA AL INFORME MEDICO CON BASE A UNA CITA
-exports.Buscar_Informe = async (req, res) => {
-  try {
-    let informeBuscado = await Informe.findOne({ cita: req.params.id });
-    let citaBuscada = await Cita.findById(req.params.id);
-    let usuarioBuscado =
-      citaBuscada && citaBuscada.user
-        ? await User.findById(citaBuscada.user)
-        : null;
-    let especialidadBuscada =
-      citaBuscada && (await Especialidad.findById(citaBuscada.especialidad));
-
-    const resultado = { informeBuscado, usuarioBuscado, especialidadBuscada };
-
-    res.json(resultado);
-  } catch (err) {
-    console.log("ERROR AL BUSCAR INFORME: " + err);
-  }
-};
-
-// LLAMA AL SINTOMA CON BASE A UNA CITA
-exports.Buscar_Sintom = async (req, res) => {
-  try {
-    let sintomaBuscado = await Sintomas.findOne({ cita: req.params.id });
-    let citaBuscada = await Cita.findById(req.params.id);
-    let usuarioBuscado =
-      citaBuscada && citaBuscada.user
-        ? await User.findById(citaBuscada.user)
-        : null;
-    let especialidadBuscada =
-      citaBuscada && citaBuscada.especialidad
-        ? await Especialidad.findById(citaBuscada.especialidad)
-        : null;
-
-    const resultado = {
-      sintomaBuscado,
-      citaBuscada,
-      usuarioBuscado,
-      especialidadBuscada,
-    };
-
-    res.json(resultado);
-  } catch (err) {
-    console.log("ERROR AL BUSCAR sintoma: " + err);
-  }
-};
-
-// LLAMA AL SINTOMA CON BASE A UNA CITA
-exports.Buscar_Sintoma = async (req, res) => {
-  try {
-    let citaBuscada = await Cita.findById(req.params.id);
-    let sintomas = citaBuscada.detalle_sintomas;
-    let usuarioBuscado =
-      citaBuscada && citaBuscada.user
-        ? await User.findById(citaBuscada.user)
-        : null;
-    let especialidadBuscada =
-      citaBuscada && citaBuscada.especialidad
-        ? await Especialidad.findById(citaBuscada.especialidad)
-        : null;
-
-    const resultado = {
-      sintomas,
-      citaBuscada,
-      usuarioBuscado,
-      especialidadBuscada,
-    };
-
-    res.json(resultado);
-  } catch (err) {
-    console.log("ERROR AL BUSCAR sintoma: " + err);
-  }
-};
-
-// LLAMA LA RECETA CON BASE A UNA CITA
-exports.Buscar_Receta = async (req, res) => {
-  try {
-    let recetaBuscada = await Receta.findOne({ cita: req.params.id });
-    let citaBuscada = await Cita.findById(req.params.id);
-    let usuarioBuscado =
-      citaBuscada && citaBuscada.user
-        ? await User.findById(citaBuscada.user)
-        : null;
-    let especialidadBuscada =
-      citaBuscada && citaBuscada.especialidad
-        ? await Especialidad.findById(citaBuscada.especialidad)
-        : null;
-
-    const resultado = {
-      recetaBuscada,
-      citaBuscada,
-      usuarioBuscado,
-      especialidadBuscada,
-    };
-
-    res.json(resultado);
-  } catch (err) {
-    console.log("ERROR AL BUSCAR receta: " + err);
+    console.log(err);
+    res.json(err);
   }
 };

@@ -6,7 +6,8 @@ var doctorController = require("../../controller/doctorController");
 var citaController = require("../../controller/citaController");
 const multer = require("multer");
 var path = require("path");
-
+//para ingresar la imgane con multer
+const upload = require("../../libs/storage");
 //crera un nuevo usuario REGISTANDOTE
 router.post("/signupdoctor", doctorController.SignupDoctor);
 //LOGEARTE una vez ya tengas tu CUENTA REGISTRADA
@@ -56,7 +57,7 @@ router.post(
   doctorController.Eliminar_horario_doctor
 );
 
-//CITAS DEL DOCTOR
+//////-----CITAS DEL DOCTOR--------------------------------------------
 //listar citas pendientes
 router.get(
   "/doctor/cita/listar/:id",
@@ -75,7 +76,10 @@ router.get(
   doctorController.Obtener_Detalles_De_Cita_De_Un_Paciente
 );
 
-// DURANTE EL MEETING
+//CITAS MANEJADAS POR EL DOCTOR PARA CAMBIAR DE ESTADO DE PENDIENTE A -> ATENDIDO Y A NO ATENDIDO
+router.post('/doctor/cita/estado/:id',passport.authenticate('doctor', { session: false}),doctorController.Cambiar_estado_citas)
+
+//------------------ DURANTE EL MEETING--------
 //AGREGAR DIAGNOSTICO AL PACIENTE
 router.post(
   "/doctor/cita/registrar_diagnostico/:id",
@@ -96,83 +100,25 @@ router.post(
   citaController.Ver_diagnostico_doctor
 );
 
-// GENERAR RECETA - id de la CITA
-
-var storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "public/api/uploads");
-  },
-  filename: function (req, file, cb) {
-    cb(
-      null,
-      file.fieldname + "-" + Date.now() + path.extname(file.originalname)
-    );
-  },
-});
-
-var upload = multer({ storage: storage });
-
-router.post("/uploadImage", upload.single("firma"), (req, res, next) => {
-  const file = req.file;
-  if (!file) {
-    const error = new Error("Please upload a file");
-    error.httpStatusCode = 400;
-    return next(error);
-  }
-  res.send(file);
-});
-
+/// AGREGAR RECETAS
+//datos iniciales de la nueva receta
 router.post(
-  "/doctor/generar-receta/:id",
-
-  citaController.Generar_Receta
-  // passport.authenticate("doctor", { session: false })
+  "/doctor/receta/datos/:id",
+  passport.authenticate("doctor", { session: false }),
+  doctorController.Enviar_Datos_Nueva_Receta
 );
-
-// GENERAR Sintomas - id de la CITA
+//crear nueva receta
 router.post(
-  "/doctor/generar-sintomas/:id",
-  citaController.Generar_Sintoma
-  // passport.authenticate("doctor", { session: false })
+  "/doctor/receta/crear/:id",
+  passport.authenticate("doctor", { session: false }),
+  upload.single("firma_imagen"),
+  doctorController.Crear_Nueva_Receta
 );
-
-// GENERAR INFORME MEDICO - id de la CITA
+//ver receta que el medico receto a un paciente
 router.post(
-  "/doctor/generar-informe/:id",
-  citaController.Generar_Informe
-  // passport.authenticate("doctor", { session: false })
+  "/doctor/receta/ver_receta/:id",
+  passport.authenticate("doctor", { session: false }),
+  citaController.Ver_receta_doctor
 );
-
-// BUSCA INFORME MEDICO EN BASE A LA CITA
-router.get(
-  "/doctor/obtener-informe/:id",
-  citaController.Buscar_Informe
-  // passport.authenticate("doctor", { session: false })
-);
-
-// BUSCA INFORME MEDICO EN BASE A LA CITA
-router.get(
-  "/doctor/obtener-sintoma/:id",
-  citaController.Buscar_Sintoma
-  // passport.authenticate("doctor", { session: false })
-);
-
-// BUSCA RECETA EN BASE A LA CITA
-router.get(
-  "/doctor/obtener-receta/:id",
-  citaController.Buscar_Receta
-  // passport.authenticate("doctor", { session: false })
-);
-
-// router.post('/uploadfile', upload.single('myFile'), (req, res, next) => {
-//   const file = req.file
-//   // if (!file) {
-//   //   const error = new Error('Please upload a file')
-//   //   error.httpStatusCode = 400
-//   //   return next(error)
-//   // }
-//   //   res.send(file.filename)
-
-// })
 
 module.exports = router;

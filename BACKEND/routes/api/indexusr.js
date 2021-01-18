@@ -73,4 +73,16 @@ router.get('/especialidad', especialidadController.Obtener_Especialidades);
 //obtener doctores de una especialidad
 router.post('/especialidad/doctores',especialidadController.Obtener_Doctores_por_Especialidades);
 
+
+/*---------------------------------------------------------
+--------------------ENDPOINT DURANTE EL MEETING-----------
+----------------------------------------------------*/
+
+// Agregar detalle de sintomas a una cita
+router.post('/user/cita/registrar_sintomas/:id',passport.authenticate('user', { session: false}),citaController.Registrar_Sintomas);
+//Listar receta de una cita
+router.post('/user/cita/ver_receta/:id',passport.authenticate('user', { session: false}),citaController.Ver_receta_paciente);
+//Ver mi diagnostico de una cita
+router.post('/user/cita/ver_diagnostico/:id',passport.authenticate('user', { session: false}),citaController.Ver_Diagnostico_Paciente);
+
 module.exports = router;

@@ -12,7 +12,12 @@ var indexDoctorApiRouter = require('./routes/api/indexct');
 var indexOrgApiRouter = require('./routes/api/indexorg');
 var usersRouter = require('./routes/users');
 var cmpScrapApiRouter = require('./routes/api/scrap');
+var opentokApiRouter = require('./routes/api/opentk')
 var passport = require('passport');
+
+var multer = require('multer')
+var uploads = multer()
+
 // INICIANDO LA APP
 var app = express();
 require("./database/database");
@@ -37,6 +42,7 @@ app.use('/users', usersRouter);
 app.use('/api', indexDoctorApiRouter);
 app.use('/api', indexOrgApiRouter);
 app.use('/cmp', cmpScrapApiRouter);
+app.use('/opentok',opentokApiRouter);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));

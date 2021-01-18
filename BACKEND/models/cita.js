@@ -23,24 +23,29 @@ var CitaSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "User",
   },
-  /*
-    receta:{
-        type: Schema.Types.ObjectId,
-        ref: 'Receta'
-    },*/
-  detalle_sintomas: {
-    sintomas: String,
-    some_allergy: { type: Boolean, default: false },
-    last_atention: { type: Boolean, default: false },
-    alergias: { type: String, default: "" },
+  receta: {
+    type: Schema.Types.ObjectId,
+    ref: "Receta",
   },
-  
+  detalle_sintomas: {
+    sintoma: String,
+    tratamiento_reciente: { type: Boolean, default: false },
+    alergia: { type: Boolean, default: false },
+  },
+
   diagnostico: {
     type: Schema.Types.ObjectId,
     ref: "Diagnostico",
   },
-  
-  // Acá va el aula virtual
+
+  aulaVirtual: {
+    sessionId: {
+      type: String,
+    },
+    sessionToken: {
+      type: String,
+    },
+  },
 });
 
 module.exports = model("Cita", CitaSchema);
