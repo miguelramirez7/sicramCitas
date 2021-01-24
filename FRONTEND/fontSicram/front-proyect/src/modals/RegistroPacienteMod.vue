@@ -24,8 +24,8 @@
               <v-col cols="12" sm="6" md="6">
                 <v-text-field
                   type="text"
-                  label="Nombres*"
-                  :rules="[getReglas.requerido,getReglas.maxCharacters]"
+                  label="Nombres*"       
+                  :rules="[getReglas.requerido,getReglas.maxCharacters,getReglas.onlyLetters]"
                   required
                   color="light-blue"
                   v-model="pacienteDatos.name"
@@ -35,7 +35,7 @@
                 <v-text-field
                   type="text"
                   label="Apellidos*"
-                  :rules="[getReglas.requerido,getReglas.maxCharacters]"
+                  :rules="[getReglas.requerido,getReglas.maxCharacters,getReglas.onlyLetters]"
                   required
                   color="light-blue"
                   v-model="pacienteDatos.lastname"

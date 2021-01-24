@@ -10,6 +10,7 @@ const state = {
         celular: (v) => /9+(?=.*\d)/.test(v) || 'Debe ser un número válido.',  //CONTRASEÑA ESPECIAL
         maxCharacters: (v) => (v && v.length <= 25) || 'Este campo solo acepta 25 caracteres.', // DNI VÀLIDO
         ruc: (v) => (v && v.length == 11) || 'Digite un RUC válido.', // DNI VÀLIDO
+        onlyLetters : (v) => /^[A-ZÁÉÍÓÚÜÑa-záéíóúüñ]+$/.test(v) || 'Este campo solo acepta letras.',
     },                        
 
     alerta: {

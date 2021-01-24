@@ -22,7 +22,7 @@
                   label="Nombres*"
                   required
                   color="cyan"
-                  :rules="[getReglas.requerido,getReglas.maxCharacters]"
+                  :rules="[getReglas.requerido,getReglas.maxCharacters,getReglas.onlyLetters]"
                   v-model="doctorDatos.name"
                 ></v-text-field>
               </v-col>
@@ -31,7 +31,7 @@
                   label="Apellidos*"
                   required
                   color="cyan"
-                  :rules="[getReglas.requerido,getReglas.maxCharacters]"
+                  :rules="[getReglas.requerido,getReglas.maxCharacters,getReglas.onlyLetters]"
                   v-model="doctorDatos.lastname"
                 ></v-text-field>
               </v-col>
