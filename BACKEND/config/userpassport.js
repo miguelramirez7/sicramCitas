@@ -5,6 +5,7 @@ var JwtStrategy = require('passport-jwt').Strategy,
 var User = require('../models/user');
 var config = require('../database/key');//para obtener el secreto
 var Doctor  = require('../models/doctor');
+var Organizacion = require('../models/organizacion');
 module.exports = function(passport) {
   var opts = {};
   opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
@@ -42,6 +43,21 @@ module.exports = function(passport) {
                 return done(null, false);
              }
             
+      });
+  }));
+
+  //estrategia para encontrar la Organizacion a partir del token y nos retornarar el user que sera de organizacion
+  passport.use('organizacion',new JwtStrategy(opts, async function(jwt_payload, done) {
+    Organizacion.findOne({email: jwt_payload.email}, function(err, user) {
+          if (err) {
+              return done(err, false);
+          }
+          if (user) {
+              done(null, user);
+              
+          } else {
+              done(null, false);
+          }
       });
   }));
  

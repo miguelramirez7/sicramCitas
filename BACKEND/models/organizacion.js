@@ -1,6 +1,7 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var bcrypt = require('bcrypt-nodejs');
+const mailer = require('../mail/mailer')
 
 
 var OrganizacionSchema = new Schema({

@@ -58,7 +58,7 @@ exports.GenerarNuevaCita = async function (req, res) {
                         var cy = fechacita.substring(0, 4);
                         var cm = fechacita.substring(5, 7);
                         var cd = fechacita.substring(8, 10);
-
+                        console.log(cy+""+cm+" "+cd);
                         const fechacitac = new Date(cy, cm, cd);
                         if (fechaActual > fechacitac) {
                           res.json({ msg: "Error, fecha pasada" });
@@ -88,9 +88,93 @@ exports.GenerarNuevaCita = async function (req, res) {
                               nuevacita.doctor = doctor;
                               nuevacita.especialidad = especialidad;
                               nuevacita.horario = horario;
+
+                              await optk.createSession(async (err, session) => {
+                                try {
+                                  if (err) {
+                                    logger(
+                                      chalk.red("ERROR: ") + chalk.white(err)
+                                    );
+                                  } else {
+                                    logger(
+                                      chalk.blue("sessionID: ") +
+                                        chalk.magenta(session.sessionId)
+                                    );
+                                    var sessiontoken = optk.generateToken(
+                                      session.sessionId
+                                    );
+                                    logger(
+                                      chalk.blue("sessiontoken: ") +
+                                        chalk.magenta(sessiontoken)
+                                    );
+                                    var aulaVirtual = {
+                                      sessionId: session.sessionId,
+                                      sessionToken: sessiontoken,
+                                    };
+                                    logger(
+                                      chalk.blue("aulavirtual: ") +
+                                        chalk.magenta(aulaVirtual.sessionId)
+                                    );
+                                    nuevacita.aulaVirtual = {
+                                      sessionId: session.sessionId,
+                                      sessionToken: sessiontoken,
+                                    };
+                                    logger(
+                                      chalk.blue("aulavirtual: ") +
+                                        chalk.magenta(nuevacita.aulaVirtual)
+                                    );
+                                    //guardamos nueva cita con su doctor y su usuario respectivo
+                                    await nuevacita.save(function (err) {
+                                      if (err) {
+                                        return res.json({
+                                          success: false,
+                                          msg: "Error al guardar la cita",
+                                        });
+                                      }
+                                      res.json({
+                                        success: true,
+                                        msg: "Exito nueva cita creada.",
+                                      });
+                                    });
+                                    mailer.notificarNuevaCita(
+                                    `Hola Doctor ${doctor.lastname}, ${doctor.name} \n
+                                    reciba nuestros cordiales saludos\n
+                                    le informamos que TIENE UNA NUEVA CITA PROGRAMADA\n
+                                    Detalles de su nueva cita:\n
+                                    paciente: ${paciente.lastname}, ${paciente.name}\n
+                                    dni: ${paciente.dni}\n
+                                    fecha: ${horario.fecha}\n
+                                    hora de inicio: ${horario.hora_inicio}\n
+                                    hora de finalizacion: ${horario.hora_fin}\n
+                                    
+                                    Gracias Doctor ${doctor.lastname} su paciente estara atento para ingresar a la sala virtual en la fecha y hora indicada.
+                                    \n
+                                    Saludos Atentamente: SICRAM `,
+                                      doctor
+                                    );
+                                    //agregamos la cita para el usuario.
+                                    paciente.cita.push(nuevacita);
+                                    //agregamos la cita para el doctor
+                                    doctor.cita.push(nuevacita);
+                                    //guardamos al user con su cita
+                                    await paciente.save();
+                                    //guardamos al doctor con su cita
+                                    await doctor.save();
+                                    //guardamos la cita en el horario
+                                    horario.cita = nuevacita;
+                                    //guardamos al horario con su cita
+                                    await horario.save();
+                                  }
+                                } catch (error) {
+                                  logger(
+                                    chalk.red("ERROR: ") + chalk.white(error)
+                                  );
+                                  res.status(400).json({ msg: "ERROR" + error });
+                                }
+                              });
                               /* Aquí debería ir opentok create session*/
                               //agregamos el token y la session a la citanueva
-                              await nuevacita.save(function (err) {
+                              /*await nuevacita.save(function (err) {
                                 if (err) {
                                   return res.json({
                                     success: false,
@@ -114,6 +198,7 @@ exports.GenerarNuevaCita = async function (req, res) {
                               horario.cita = nuevacita;
                               //guardamos al horario con su cita
                               await horario.save();
+                              */
                             }
 
                             // res.send(nuevacita);  me sale error de cabecera si hago res.send

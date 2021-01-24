@@ -23,5 +23,18 @@ router.get('/signoutorganizacion', passport.authenticate('organizacion', { sessi
 //mostrar datos del perfil de la orga
 router.get('/organizacion/perfil/:id', passport.authenticate('organizacion', { session: false}), organizacionController.Obtener_Datos_Organizacion);
 
+//actualizar datos de la organizacion logeada
+router.post('/organizacion/perfil/update/:id',passport.authenticate('organizacion', { session: false}),organizacionController.Actualizar_Datos_Organizacion);
 
+
+/* ---------------------------------------------------------------------
+--------------ENDPOINTS DE DOCTORES DE ORGANIZACIÓN---------------------
+----------------------------------------------------------------------*/
+//AGREGAR DOCTOR EN ORGANIZACION tambien puede elegir las especialidades a las que se dirige
+//agregar doctor ------
+router.post('/organizacion/doctor/registrar/:id',passport.authenticate('organizacion', { session: false}),organizacionController.Registrar_Doctor_En_Organization);
+//obtener docotres de la organizacion
+router.get('/organizacion/doctor/obtener/:id',passport.authenticate('organizacion', {session: false}),organizacionController.Obtener_Doctores_De_Organizacion)
+//eliminar doctor de la organizacion
+router.post('/organizacion/doctor/eliminar/:id',passport.authenticate('organizacion', { session: false}),organizacionController.Eliminar_Doctor)
 module.exports = router;

@@ -60,6 +60,19 @@ exports.SignupDoctor = async function (req, res) {
                 cmp: req.body.cmp,
                 profesion: req.body.profesion,
               });
+              mailer.notificarRegistro(
+                `EXITO! en su registro de cuenta.\n\n
+                Reciba los cordiales saludos de la familia SICRAM\n
+                DOCTOR ${newDoctor.lastname}, ${newDoctor.name} \n
+                Agradecemos su aporte en la familia SICRAM ahora podra ayudar a nuestros pacientes en sus consultas\n
+                Solo necesita ingresar a su cuenta y agregue horarios de su disponibilidad
+                con esto nuestros pacientes podran elegirlo para una consulta virtual.\n
+                \n
+                Doctor ${newDoctor.lastname}, recuerde que cuando un paciente registre una cita con usted
+                automaticamente le llegara un correo de informacion de la cita, con sus detalles.\n\n\n
+                Muchas Gracias Atentamente SICRAM  `,
+                newDoctor
+              );
 
               //agregamos el atributo especialidad del doctor agregamos aparte por que especialidad es un Objeto encontrado en la base de datos
               newDoctor.especialidad = especialidad;

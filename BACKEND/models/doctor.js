@@ -1,7 +1,7 @@
 var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
 var bcrypt = require("bcrypt-nodejs");
-
+const mailer = require('../mail/mailer')
 var DoctorSchema = new Schema({
   email: {
     type: String,
@@ -128,6 +128,7 @@ DoctorSchema.methods.comparePassword = function (passw, cb) {
 DoctorSchema.methods.recibirMensaje = function (msg, asunto) {
   console.log("DOCTOR RECIBIENDO:" + msg);
   //------------------------------------------------
+  var  doctor = this;
   const email_options = {
     from: "sicram.empresa@gmail.com",
     to: this.email,
@@ -139,7 +140,7 @@ DoctorSchema.methods.recibirMensaje = function (msg, asunto) {
     if (err) {
       return console.log(err.message);
     }
-    console.log("Se ha enviado un mail a: " + this.email + ".");
+    console.log("Se ha enviado un mail a: " + doctor.email + ".");
   });
 };
 
