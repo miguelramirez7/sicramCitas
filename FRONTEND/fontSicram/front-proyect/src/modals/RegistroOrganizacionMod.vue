@@ -20,7 +20,7 @@
               <v-col cols="12" sm="6" md="6">
                 <v-text-field
                   label="Correo*"
-                  :rules="[getReglas.correo, getReglas.requerido]"
+                  :rules="[getReglas.correo, getReglas.requerido,getReglas.maxCharacters]"
                   required
                   color="blue"
                   v-model="organizacionDatos.email"
@@ -45,7 +45,7 @@
               <v-col cols="12" sm="12" md="12">
                 <v-text-field
                   label="Nombre organización*"
-                  :rules="[getReglas.requerido]"
+                  :rules="[getReglas.requerido,getReglas.maxCharacters]"
                   required
                   color="blue"
                   v-model="organizacionDatos.nameOrg"
@@ -64,7 +64,7 @@
                   label="R.U.C.*"
                   required
                   color="blue"
-                  :rules="[getReglas.requerido]"
+                  :rules="[getReglas.requerido,getReglas.ruc]"
                   v-model="organizacionDatos.ruc"
                 ></v-text-field>
               </v-col>

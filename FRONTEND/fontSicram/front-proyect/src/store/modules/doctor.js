@@ -1,7 +1,7 @@
 const axios = require('axios')
 //BASE URL POR DEFAULT EN LOCAL HOST 
-axios.defaults.baseURL = 'http://localhost:3000/api'; 
-//axios.defaults.baseURL = 'https://sicramtest.herokuapp.com/api';
+//axios.defaults.baseURL = 'http://localhost:3000/api'; 
+axios.defaults.baseURL = 'https://sicramtest.herokuapp.com/api';
 
 const state = {
     doctorPerfil: null, // VARIABLE PARA LOS DATOS DEL DOCTOR
@@ -9,6 +9,7 @@ const state = {
     especialidades: null, // VARIABLE PARA LA LISTA DE LAS ESPECIALIDADES
     listaDoctoresPorEspecialidad : null, // VARIABLE PARA LA LISTA DE DOCTORES POR ESPECIALIDAD
     citasPendientes: null, // VARIABLE PARA LA LISTA DE CITAS PENDIENTES
+    dataSintomasPaciente : null // VARIABLE PARA OBTENER SINTOMAS DEL PACIENTE
 };
 
 const getters = {
@@ -27,6 +28,7 @@ const getters = {
         return state.especialidades
     },
 
+    //CONSIGUE LA LISTA DE LOS DOCTORES POR ESPECIALIDAD
     getListaDoctoresPorEspecialidad(state){
         return state.listaDoctoresPorEspecialidad
     },
@@ -35,6 +37,11 @@ const getters = {
 
     getCitasPendientes(state){
         return state.citasPendientes
+    },
+
+    //CONSIGUE LOS DATOS DE LOS SINTOMAS DEL PACIENTE DE LA CITA
+    getDataSintomasPaciente(state){
+        return state.dataSintomasPaciente
     }
 
 };
@@ -63,6 +70,11 @@ const mutations = {
     //PONE LAS CITAS PENDIENTES
     setCitasPendientes(state,payload){
         state.citasPendientes=payload
+    },
+
+    //PONE LOS DATOS DE LOS SINTOMAS DEL PACIENTE DE LA CITA
+    setDataSintomasPaciente(state,payload){
+        state.dataSintomasPaciente = payload
     }
 
 };
@@ -302,6 +314,91 @@ const actions = {
             console.log(e)
             return Promise.resolve(false)
         });
+    },
+
+    //CONSULTA PARA CONSEGUIR LOS SINTOMAS DEL PACIENTE
+    sintomasPaciente({commit},datos){
+        return axios 
+        .get(`/doctor/cita/detalle/${datos.id_cita}`
+            ,{
+                headers: {
+                  Authorization: `${datos.doctor.token}`,
+                },
+              })
+        .then((res)=>{
+            console.log("Sintomas del paciente: ")
+            console.log(res.data)
+            if (res.data != null)
+            commit('setDataSintomasPaciente',res.data)
+            else
+            commit('setDataSintomasPaciente',null)
+            Promise.resolve(true)
+        })
+        .catch((e)=>{
+            console.log(e)
+            Promise.resolve(false)
+        })
+    },
+
+    registrarInformeMedico({commit,dispatch},datos){
+        let url = `/doctor/cita/registrar_diagnostico/${datos.doctor.id}`;
+        return axios
+          .post(
+            url,
+            { ...datos.informe },
+            {
+              headers: {
+                Authorization: `${datos.doctor.token}`,
+              },
+            }
+          )
+        .then((res)=>{
+            console.log(res)
+            if(res.data.msg =="Ya existe un diagnóstico para esta cita"){
+              dispatch('mensajeTipoAlert', {mensajeAlerta: res.data.msg,tipoAlerta:'warning'} , { root: true })
+              return Promise.resolve(true)
+            }else{
+              dispatch('mensajeTipoAlert', {mensajeAlerta:"Informe registrado con éxito." ,tipoAlerta:'success'} , { root: true })
+              return Promise.resolve(false)
+            }
+
+        })
+        .catch((e)=>{
+            console.log(e)
+            dispatch('mensajeTipoAlert', {mensajeAlerta:"Ocurrio un error en el registro",tipoAlerta:'error'} , { root: true })
+            return Promise.resolve(false)
+        })
+    },
+
+    //CONSULTA PARA REGISTRAR LA RECETA MÉDICA EXPEDIDAD EN LA CITA
+    registrarRecetaMedica({commit,dispatch},datos){
+      let url = `/doctor/receta/crear/${datos.doctor.id}`;
+      return axios
+      .post(
+        url,
+        datos.lista,
+        {
+          headers: {
+            'Authorization': `${datos.doctor.token}`,
+            'Content-Type': 'multipart/form-data'
+          },
+        }
+      )
+      .then((res)=>{
+        console.log(res)
+        if(res.data.msg =="Nueva receta guardada"){
+          dispatch('mensajeTipoAlert', {mensajeAlerta: "Receta registrada con éxito",tipoAlerta:'success'} , { root: true })
+          return Promise.resolve(true)
+        }else{
+          dispatch('mensajeTipoAlert', {mensajeAlerta:"Ya existe una receta registrada en esta cita." ,tipoAlerta:'warning'} , { root: true })
+          return Promise.resolve(false)
+        }
+      })
+      .catch((e)=>{
+        console.log(e)
+        dispatch('mensajeTipoAlert', {mensajeAlerta:"Ocurrió un error al guardar la receta médica." ,tipoAlerta:'error'} , { root: true })
+        return Promise.resolve(false)
+      })
     }
 };
 

@@ -1,5 +1,4 @@
-const axios = require('axios')
-//axios.defaults.baseURL = 'https://sicramtest.herokuapp.com/api';
+const axios = require('axios');
 
 const state = {
     

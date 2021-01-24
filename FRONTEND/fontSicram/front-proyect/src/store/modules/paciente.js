@@ -1,5 +1,5 @@
 const axios = require('axios');
-//axios.defaults.baseURL = 'https://sicramtest.herokuapp.com/api';
+
 
 const state = {
     pacientePerfil: null, // VARIABLE PARA LOS DATOS DEL PACIENTE
@@ -359,7 +359,40 @@ const actions = {
             dispatch('mensajeTipoAlert', {mensajeAlerta:"Ocurrio un error en la actualizacion",tipoAlerta:'error'} , { root: true })
             return Promise.resolve(false)
         })
-    }
+    },
+
+    //CONSULTA PARA REGISTRAR LOS SINTOMAS DEL PACIENTE INGRESANDO A LA CITA
+    registrarSintomas({commit,dispatch},datos){
+        let url = `/user/cita/registrar_sintomas/${datos.paciente.id}`;
+        return axios
+          .post(
+            url,
+            { ...datos.sintomas },
+            {
+              headers: {
+                Authorization: `${datos.paciente.token}`,
+              },
+            }
+          )
+        .then((res)=>{
+            console.log(res)
+            if(res.data==="Sintomas agregados"){
+              dispatch('mensajeTipoAlert', {mensajeAlerta: res.data,tipoAlerta:'success'} , { root: true })
+              return Promise.resolve(true)
+            }else{
+              dispatch('mensajeTipoAlert', {mensajeAlerta:res.data.msg ,tipoAlerta:'warning'} , { root: true })
+              return Promise.resolve(false)
+            }
+
+        })
+        .catch((e)=>{
+            console.log(e)
+            dispatch('mensajeTipoAlert', {mensajeAlerta:"Ocurrio un error en la actualizacion",tipoAlerta:'error'} , { root: true })
+            return Promise.resolve(false)
+        })
+    },
+
+    
 };
 
 export default {

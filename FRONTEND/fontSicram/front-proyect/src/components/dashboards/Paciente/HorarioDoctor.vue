@@ -190,6 +190,7 @@ export default {
 
     //PARA REGISTRAR LA CITA AL PACIENTE TITULAR DE LA CUENTA
     citaPacienteTitular(datos){
+      console.log(datos)
       this.registrarCitaTitular({
         paciente: this.getUsuario,
         cita: datos,
@@ -204,6 +205,7 @@ export default {
 
     //PARA REGISTRAR LA CITA AL PACIENTE FAMILIAR DEL TITULAR
     citaPacienteDependiente(datos){
+      console.log(datos)
       this.registrarCitaDependiente({
         paciente: this.getUsuario,
         cita: datos,

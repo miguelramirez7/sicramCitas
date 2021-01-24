@@ -3,7 +3,6 @@
     :value="regPacDialog"
     max-width="600px"
     persistent
-    content-class="modal"
   >
     <!----CARGADOR---->
     <Loader :dialog="showLoader" />
@@ -26,7 +25,7 @@
                 <v-text-field
                   type="text"
                   label="Nombres*"
-                  :rules="[getReglas.requerido]"
+                  :rules="[getReglas.requerido,getReglas.maxCharacters]"
                   required
                   color="light-blue"
                   v-model="pacienteDatos.name"
@@ -36,7 +35,7 @@
                 <v-text-field
                   type="text"
                   label="Apellidos*"
-                  :rules="[getReglas.requerido]"
+                  :rules="[getReglas.requerido,getReglas.maxCharacters]"
                   required
                   color="light-blue"
                   v-model="pacienteDatos.lastname"
@@ -46,7 +45,7 @@
                 <v-text-field
                   type="text"
                   label="Correo*"
-                  :rules="[getReglas.requerido, getReglas.correo]"
+                  :rules="[getReglas.requerido, getReglas.correo,getReglas.maxCharacters]"
                   required
                   color="light-blue"
                   v-model="pacienteDatos.email"
@@ -59,6 +58,7 @@
                     getReglas.requerido,
                     getReglas.pass,
                     getReglas.minimochar,
+                    getReglas.maxCharacters
                   ]"
                   :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
                   :type="show1 ? 'text' : 'password'"
@@ -71,7 +71,7 @@
               <v-col cols="12" sm="6">
                 <v-text-field
                   label="DNI*"
-                  :rules="[getReglas.DNI]"
+                  :rules="[getReglas.DNI,getReglas.requerido]"
                   required
                   color="light-blue"
                   v-model="pacienteDatos.dni"
@@ -93,7 +93,7 @@
                 <v-text-field
                   type="number"
                   label="Edad*"
-                  :rules="[getReglas.requerido]"
+                  :rules="[getReglas.requerido,getReglas.edad]"
                   required
                   color="light-blue"
                   v-model="pacienteDatos.edad"
@@ -170,6 +170,7 @@ export default {
     ...mapGetters(["getReglas", "getAlert"]),
     //PREGUNTA SI EL MODAL DEBE ABRIRSE
     regPacDialog() {
+      console.log(this.dialog)
       return this.dialog;
     },
   },

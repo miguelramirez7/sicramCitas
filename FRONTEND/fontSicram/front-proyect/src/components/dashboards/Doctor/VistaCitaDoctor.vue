@@ -1,5 +1,7 @@
 <template>
   <div>
+    <!----LOADER---->
+    <loader :dialog="showLoader" />
     <!--QUESTIONER-->
     <questioner
       :dialog="showQuestion"
@@ -118,7 +120,7 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 import Questioner from "@/modals/Questioner.vue";
 import Chat from "../Chat.vue";
 import Session from "../Session.vue";
@@ -126,10 +128,8 @@ import HistorialPaciente from "./modals/HistorialPaciente.vue";
 import NuevaReceta from "./modals/NuevaReceta.vue";
 import NuevoInforme from "./modals/NuevoInforme.vue";
 import Sintomas from "./modals/Sintomas.vue";
+import Loader from "@/modals/Loader.vue";
 
-const axios = require("axios");
-//BASE URL POR DEFAULT EN LOCAL HOST
-axios.defaults.baseURL = "http://localhost:3000/api";
 export default {
   name: "VistaCitaDoctor",
   components: {
@@ -140,9 +140,11 @@ export default {
     NuevoInforme,
     Sintomas,
     Questioner,
+    Loader,
   },
   data() {
     return {
+      showLoader: false,
       idPaciente: this.$route.params.id,
       mostrarChat: true,
       screen: false,
@@ -158,7 +160,12 @@ export default {
   },
 
   computed: {
-    ...mapGetters(["getDoctorPerfil", "get_idCita"]),
+    ...mapGetters([
+      "getDoctorPerfil",
+      "get_idCita",
+      "getUsuario",
+      "getDataSintomasPaciente",
+    ]),
     iconMessage() {
       if (this.mostrarChat === true) {
         return "mdi-message-text-lock ";
@@ -175,134 +182,32 @@ export default {
     },
   },
   methods: {
+    ...mapActions(["sintomasPaciente"]),
     abrrirModal(e) {
       console.log("modasdasdal a abrir", e);
       switch (e) {
         case "informe":
           this.modalInforme = true;
-
-          let result = axios
-            .get(`/doctor/obtener-informe/${this.$route.params.id}`)
-            .then((response) => {
-              this.dataInforme = {
-                nombre: response.data.usuarioBuscado
-                  ? response.data.usuarioBuscado.name.toUpperCase()
-                  : "",
-                apellido: response.data.usuarioBuscado
-                  ? response.data.usuarioBuscado.lastname.toUpperCase()
-                  : "",
-                especialidad: response.data.especialidadBuscada
-                  ? response.data.especialidadBuscada.especialidad.toUpperCase()
-                  : "",
-                fecha: "11 Dic 2020",
-                anamnesis: response.data.informeBuscado
-                  ? response.data.informeBuscado.anamnesis
-                  : "",
-                diagnostico: response.data.informeBuscado
-                  ? response.data.informeBuscado.diagnostico
-                  : "",
-                tratamiento: response.data.informeBuscado
-                  ? response.data.informeBuscado.tratamiento
-                  : "",
-                ultimaEvolucion: response.data.informeBuscado
-                  ? response.data.informeBuscado.ultimaEvolucion
-                  : "",
-              };
-            });
+          this.dataInforme = {
+            nombre: "NOMBRE DOCTOR",
+            apellido: "APELLIDO DOCTOR",
+            fecha: "2020-20-20",
+          };
 
           break;
         case "sintomas":
-          this.modalSintomas = true;
-
-          result = axios
-            .get(`/doctor/obtener-sintoma/${this.$route.params.id}`)
-            .then((response) => {
-              console.log(response);
-              this.dataSintomas = {
-                nombre: response.data.usuarioBuscado
-                  ? response.data.usuarioBuscado.name.toUpperCase()
-                  : "",
-                apellido: response.data.usuarioBuscado
-                  ? response.data.usuarioBuscado.lastname.toUpperCase()
-                  : "",
-                especialidad: response.data.especialidadBuscada
-                  ? response.data.especialidadBuscada.especialidad.toUpperCase()
-                  : "",
-                fecha: "11 Dic 2020",
-                sintomas: response.data.citaBuscada && response.data.citaBuscada.detalle_sintomas
-                  ? response.data.citaBuscada.detalle_sintomas.sintomas
-                  : "",
-                alergias: response.data.citaBuscada && response.data.citaBuscada.detalle_sintomas
-                  ? response.data.citaBuscada.detalle_sintomas.alergias
-                  : "",
-                last_atention: response.data.citaBuscada && response.data.citaBuscada.detalle_sintomas
-                  ? response.data.citaBuscada.detalle_sintomas.last_atention
-                  : false,
-                some_allergy: response.data.citaBuscada && response.data.citaBuscada.detalle_sintomas
-                  ? response.data.citaBuscada.detalle_sintomas.some_allergy
-                  : false,
-              };
-            });
-
+          this.mostrarSintomas();
           break;
         case "historial":
           this.modalHistorial = true;
           break;
         case "receta":
           this.modalReceta = true;
-
-          result = axios
-            .get(`/doctor/obtener-receta/${this.$route.params.id}`)
-            .then((response) => {
-              console.log(response);
-              this.dataReceta = {
-                nombre: response.data.usuarioBuscado
-                  ? response.data.usuarioBuscado.name.toUpperCase()
-                  : "",
-                apellido: response.data.usuarioBuscado
-                  ? response.data.usuarioBuscado.lastname.toUpperCase()
-                  : "",
-                medicamentos:
-                  response.data.recetaBuscada &&
-                  response.data.recetaBuscada.medicamentos
-                    ? response.data.recetaBuscada.medicamentos
-                    : [],
-                fecha: "11 Dic 2020",
-                fechaExpedicion:
-                  response.data.recetaBuscada &&
-                  response.data.recetaBuscada.fechaExpedicion
-                    ? response.data.recetaBuscada.fechaExpedicion.substring(
-                        0,
-                        10
-                      )
-                    : null,
-                fechaVencimiento:
-                  response.data.recetaBuscada &&
-                  response.data.recetaBuscada.fechaVencimiento
-                    ? response.data.recetaBuscada.fechaVencimiento.substring(
-                        0,
-                        10
-                      )
-                    : null,
-                firma:
-                  response.data.recetaBuscada &&
-                  response.data.recetaBuscada.firma,
-              };
-
-              if (
-                response.data.recetaBuscada &&
-                response.data.recetaBuscada.firma
-              ) {
-                let firmaEntero = axios
-                  .get(`/uploads/${response.data.recetaBuscada.firma}`)
-                  .then((imagen) => {
-                    this.dataReceta = {
-                      ...this.dataReceta,
-                      firmaEntera: imagen,
-                    };
-                  });
-              }
-            });
+          this.dataReceta = {
+            nombre: "NOMBRE DOCTOR",
+            apellido: "APELLIDO DOCTOR",
+          }
+         
           break;
       }
     },
@@ -310,6 +215,29 @@ export default {
     colgar() {
       this.showQuestion = false;
       window.location.assign("/doctorsystem");
+    },
+
+    mostrarSintomas() {
+      //ABRIMOS EL CARGADOR
+      this.showLoader = true;
+      //SE PSAN LOS DATOS CORRESPONDIENTES PARA LA CONSULTA
+      const datos = {
+        doctor: this.getUsuario,
+        id_cita: this.get_idCita,
+      };
+      //ABRIMOS LA CONSULTA PARA LOS SINTOMAS DEL PACIENTE
+      this.sintomasPaciente(datos).then((res) => {
+        this.showLoader = false;
+        this.dataSintomas = {
+          nombre: this.getDoctorPerfil.name,
+          apellido: this.getDoctorPerfil.lastname,
+          especialidad: this.getDoctorPerfil.especialidad.especialidad,
+          fecha: this.getDataSintomasPaciente.horario,
+          sintomas: this.getDataSintomasPaciente.detalle_sintomas.sintoma,
+          alergias: this.getDataSintomasPaciente.detalle_sintomas.alergia,
+        };
+        this.modalSintomas = true;
+      });
     },
   },
 };

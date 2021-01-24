@@ -124,5 +124,5 @@
 
  <style  scoped>
  
-@import "../../../assets/css/orga.css";
+
  </style>

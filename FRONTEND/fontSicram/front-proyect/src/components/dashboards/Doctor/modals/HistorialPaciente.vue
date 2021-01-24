@@ -95,8 +95,7 @@ import Receta from "./Receta.vue";
 import Sintomas from "./Sintomas.vue";
 
 const axios = require("axios");
-//BASE URL POR DEFAULT EN LOCAL HOST
-axios.defaults.baseURL = "http://localhost:3000/api";
+
 
 export default {
   components: { Receta, Informe, Sintomas },

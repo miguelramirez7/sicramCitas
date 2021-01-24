@@ -1,8 +1,10 @@
 const axios = require('axios')
-//axios.defaults.baseURL = 'https://sicramtest.herokuapp.com/api';
+
 const state = {
     user: null, //TOKEN Y ID DEL USUARIO
     tipoUser: null,
+    today : new Date(), //DÍA ACTUAL
+    milisegundosinWeek : 604800000  // Tiempo en milisegundos de una seman
     
 };
 
@@ -104,6 +106,7 @@ const actions = {
 
     //GUADAR USUARIO EN EL LOCALSTORAGE
     guardarUsuario({commit},payload){
+        localStorage.setItem('day',Date())
         localStorage.setItem('user',JSON.stringify(payload))
         commit('setUsuario',payload)
     },
@@ -111,19 +114,28 @@ const actions = {
     //VER SI USUARIO SE ENCUENTRA LOGEADO
     leerUsuario({commit,dispatch}){ 
         const user = JSON.parse(localStorage.getItem('user'))
+        const day = new Date(localStorage.getItem('day') ); 
         const tipoUser =  localStorage.getItem('tipoUser')
+        const difDay = (state.today.getTime()-day.getTime())/ state.milisegundosinWeek
+        console.log(difDay)
+        
         if(user){
-            dispatch('guardarUsuario',user)
-            dispatch('guardarTipoDeUsuario',tipoUser)
-            switch(tipoUser){
-              case 'paciente' : dispatch('perfilPaciente', user , { root: true }); break;
-              case 'doctor':  dispatch('perfilDoctor', user , { root: true });break;
-              case 'organizacion':  dispatch('perfilOrganizacion', user , { root: true });break;
+            if(difDay <=1){
+                dispatch('guardarUsuario',user)
+                dispatch('guardarTipoDeUsuario',tipoUser)
+                switch(tipoUser){
+                    case 'paciente' : dispatch('perfilPaciente', user , { root: true }); break;
+                    case 'doctor':  dispatch('perfilDoctor', user , { root: true });break;
+                    case 'organizacion':  dispatch('perfilOrganizacion', user , { root: true });break;
+                }
+            }else{ //EL TOKEN YA NO SIRVE PORQUE PASÓ UNA SEMANA.
+                dispatch('cerrarSesion')
             }
         }else{
             commit('setUsuario',null)
             commit('setTipoUsuario',null)
         }
+        
     },
 
     //CERRAR SESION DEL USUARIO 

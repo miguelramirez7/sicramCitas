@@ -3,7 +3,7 @@
     :value="alert"
     persistent
     no-click-animation
-    width="300"
+    max-width="300"
     overlay-opacity="0"
   >
     <v-card v-click-outside="false">
