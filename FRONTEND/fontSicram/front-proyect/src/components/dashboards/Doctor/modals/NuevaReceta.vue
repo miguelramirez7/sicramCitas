@@ -204,12 +204,14 @@
               </v-menu>
             </v-col>
             <v-col md="4" sm="4">
+              <img class="signature" v-if="signa!=null" :src="signa" />
               <input
                   type="file"
                   name="image"
                   @change="getImage"
                   accept="image/*"
                 />
+                
             </v-col>
           </v-row>
 
@@ -291,7 +293,9 @@ export default {
         fechaVencimiento: "",
         firma: null,
       },
-      firma_imagen: null
+      firma_imagen: null,
+      signa: null,
+
     };
   },
   computed: {
@@ -310,17 +314,7 @@ export default {
     getImage(event) {
       //Asignamos la imagen a  nuestra data
       this.firma_imagen = event.target.files[0];
-      /*var input = event.target;
-
-      this.firma_imagen = event;
-
-      let reader = new FileReader();
-
-      reader.onload = (e) => {
-        this.firma_imagen = e.target.result;
-      };
-
-      reader.readAsDataURL(event);*/
+      this.signa = URL.createObjectURL(this.firma_imagen)
     },
 
     agregarMedicamento() {
@@ -409,10 +403,9 @@ export default {
 
 <style lang="scss" scoped>
 .signature {
-  height: 150px;
-  width: 150px;
-  object-fit: contain;
-  border: rgb(141, 89, 226) solid 2px;
+  height: 70px;
+  width: 170px;
+  border-bottom: 1px  black solid ;
 }
 .input-medicamentos {
   max-height: 10px !important;
