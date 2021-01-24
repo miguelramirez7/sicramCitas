@@ -76,7 +76,7 @@
                   :items="['MASCULINO', 'FEMENINO']"
                   label="Género*"
                   required
-                  color="cyan"
+                  color="cyan"                  
                   :rules="[getReglas.requerido]"
                   v-model="doctorDatos.genero"
                 ></v-select>
@@ -84,7 +84,7 @@
               <v-col cols="12" sm="6">
                 <v-text-field
                   label="CMP*"
-                  required
+                  required   
                   color="cyan"
                   :rules="[getReglas.requerido]"
                   v-model="doctorDatos.cmp"
