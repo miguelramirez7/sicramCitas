@@ -94,9 +94,6 @@ import Informe from "./Informe.vue";
 import Receta from "./Receta.vue";
 import Sintomas from "./Sintomas.vue";
 
-const axios = require("axios");
-
-
 export default {
   components: { Receta, Informe, Sintomas },
   name: "HistorialPaciente",
@@ -194,30 +191,15 @@ export default {
     },
     abrirSintomas(e) {
       this.showSintomas = true;
-      let result = axios
-        .get(`/doctor/obtener-sintoma/${this.$route.params.id}`)
-        .then((response) => {
-          this.dataSintomas = {
-            nombre: response.usuarioBuscado.name,
-            apellido: response.usuarioBuscado.lastname,
-            especialidad: response.especialidadBuscada.especialidad,
-            fecha: e.fecha,
-            sintomas: response.data.citaBuscada && response.data.citaBuscada.detalle_sintomas
-              ? response.data.citaBuscada.detalle_sintomas.sintomas
-              : "",
-            alergias: response.data.citaBuscada && response.data.citaBuscada.detalle_sintomas
-              ? response.data.citaBuscada.detalle_sintomas.alergias
-              : "",
-          };
-        });
-      // this.dataSintomas = {
-      //   nombre: e.nombre,
-      //   apellido: e.apellido,
-      //   fecha: e.fecha,
-      //   especialidad: e.especialidad,
-      //   sintomas: "ME DUELE MUCHO LA PANZA LA PTM",
-      //   alergias: "Ninguna",
-      // }
+      
+       this.dataSintomas = {
+         nombre: e.nombre,
+         apellido: e.apellido,
+         fecha: e.fecha,
+         especialidad: e.especialidad,
+         sintomas: "ME DUELE MUCHO LA PANZA LA PTM",
+         alergias: "Ninguna",
+       }
     },
   },
 };

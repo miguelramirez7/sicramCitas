@@ -14,8 +14,8 @@
     <alert
       @close="showAlert = false"
       :dialog="showAlert"
-      :tipo="getAlert.tipoAlerta"
-      :mensaje="getAlert.mensajeAlerta"
+      :tipo="alert.tipo"
+      :mensaje="alert.mensaje"
     />
     <!-- :tipo="" :mensaje:""-->
     <!--MODAL FIRMA-->
@@ -393,7 +393,10 @@ export default {
       console.log(JSON.stringify(data));
       this.registrarRecetaMedica(datos).then((res) => {
         this.showLoader = false
+        this.alert.tipo = this.getAlert.tipoAlerta
+        this.alert.mensaje = this.getAlert.mensajeAlerta
         this.showAlert = true
+        
       });
 
     }

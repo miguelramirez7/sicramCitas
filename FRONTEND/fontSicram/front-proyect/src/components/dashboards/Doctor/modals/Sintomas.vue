@@ -1,6 +1,6 @@
 <template>
   <v-dialog :value="modalSintomas" persistent max-width="700px">
-    <v-card v-if="data == null">
+    <v-card v-if="data.sintomas == '' || data == null">
       <v-card-title>
         SINTOMAS DEL PACIENTE
         <v-spacer></v-spacer>
@@ -14,7 +14,7 @@
         </v-alert>
       </v-card-text>
     </v-card>
-    <v-card v-if="data !== null">
+    <v-card v-if="data.sintomas !== '' || data !== null">
       <v-card-title>
         SINTOMAS DEL PACIENTE
         <v-spacer></v-spacer>
