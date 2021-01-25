@@ -61,7 +61,8 @@ router.get('/user/cita/listar/:id',passport.authenticate('user', { session: fals
 router.get('/user/cita/listar_ocupadas/:id',passport.authenticate('user', { session: false}),citaController.Obtener_Citas_Atendidas_Paciente);
 //actualizar citas
 router.post('/user/cita/actualizar/:id',passport.authenticate('user', { session: false}),citaController.Actualizar_Citas);
-
+//eliminar citas
+router.post('/user/cita/eliminar/:id',passport.authenticate('user', { session: false}),citaController.Eliminar_cita);
 /*  ----------------------------------------------------------------------
 -------------ENDPOINTS PARA ESPECIALIDAD---------------------------------
  ----------------------------------------------------------------------- */

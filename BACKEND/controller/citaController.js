@@ -507,6 +507,99 @@ exports.Actualizar_Citas = async function (req, res) {
   }
 };
 
+// ELIMINAR CITAS
+exports.Eliminar_cita = async function (req, res) {
+  try {
+    var token = getToken(req.headers);
+    if (token) {
+      if (req.user.id == req.params.id) {
+        //encontramos la cita por su codigo
+        await Cita.findOne({ _id: req.body.id_cita }, async (error, cita) => {
+          if (!cita) {
+            res.json({ msg: "cita no encontrada" });
+          } else {
+            await User.findById(cita.user, async (err, paciente) => {
+              if (!paciente) {
+                res.json({ msg: "No se encuentra al paciente de la cita" });
+              } else {
+                await Doctor.findById(cita.doctor, async (err, doctor) => {
+                  if (!doctor) {
+                    res.json({ msg: "Doctor de cita no encontrado" });
+                  } else {
+                    await Horario.findById(
+                      cita.horario,
+                      async (err, horario) => {
+                        if (!horario) {
+                          res.json({
+                            msg: "No se encuentra el horario de la cita",
+                          });
+                        } else {
+                          //Encuentro la cita dentro del paciente y la borro
+                          const index = paciente.cita.indexOf(cita._id);
+
+                          paciente.cita.splice(index, 1);
+                          await paciente.save();
+                          //Encuentro la cita dentro del doctor y la borro
+                          const indexdoctor = doctor.cita.indexOf(cita._id);
+
+                          doctor.cita.splice(indexdoctor, 1);
+                          await doctor.save();
+
+                          //Ahora que las citas están borradas cambio el horario por desocupado
+                          horario.ocupado = false;
+                          horario.cita = null;
+                          await horario.save();
+                          mailer.notificarEliminacionDeCita(
+                          `Hola Doctor ${doctor.lastname}, ${doctor.name} \n
+                          reciba nuestros cordiales saludos\n
+                          le informamos que el paciente ${paciente.lastname} ${paciente.name} elimino su cita programada con usted\n
+                          Detalles de la cita:
+                          paciente: ${paciente.lastname}, ${paciente.name}
+                          dni: ${paciente.dni}
+                          fecha: ${horario.fecha}\n
+                          hora de inicio: ${horario.hora_inicio}\n
+                          hora de finalizacion: ${horario.hora_fin}\n
+                          
+                          Recuerde Doctor ${doctor.lastname} que el horario de esta cita eliminada ahora esta disponible para que otro paciente pueda tomarla.
+                          \n
+                          Saludos Atentamente: SICRAM `,doctor)
+
+                          //Ahora elimino el documento cita de la colección
+                          await cita.remove();
+
+                          res.json({ msg: "Cita eliminada" });
+                        }
+                      }
+                    );
+                  }
+                });
+              }
+            });
+          }
+        });
+      } else {
+        logger(
+          chalk.blue("NO es el usuario ") +
+            chalk.green(req.user.id) +
+            chalk.blue("comparado con ") +
+            chalk.magenta(req.params.id)
+        );
+        res.send(
+          "NO ES EL USUARIO   " +
+            req.user.id +
+            " comparando con " +
+            req.params.id
+        );
+      }
+    } else {
+      return res.status(403).send({ success: false, msg: "Unauthorized." });
+    }
+  } catch (err) {
+    logger(chalk.red("ERROR  ") + chalk.white(err));
+  }
+};
+
+
 // DURANTE EL MEETING
 
 //Registrar los sintomas del paciente

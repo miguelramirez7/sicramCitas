@@ -677,7 +677,8 @@ exports.Obtener_Detalles_De_Cita_De_Un_Paciente = async function (req, res) {
       }
     })
       .populate("user")
-      .populate("doctor");
+      .populate("doctor")
+      .populate("horario");
   } catch (err) {
     logger(chalk.red("ERROR: ") + chalk.white(err));
   }
