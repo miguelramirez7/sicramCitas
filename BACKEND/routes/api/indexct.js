@@ -121,4 +121,10 @@ router.post(
   citaController.Ver_receta_doctor
 );
 
+/*----------------------------------------------------------------
+----------------historial médico del doctor-----------------------
+------------------------------------------------------------------ */
+router.get("/doctor/historial/:id",passport.authenticate("doctor", { session: false }),
+    citaController.Doctor_historial_medico
+);
 module.exports = router;

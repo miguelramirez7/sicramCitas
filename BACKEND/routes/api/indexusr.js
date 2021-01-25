@@ -86,4 +86,8 @@ router.post('/user/cita/ver_receta/:id',passport.authenticate('user', { session:
 //Ver mi diagnostico de una cita
 router.post('/user/cita/ver_diagnostico/:id',passport.authenticate('user', { session: false}),citaController.Ver_Diagnostico_Paciente);
 
+
+// Obtener el historial clinico del paciente
+router.get('/user/historial/:id',passport.authenticate('user', { session: false}),citaController.Paciente_historial_clinico);
+
 module.exports = router;

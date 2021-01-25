@@ -287,7 +287,7 @@ exports.Obtener_Citas_Paciente = async function (req, res) {
           "NO ES EL USUARIO   " +
             req.user.id +
             " comparando con " +
-            req.params.id
+            req.params.id1
         );
       }
     } else {
@@ -974,5 +974,94 @@ exports.Ver_receta_doctor = async function (req, res) {
   } catch (err) {
     console.log(err);
     res.json(err);
+  }
+};
+
+/*---------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------
+--------------------------------HISTORIALES CLÍNICOS-------------------------------
+-----------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------*/ 
+
+// El paciente puede ver su historial clinico de citas pasadas
+exports.Paciente_historial_clinico = async function(req,res) {
+  try {
+    var token = getToken(req.headers);
+    if (token) {
+      if (req.user.id == req.params.id) {
+        //verificar que sea el mismo usuario del token y el de params en la ruta
+        await Cita.find({user: req.user.id, estado: {$ne: 'pendiente'}}, async (err, citas) => {
+          if(err){
+            res.json(err);
+          }
+          if(citas[0]== null){
+            res.json({msg: "Usted no tiene citas atendidas"})
+          }else{
+            res.json(citas);
+          }
+
+        })
+        .populate({path: "user", select: "email name lastname dni edad celular genero"})
+        .populate({path:"diagnostico", select:"diagnostico resultados_labo tratamiento"})
+        .populate({path:"receta", select: "acto_medico medicamentos fecha_expedicion valida_hasta firma"})
+        .populate({path:'doctor', select: 'name lastname email genero dni celular cmp'})
+        .populate({path: 'especialidad', select: 'especialidad'})
+        .populate({path: 'horario', select: 'fecha hora_inicio hora_fin'});
+      } else {
+        console.log("No es el usuario del id");
+        res.send("NO ES EL USUARIO   " +req.user.id +" comparando con " +req.params.id);
+      }
+    }
+  } catch (err) {
+    console.log(err);
+    res.json(err);
+  }
+}
+
+exports.Doctor_historial_medico = async function (req, res) {
+  try {
+    var token = getToken(req.headers);
+    if (token) {
+      if (req.user.id == req.params.id) {
+        //verificar que sea el mismo usuario del token y el de params en la ruta
+        await Cita.find({doctor: req.user.id, estado: {$ne: 'pendiente'}}, async (err, citas) => {
+          if(err){
+            res.json(err);
+          }
+          if(citas[0]== null){
+            res.json({msg: "Usted no tiene citas atendidas"})
+          }else{
+            res.json(citas);
+          }
+        })
+        .populate({path: "user", select: "email name lastname dni edad celular genero"})
+        .populate({path:"diagnostico", select:"diagnostico resultados_labo tratamiento"})
+        .populate({path:"receta", select: "acto_medico medicamentos fecha_expedicion valida_hasta firma"})
+        .populate({path:'doctor', select: 'name lastname email genero dni celular cmp'})
+        .populate({path: 'especialidad', select: 'especialidad'})
+        .populate({path: 'horario', select: 'fecha hora_inicio hora_fin'});
+      } else {
+        console.log("No es el usuario del id");
+        res.send("NO ES EL USUARIO   " +req.user.id +" comparando con " +req.params.id);
+      }
+    }
+  } catch (err) {
+    console.log(err);
+    res.json(err);
+  }
+}
+
+//metodo para confirmar que entro un token
+getToken = function (headers) {
+  if (headers && headers.authorization) {
+    var parted = headers.authorization.split(" ");
+    if (parted.length === 2) {
+      console.log(parted);
+      return parted[1];
+    } else {
+      return null;
+    }
+  } else {
+    return null;
   }
 };
