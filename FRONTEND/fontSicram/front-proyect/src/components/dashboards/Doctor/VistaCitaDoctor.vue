@@ -206,8 +206,8 @@ export default {
           this.dataReceta = {
             nombre: "NOMBRE DOCTOR",
             apellido: "APELLIDO DOCTOR",
-          }
-         
+          };
+
           break;
       }
     },
@@ -228,14 +228,17 @@ export default {
       //ABRIMOS LA CONSULTA PARA LOS SINTOMAS DEL PACIENTE
       this.sintomasPaciente(datos).then((res) => {
         this.showLoader = false;
-        this.dataSintomas = {
-          nombre: this.getDoctorPerfil.name,
-          apellido: this.getDoctorPerfil.lastname,
-          especialidad: this.getDoctorPerfil.especialidad.especialidad,
-          fecha: this.getDataSintomasPaciente.horario,
-          sintomas: this.getDataSintomasPaciente.detalle_sintomas.sintoma,
-          alergias: this.getDataSintomasPaciente.detalle_sintomas.alergia,
-        };
+        if (this.getDataSintomasPaciente !== null) {
+          this.dataSintomas = {
+            nombre: this.getDoctorPerfil.name,
+            apellido: this.getDoctorPerfil.lastname,
+            especialidad: this.getDoctorPerfil.especialidad.especialidad,
+            fecha: this.getDataSintomasPaciente.horario,
+            sintomas: this.getDataSintomasPaciente.detalle_sintomas.sintoma,
+            alergias: this.getDataSintomasPaciente.detalle_sintomas.alergia,
+          };
+        }
+
         this.modalSintomas = true;
       });
     },

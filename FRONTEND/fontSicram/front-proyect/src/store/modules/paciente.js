@@ -298,7 +298,8 @@ const actions = {
           )
         .then((res)=>{
             console.log(res)
-            commit('setCitasPendientesTitular',res.data)
+            if(res.data.length == 0 )  commit('setCitasPendientesTitular',null)
+            else commit('setCitasPendientesTitular',res.data)
             return Promise.resolve(true)
         })
         .catch((e)=>{
@@ -321,7 +322,9 @@ const actions = {
         )
       .then((res)=>{
           console.log(res)
-          commit('setCitasPendientesDependiente',res.data)
+         
+          if(res.data.length == 0 )  commit('setCitasPendientesDependiente',null)
+          else commit('setCitasPendientesDependiente',res.data)
           return Promise.resolve(true)
       })
       .catch((e)=>{

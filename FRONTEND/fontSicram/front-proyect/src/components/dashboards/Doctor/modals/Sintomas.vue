@@ -1,9 +1,23 @@
 <template>
   <v-dialog :value="modalSintomas" persistent max-width="700px">
+    <v-card v-if="data == null">
+      <v-card-title>
+        SINTOMAS DEL PACIENTE
+        <v-spacer></v-spacer>
+        <v-btn icon color="red" @click="close">
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
+      </v-card-title>
+      <v-card-text>
+        <v-alert text prominent type="error" icon="mdi-cloud-alert">
+          El paciente aún no ha registrado sus sintomas.
+        </v-alert>
+      </v-card-text>
+    </v-card>
     <v-card v-if="data !== null">
       <v-card-title>
         SINTOMAS DEL PACIENTE
-        <v-spacer></v-spacer> 
+        <v-spacer></v-spacer>
         <v-btn icon color="red" @click="close">
           <v-icon>mdi-close</v-icon>
         </v-btn>
@@ -17,9 +31,7 @@
           <v-col sm="4" md="4">
             DOCTOR
           </v-col>
-          <v-col sm="8" md="8">
-            : {{ data.nombre }} {{ data.apellido }}
-          </v-col>
+          <v-col sm="8" md="8"> : {{ data.nombre }} {{ data.apellido }} </v-col>
           <v-col sm="4" md="4">
             Especialidad
           </v-col>
@@ -86,7 +98,7 @@ export default {
       return this.dialog;
     },
   },
-  
+
   methods: {
     close() {
       this.$emit("close");

@@ -328,7 +328,9 @@ const actions = {
         .then((res)=>{
             console.log("Sintomas del paciente: ")
             console.log(res.data)
-            if (res.data != null)
+            if(res.data.msg == "No se encontro la cita") 
+            commit('setDataSintomasPaciente',null)
+            else if(res.data != null)
             commit('setDataSintomasPaciente',res.data)
             else
             commit('setDataSintomasPaciente',null)
