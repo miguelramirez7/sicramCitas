@@ -31,6 +31,7 @@ var CitaSchema = new Schema({
     sintoma: String,
     tratamiento_reciente: { type: Boolean, default: false },
     alergia: { type: Boolean, default: false },
+    detalle_alergia: String
   },
 
   diagnostico: {

@@ -523,6 +523,7 @@ exports.Registrar_Sintomas = async function (req, res) {
             cita.detalle_sintomas.tratamiento_reciente =
               req.body.tratamiento_reciente;
             cita.detalle_sintomas.alergia = req.body.alergia;
+            cita.detalle_sintomas.detalle_alergia= req.body.detalle_alergia;
             await cita.save();
 
             res.json("Sintomas agregados");
