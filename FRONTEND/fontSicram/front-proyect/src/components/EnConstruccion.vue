@@ -20,10 +20,10 @@ export default {
 <style scoped>
 
 .imagen-const{
-    top: -12vh;
-    left: -5vh;
+    top: -3vh;
+    left: 5vh;
     position: absolute;
-    height: 100vh;
+    height: 90vh;
     
 }
 
