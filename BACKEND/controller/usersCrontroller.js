@@ -3,6 +3,7 @@ var config = require("../database/key");
 require("../config/userpassport")(passport);
 var jwt = require("jsonwebtoken");
 var User = require("../models/user");
+const mailer = require("../mail/mediador_mailer")
 
 //REGISTRO USUARIO
 exports.SignupUsuario = async function (req, res) {
@@ -24,7 +25,18 @@ exports.SignupUsuario = async function (req, res) {
             celular: req.body.celular,
             genero: req.body.genero
           });
-
+          mailer.notificarRegistro(
+            `EXITO! en su registro de cuenta.\n\n
+            Reciba los cordiales saludos de la familia SICRAM\n
+            ${newUser.lastname}, ${newUser.name} ahora es un nuevo paciente que se le atendera agradablemente\n
+            Agradecemos su aporte en la familia SICRAM ahora podra hacer crear citas con nuestros doctores registrados y disponibles\n
+            Solo necesita ingresar a su cuenta y crear su cita con el doctor de su preferencia y en el horario de disponibilidad del doctor.\n
+            Recuerde ${newUser.lastname}, ${newUser.name} que si tiene un familiar que no puede usar el sistema virtual algun motivo\n
+            puede agregarlo como familiar a su cuenta y tambien podra sacar una cita para su familiar.\n
+            \n
+            ${newUser.lastname}, tome en cuenta que los doctores tendran horarios de disponibilidad, si su doctor no tiene un horario disponible.\n
+            le invitamos que busque a otro doctor que si tenga horario disponible\n
+            Muchas Gracias Atentamente SICRAM  `,newUser);
           await newUser.save((err,nuevous)=>{
             if(err){
               return res.status(500).json({ ok: false, err})

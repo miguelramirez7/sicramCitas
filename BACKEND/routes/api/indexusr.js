@@ -61,7 +61,8 @@ router.get('/user/cita/listar/:id',passport.authenticate('user', { session: fals
 router.get('/user/cita/listar_ocupadas/:id',passport.authenticate('user', { session: false}),citaController.Obtener_Citas_Atendidas_Paciente);
 //actualizar citas
 router.post('/user/cita/actualizar/:id',passport.authenticate('user', { session: false}),citaController.Actualizar_Citas);
-
+//eliminar citas
+router.post('/user/cita/eliminar/:id',passport.authenticate('user', { session: false}),citaController.Eliminar_cita);
 /*  ----------------------------------------------------------------------
 -------------ENDPOINTS PARA ESPECIALIDAD---------------------------------
  ----------------------------------------------------------------------- */
@@ -72,5 +73,21 @@ router.get('/especialidad', especialidadController.Obtener_Especialidades);
 
 //obtener doctores de una especialidad
 router.post('/especialidad/doctores',especialidadController.Obtener_Doctores_por_Especialidades);
+
+
+/*---------------------------------------------------------
+--------------------ENDPOINT DURANTE EL MEETING-----------
+----------------------------------------------------*/
+
+// Agregar detalle de sintomas a una cita
+router.post('/user/cita/registrar_sintomas/:id',passport.authenticate('user', { session: false}),citaController.Registrar_Sintomas);
+//Listar receta de una cita
+router.post('/user/cita/ver_receta/:id',passport.authenticate('user', { session: false}),citaController.Ver_receta_paciente);
+//Ver mi diagnostico de una cita
+router.post('/user/cita/ver_diagnostico/:id',passport.authenticate('user', { session: false}),citaController.Ver_Diagnostico_Paciente);
+
+
+// Obtener el historial clinico del paciente
+router.get('/user/historial/:id',passport.authenticate('user', { session: false}),citaController.Paciente_historial_clinico);
 
 module.exports = router;

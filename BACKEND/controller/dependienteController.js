@@ -1,4 +1,4 @@
-//libreria
+//usos
 var User = require("../models/user");
 var Dependiente = require("../models/dependiente");
 var Doctor = require("../models/doctor");

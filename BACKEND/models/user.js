@@ -1,7 +1,7 @@
 var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
 var bcrypt = require("bcrypt-nodejs");
-
+const mailer = require('../mail/mailer')
 var UserSchema = new Schema({
   email: {
     type: String,
@@ -93,5 +93,25 @@ UserSchema.methods.comparePassword = function (passw, cb) {
     cb(null, isMatch);
   });
 };
+
+UserSchema.methods.recibirMensaje = function(msg,asunto){
+  console.log("PACIENTE "+this.email+" RECIBIENDO:"+msg)
+
+  //-----------------------
+  const email_options = {
+      from: 'sicram.empresa@gmail.com',
+      to: this.email,
+      subject: asunto,
+      text: msg
+  }
+  
+  mailer.sendMail(email_options,function(err){
+    var user=this;
+    console.log('Se ha enviado un mail a: '+user.email+'.')
+      if(err){ return console.log(err.message)}
+      
+  })
+
+}
 
 module.exports = mongoose.model("User", UserSchema);

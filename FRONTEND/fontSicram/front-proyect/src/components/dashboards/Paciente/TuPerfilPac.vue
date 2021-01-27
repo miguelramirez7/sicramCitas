@@ -1,33 +1,35 @@
 <template>
-  <div>
+  <div >
     <v-container>
       <v-row>
         <v-col cols="12" md="5">
           <v-card content-class="carta-perfil" class="mt-5">
-
             <div class="imagen-card">
               <img src="../../../assets/user.svg" alt="John" />
             </div>
- 
 
-            <v-card-title class="titulo2">{{ getPacientePerfil.name }} {{ getPacientePerfil.lastname }}</v-card-title>
+            <v-card-title class="titulo2"
+              >{{ getPacientePerfil.name }}
+              {{ getPacientePerfil.lastname }}</v-card-title
+            >
             <v-card-subtitle class="text-center">
-              Doctor
+              Paciente
             </v-card-subtitle>
           </v-card>
-
         </v-col>
         <v-col cols="12" md="6">
-          
-            
-              <div class="mt-5">
-                <v-row justify="center">
-                  <v-expansion-panels accordion v-model="panel">
-                    <v-expansion-panel value="true">
-                      <v-expansion-panel-header class="titulo">Información personal</v-expansion-panel-header>
-                      <v-expansion-panel-content>
-                        <v-simple-table>
-                          <template v-slot:default>
+          <div class="mt-5 ml-5">
+            <v-row justify="center">
+              <v-expansion-panels accordion v-model="panel">
+                <v-expansion-panel value="true">
+                  <v-expansion-panel-header color="teal lighten-2"
+                    ><h3 class="titulo-perfil-pac">
+                      INFORMACIÓN PERSONAL
+                    </h3></v-expansion-panel-header
+                  >
+                  <v-expansion-panel-content>
+                    <v-simple-table>
+                      <template v-slot:default>
                         <tbody>
                           <tr>
                             <td>
@@ -38,7 +40,10 @@
                               ></v-icon
                               >NOMBRES Y APELLIDOS
                             </td>
-                            <td>{{ getPacientePerfil.name }} {{ getPacientePerfil.lastname }}</td>
+                            <td>
+                              {{ getPacientePerfil.name }}
+                              {{ getPacientePerfil.lastname }}
+                            </td>
                           </tr>
                           <tr>
                             <td>
@@ -95,20 +100,14 @@
                             </td>
                             <td>{{ getPacientePerfil.genero }}</td>
                           </tr>
-                          
                         </tbody>
                       </template>
-                        </v-simple-table>
-                      </v-expansion-panel-content>
-                    </v-expansion-panel>
-
-                   
-                  </v-expansion-panels>
-                </v-row>
-              </div>
-            
-
-          
+                    </v-simple-table>
+                  </v-expansion-panel-content>
+                </v-expansion-panel>
+              </v-expansion-panels>
+            </v-row>
+          </div>
         </v-col>
       </v-row>
     </v-container>
@@ -116,28 +115,24 @@
 </template>
 
 <script>
-  import {
-    mapActions,
-    mapGetters
-  } from 'vuex';
-  export default {
-    name: 'TuPerfilDoc',
-    computed: {
-      ...mapGetters(['getPacientePerfil'])
-    },
-    data() {
-      return {
-         panel: 0,
-         datos: null
-      }
-    },
-
-
-  };
+import { mapActions, mapGetters } from "vuex";
+export default {
+  name: "TuPerfilDoc",
+  computed: {
+    ...mapGetters(["getPacientePerfil"]),
+  },
+  data() {
+    return {
+      panel: 0,
+      datos: null,
+    };
+  },
+};
 </script>
 
-<style scoped>
-
-
+<style lang="scss" scoped>
 @import "../../../assets/css/paciente.css";
+.titulo-perfil-pac {
+  color: white;
+}
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div class="imagen">
+  <div class="imagen" v-if="getUsuario == null">
     <!---------------MODALES---------------------->
     <Login :dialog="loginDialog" @close="loginDialog = false" />
     <RegistroPacienteMod
@@ -61,8 +61,11 @@
         <v-divider />
 
         <v-list-item-group color="teal lighten-2">
-          <v-list-item>
+          <v-list-item @click="loginDialog = true">
             <v-list-item-title>Ingresar</v-list-item-title>
+          </v-list-item>
+          <v-list-item @click="$router.push('/pacientesystem/citapaciente')">
+            <v-list-item-title>Prueba</v-list-item-title>
           </v-list-item>
 
           <v-list-group no-action color="teal lighten-2">
@@ -116,7 +119,7 @@ import Login from "@/modals/Login.vue";
 import RegistroPacienteMod from "@/modals/RegistroPacienteMod.vue";
 import RegistroDoctorMod from "@/modals/RegistroDoctorMod.vue";
 import RegistroOrganizacionMod from "@/modals/RegistroOrganizacionMod.vue";
-import { mapActions } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 export default {
   name: "Home",
   components: {
@@ -151,17 +154,42 @@ export default {
       ],
     };
   },
-
+  computed:{
+    ...mapGetters(['getUsuario',"getTipoUsuario"])
+  },
   watch: {
     group() {
       this.drawer = false;
     },
   },
   methods:{
-    ...mapActions(['listaEspecialidades'])
+    ...mapActions(['listaEspecialidades']),
+    //PREGUNTA SI EL USUARIO ESTA LOGEADO
+    usuarioLogeado() {
+      if (this.getUsuario != null) {
+        console.log(this.getUsuario);
+        console.log(this.getTipoUsuario);
+        switch (this.getTipoUsuario) {
+          case "paciente":
+            this.$router.push("/pacientesystem");
+            break;
+          case "doctor":
+            this.$router.push("/doctorsystem");
+            break;
+          case "organizacion":
+            this.$router.push("/orgsystem");
+            break;
+        }
+      } else {
+        console.log("Inicio");
+      }
+    },
   },
   created(){
     this.listaEspecialidades()
+  },
+  beforeMount(){
+    this.usuarioLogeado()
   }
 };
 </script>

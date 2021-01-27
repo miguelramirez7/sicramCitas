@@ -6,10 +6,16 @@ var Doctor = require("../models/doctor");
 var Especialidad = require("../models/especialidad");
 var Horario = require("../models/horario");
 var Cita = require("../models/cita");
-
+var User = require("../models/user");
+var Receta = require("../models/receta");
 const chalk = require("chalk");
 var pup = require("../tools/scrapers");
 const logger = console.log;
+const mailer = require("../mail/mediador_mailer");
+
+//para agregar en cloudinary nuestras imagenes
+const cloudinary = require("../tools/cloudinary");
+const fs = require("fs");
 
 //registro doctor
 exports.SignupDoctor = async function (req, res) {
@@ -54,6 +60,19 @@ exports.SignupDoctor = async function (req, res) {
                 cmp: req.body.cmp,
                 profesion: req.body.profesion,
               });
+              mailer.notificarRegistro(
+                `EXITO! en su registro de cuenta.\n\n
+                Reciba los cordiales saludos de la familia SICRAM\n
+                DOCTOR ${newDoctor.lastname}, ${newDoctor.name} \n
+                Agradecemos su aporte en la familia SICRAM ahora podra ayudar a nuestros pacientes en sus consultas\n
+                Solo necesita ingresar a su cuenta y agregue horarios de su disponibilidad
+                con esto nuestros pacientes podran elegirlo para una consulta virtual.\n
+                \n
+                Doctor ${newDoctor.lastname}, recuerde que cuando un paciente registre una cita con usted
+                automaticamente le llegara un correo de informacion de la cita, con sus detalles.\n\n\n
+                Muchas Gracias Atentamente SICRAM  `,
+                newDoctor
+              );
 
               //agregamos el atributo especialidad del doctor agregamos aparte por que especialidad es un Objeto encontrado en la base de datos
               newDoctor.especialidad = especialidad;
@@ -658,9 +677,203 @@ exports.Obtener_Detalles_De_Cita_De_Un_Paciente = async function (req, res) {
       }
     })
       .populate("user")
-      .populate("doctor");
+      .populate("doctor")
+      .populate("horario");
   } catch (err) {
     logger(chalk.red("ERROR: ") + chalk.white(err));
+  }
+};
+
+/////////CREACION DE LA RECETA-------------------------------
+//el obtendra los datos de la cita para colocarlas por defecto a la receta
+exports.Enviar_Datos_Nueva_Receta = async function (req, res) {
+  try {
+    var token = getToken(req.headers);
+    if (token) {
+      if (req.user.id == req.params.id) {
+        //Encontrando al docotor que esta haciendo la cita
+        await Doctor.findById(req.user.id, async (err, doctor) => {
+          try {
+            if (!doctor) {
+              logger(
+                chalk.red("ERR ") + chalk.white("no se encontro el doctor")
+              );
+            } else {
+              //mensaje encontrando al doctor
+              logger(
+                chalk.blue("mensaje: ") +
+                  chalk.green("se encontro al doctor: ") +
+                  chalk.magenta(doctor.lastname)
+              );
+              //encontrando cita por ID mandado por Body
+              await Cita.findById(req.body.id_cita, async (err, cita) => {
+                try {
+                  if (!cita) {
+                    logger(
+                      chalk.red("ERR ") + chalk.white("no se encontro la cita")
+                    );
+                    logger(chalk.red("ERR ") + chalk.white(err));
+                    res.send({ msg: "cita no colocada" });
+                  } else {
+                    await User.findById(cita.user, async (err, paciente) => {
+                      try {
+                        await Horario.findById(cita.horario, (err, horario) => {
+                          console.log(
+                            chalk.blue("nombre del paciente de la receta: ") +
+                              chalk.yellow(paciente.name + " " + paciente.lastname)
+                          );
+                          console.log(
+                            chalk.blue("nombre del doctor de la receta: ") +
+                              chalk.yellow(doctor.name + " "+doctor.lastname)
+                          );
+                          res.json({
+                            receta: "OK",
+                            paciente: paciente.name +" " +paciente.lastname,
+                            doctor: doctor.name + " "+ doctor.lastname,
+                            horario:
+                              "De " +
+                              horario.hora_inicio +
+                              " hasta " +
+                              horario.hora_fin,
+                            fecha: horario.fecha,
+                          });
+                        });
+                      } catch (error) {
+                        logger(chalk.red("ERROR: ") + chalk.white(error));
+                        res.send({ msg: "ERROR: " + error });
+                      }
+                    });
+                  }
+                } catch (error) {
+                  logger(chalk.red("ERROR: ") + chalk.white(error));
+                  res.send({ msg: "ERROR: " + error });
+                }
+              });
+            }
+          } catch (error) {
+            logger(chalk.red("ERROR: ") + chalk.white(error));
+            res.send({ msg: "ERROR: " + error });
+          }
+        });
+      } else {
+        logger(
+          chalk.blue("NO es el usuario ") +
+            chalk.green(req.user.id) +
+            chalk.blue("comparado con ") +
+            chalk.magenta(req.params.id)
+        );
+        res.send(
+          "NO ES EL USUARIO   " +
+            req.user.id +
+            " comparando con " +
+            req.params.id
+        );
+      }
+    } else {
+      return res.status(403).send({ success: false, msg: "Unauthorized." });
+    }
+  } catch (err) {
+    
+    logger(chalk.red("ERROR: ") + chalk.white(err));
+  }
+};
+
+exports.Crear_Nueva_Receta = async function (req, res) {
+  try {
+    var token = getToken(req.headers);
+    if (token) {
+      if (req.user.id == req.params.id) {
+        await Doctor.findById(req.user.id, async (err, doctor) => {
+          if (!doctor) {
+            res.json({ msg: "No se encontró al doctor" });
+          } else {
+            await Cita.findById(req.body.id_cita, async (err, cita) => {
+              if (!cita) {
+                res.json({ msg: "No se encontró la cita" });
+              } else {
+                await Receta.findOne(
+                  { cita: cita._id },
+                  async (err, receta) => {
+                    if (!receta) {
+                      await User.findById(cita.user, async (err, paciente) => {
+                        if (err) {
+                          res.json({
+                            msg: "No se encontró al paciente de la cita",
+                          });
+                        } else {
+                          try {
+                            /*----CARGANDO LA IMAGEN EN CLOUDINARY Y ELIMINANDOLA AUTOMATICAMENTE DE NUESTRO ARCHIVO ESTATICO ----*/
+                            const uploader = async (path) =>
+                            await cloudinary.uploads(path, "Firmas");
+                            //console.log(req.file);
+                            const file = req.file;
+                            /**--------------------------------------------- */
+                            if(file){
+                              const path = file.path;
+                            const newUrl = await uploader(path);
+                            const firma_imagen = newUrl.url;
+                            fs.unlinkSync(path);
+
+                            
+                              var newreceta = new Receta({
+                              nombres_apellidos:
+                              paciente.name + " " + paciente.lastname,
+                              acto_medico: req.body.acto_medico,
+                              medicamentos: req.body.medicamentos,
+                              fecha_expedicion: req.body.fecha_expedicion,
+                              valida_hasta: req.body.valida_hasta,
+                              cita: req.body.id_cita,
+                              firma: firma_imagen
+                            });
+
+                            
+                            newreceta.cita = cita;
+                            await newreceta.save();
+
+                            cita.receta = newreceta;
+                            await cita.save();
+
+                            res.json({ msg: "Nueva receta guardada" });
+                            }else{
+                              res.json({msg:"No se detectó ninguna imagen"});
+                            }
+                            
+                
+                            
+                          } catch (err) {
+                            res.json(err);
+                          }
+                        }
+                      });
+                    } else {
+                      res.json({ msg: "Ya existe una receta para esta cita." });
+                    }
+                  }
+                );
+              }
+            });
+          }
+        });
+      } else {
+        logger(
+          chalk.blue("NO es el usuario ") +
+            chalk.green(req.user.id) +
+            chalk.blue("comparado con ") +
+            chalk.magenta(req.params.id)
+        );
+        res.send(
+          "NO ES EL USUARIO   " +
+            req.user.id +
+            " comparando con " +
+            req.params.id
+        );
+      }
+    } else {
+      return res.status(403).send({ success: false, msg: "Unauthorized." });
+    }
+  } catch (err) {
+    logger(chalk.red("ERROR: ") + chalk.white(err));
+    res.send({ msg: "ERROR: " + err });
   }
 };
 

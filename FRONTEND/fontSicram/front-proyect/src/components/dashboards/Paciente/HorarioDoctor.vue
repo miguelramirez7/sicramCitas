@@ -1,10 +1,32 @@
 <template>
+<div>
+  <!----CARGADOR---->
+    <Loader :dialog="showLoader" />
+    <!----ALERTA---->
+    <Alert
+      :dialog="showAlert"
+      @close="showAlert = false"
+      :mensaje="alerta.mensajeAlerta"
+      :tipo="alerta.tipoAlerta"
+    />
   <v-row class="fill-height">
     <v-col>
-      <h4 >
-        Horarios disponibles del Dr. Apellido
+      <h4>
+        Horarios disponibles del Dr. {{ doctor.name }} {{ doctor.lastname }}
       </h4>
-      <v-sheet height="64">
+      <v-sheet
+        :color="`grey ${theme.isDark ? 'darken-2' : 'lighten-4'}`"
+        class="pa-3"
+        v-if="dataTime == null"
+      >
+        <v-skeleton-loader
+          class="mx-auto "
+          max-width="100%"
+          height="100%"
+          type="date-picker"
+        ></v-skeleton-loader>
+      </v-sheet>
+      <v-sheet height="64" v-if="dataTime != null">
         <v-toolbar flat>
           <v-btn outlined class="mr-4" color="teal darken-2" @click="setToday">
             Hoy
@@ -46,7 +68,7 @@
           </v-menu>
         </v-toolbar>
       </v-sheet>
-      <v-sheet height="350">
+      <v-sheet height="300" v-if="dataTime != null">
         <v-calendar
           ref="calendar"
           v-model="focus"
@@ -64,39 +86,58 @@
           v-model="selectedOpen"
           :close-on-content-click="false"
           :activator="selectedElement"
-          offset-x
+          offset-y
         >
-          <v-card color="grey lighten-4" min-width="350px" flat>
-            <v-toolbar :color="selectedEvent.color" dark>
-              <v-btn icon>
-                <v-icon>mdi-pencil</v-icon>
+          <v-card color="grey lighten-4" min-width="350px" flat class="pa-0">
+            <v-toolbar :color="selectedEvent.color" dark class="pa-0">
+              <v-btn icon @click="agregar(selectedEvent)">
+                <v-icon>mdi-plus</v-icon>
               </v-btn>
-              <v-toolbar-title v-html="selectedEvent.name"></v-toolbar-title>
+              <v-toolbar-title
+              > Disponible de {{selectedEvent.inicio}} - {{selectedEvent.fin}}</v-toolbar-title>
               <v-spacer></v-spacer>
-              <v-btn icon>
-                <v-icon>mdi-heart</v-icon>
-              </v-btn>
-              <v-btn icon>
-                <v-icon>mdi-dots-vertical</v-icon>
+              <v-btn icon @click="selectedOpen = false">
+                <v-icon>mdi-close</v-icon>
               </v-btn>
             </v-toolbar>
-            <v-card-text>
-              <span v-html="selectedEvent.details"></span>
-            </v-card-text>
-            <v-card-actions>
-              <v-btn text color="secondary" @click="selectedOpen = false">
-                Cancel
-              </v-btn>
-            </v-card-actions>
           </v-card>
         </v-menu>
       </v-sheet>
     </v-col>
   </v-row>
+</div>
 </template>
 <script>
+import Loader from "@/modals/Loader.vue";
+import Alert from "@/modals/Alert.vue";
+import { mapActions, mapGetters } from "vuex";
+
 export default {
+  name : "HorarioDoctor",
+  components: {
+    Loader,
+    Alert,
+  },
+  props: {
+    dataTime: {
+      type: Array,
+      default: null,
+    },
+    dataCita: { 
+      type: Object,
+      default: null,
+    },
+    doctor: {
+      type: Object,
+      default: {
+        name: "Nombre",
+        lastname: "Apellido",
+      },
+    },
+  },
   data: () => ({
+    showLoader: false, //MUESTRA EL CARGADOR DESPUES DE REGISTRAR
+    showAlert: false, //MUESTRA LA ALERTA DESPUES DEL REGISTRO
     focus: "",
     type: "week",
     typeToLabel: {
@@ -104,6 +145,11 @@ export default {
       week: "Semana",
       day: "Día",
     },
+    alerta: {
+        mensajeAlerta: "",
+        tipoAlerta: "",
+    },
+    selccion: {},
     selectedEvent: {},
     selectedElement: null,
     selectedOpen: false,
@@ -117,14 +163,88 @@ export default {
       "orange",
       "grey darken-1",
     ],
-    names: [
-      "Meeting",
-    ],
   }),
   mounted() {
     this.$refs.calendar.checkChange();
+    this.$refs.calendar.scrollToTime("08:00");
+    console.log("los horarios son:", this.events);
   },
   methods: {
+    ...mapActions(['registrarCitaTitular',"registrarCitaDependiente"]),
+    //AGREGAR HORARIO:
+    agregar(event) {
+      this.selectedOpen = false
+      this.selccion = event
+      console.log(this.selccion);
+      console.log(this.dataCita);
+      const datos = {
+        _iddoctor : this.doctor._id,
+        especialidad : this.dataCita.especialidad,
+        fecha: this.selccion.data.fecha,
+        hora_inicio:this.selccion.data.hora_inicio,
+        hora_fin: this.selccion.data.hora_fin,
+      }
+      this.camposCorrectos(datos)
+    },
+
+
+    //PARA REGISTRAR LA CITA AL PACIENTE TITULAR DE LA CUENTA
+    citaPacienteTitular(datos){
+      this.registrarCitaTitular({
+        paciente: this.getUsuario,
+        cita: datos,
+      })
+      .then(res=>{
+        if(res==true) this.recargarHorario()
+        this.alerta = this.getAlert
+        this.showLoader = false
+        this.showAlert = true
+      })
+    },
+
+    //PARA REGISTRAR LA CITA AL PACIENTE FAMILIAR DEL TITULAR
+    citaPacienteDependiente(datos){
+      this.registrarCitaDependiente({
+        paciente: this.getUsuario,
+        cita: datos,
+        id_dependiente : this.dataCita.dependiente._id
+      })
+      .then(res=>{
+        if(res==true) this.recargarHorario()
+        this.alerta = this.getAlert
+        this.showLoader = false
+        this.showAlert = true
+      })
+    },
+
+    recargarHorario(){
+      this.$emit("recargarHorario")
+    },
+   
+    camposCorrectos(datos){
+      switch(this.dataCita.tipoPaciente){
+        case 'Dependiente':
+          if(this.dataCita.dependiente == ""){  
+            this.alerta.mensajeAlerta = "Seleccione el paciente dependiente.";
+            this.alerta.tipoAlerta = "warning";
+            this.showAlert = true;
+          }else{
+            this.showLoader = true
+            this.citaPacienteDependiente(datos)
+          }
+          break;
+        case 'Titular':
+          this.showLoader = true
+          this.citaPacienteTitular(datos)
+          break;
+        default:
+          this.alerta.mensajeAlerta = "Seleccione el tipo de Paciente.";
+          this.alerta.tipoAlerta = "warning";
+          this.showAlert = true;
+          break;
+      }
+    },
+
     viewDay({ date }) {
       this.focus = date;
       this.type = "day";
@@ -159,27 +279,26 @@ export default {
 
       nativeEvent.stopPropagation();
     },
+
     updateRange({ start, end }) {
+      console.log("los horarios son:", this.events);
+      this.$refs.calendar.checkChange();
+      this.$refs.calendar.scrollToTime("08:00");
+      this.events = [];
       const events = [];
-
-      const min = new Date(`${start.date}T00:00:00`);
-      const max = new Date(`${end.date}T23:59:59`);
-      const days = (max.getTime() - min.getTime()) / 86400000;
-      const eventCount = this.rnd(days, days + 20);
-
-      for (let i = 0; i < eventCount; i++) {
-        const allDay = this.rnd(0, 3) === 0;
-        const firstTimestamp = this.rnd(min.getTime(), max.getTime());
-        const first = new Date(firstTimestamp - (firstTimestamp % 900000));
-        const secondTimestamp = this.rnd(2, allDay ? 288 : 8) * 900000;
-        const second = new Date(first.getTime() + secondTimestamp);
-
+      for (let i = 0; i < this.dataTime.length; i++) {
+        const first =
+          this.dataTime[i].fecha + " " + this.dataTime[i].hora_inicio;
+        const second = this.dataTime[i].fecha + " " + this.dataTime[i].hora_fin;
+        const data = this.dataTime[i]
         events.push({
-          name: this.names[this.rnd(0, this.names.length - 1)],
+          name: "Disponible.",
           start: first,
           end: second,
           color: this.colors[this.rnd(0, this.colors.length - 1)],
-          timed: !allDay,
+          data:  data,
+          inicio :  this.dataTime[i].hora_inicio,
+          fin: this.dataTime[i].hora_fin
         });
       }
 
@@ -187,6 +306,16 @@ export default {
     },
     rnd(a, b) {
       return Math.floor((b - a + 1) * Math.random()) + a;
+    },
+  },
+
+  computed: {
+    ...mapGetters(["getUsuario","getAlert"])
+  },
+
+  inject: {
+    theme: {
+      default: { isDark: false },
     },
   },
 };

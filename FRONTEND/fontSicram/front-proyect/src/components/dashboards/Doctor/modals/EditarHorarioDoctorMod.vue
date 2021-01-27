@@ -65,14 +65,46 @@
               </v-col>
               <v-col cols="12" md="3">
                 <div class="text-center">
-                  <v-btn elevation="7" color="teal" type="submit">Editar</v-btn>
+                  <v-tooltip left>
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-btn
+                        large
+                        v-bind="attrs"
+                        v-on="on"
+                        elevation="7"
+                        color="green"
+                        type="submit"
+                        dark
+                        >Editar 
+                         <v-icon class="ml-1" >
+                        mdi-pencil
+                      </v-icon></v-btn
+                      >
+                    </template>
+                    <span>Editar Horario</span>
+                  </v-tooltip>
                 </div>
               </v-col>
               <v-col cols="12" md="1">
                 <div class="text-center">
-                  <v-btn elevation="7" color="red lighten-1" @click="close"
-                    >x</v-btn
-                  >
+                  <v-tooltip left>
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-btn
+                        large
+                        v-bind="attrs"
+                        v-on="on"
+                        elevation="7"
+                        color="red"
+                        @click="close"
+                        dark
+                        > 
+                         <v-icon class="ml-1" >
+                        mdi-close
+                      </v-icon></v-btn
+                      >
+                    </template>
+                    <span>CERRAR</span>
+                  </v-tooltip>
                 </div>
               </v-col>
             </v-row>
@@ -141,7 +173,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(["modificarHorario","listarHorariosDoctor"]),
+    ...mapActions(["modificarHorario", "listarHorariosDoctor"]),
     //MODIFICA EL HORARIO DEL DOCTOR
     editar() {
       if (this.$refs.form.validate()) {
@@ -161,8 +193,8 @@ export default {
         doctor: this.getUsuario,
       };
       this.modificarHorario(datos).then((res) => {
-        this.showLoader = false
-        this.showAlert = true
+        this.showLoader = false;
+        this.showAlert = true;
         if (res) {
           this.listarHorariosDoctor(this.getUsuario);
           this.close();
