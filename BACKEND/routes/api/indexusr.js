@@ -56,7 +56,7 @@ router.get('/user/dependiente/citas/:id', dependienteCotroller.Obtener_citas_dep
 //crear nueva cita una vez logeado
 router.post('/user/cita/crear/:id', passport.authenticate('user', { session: false }), citaController.GenerarNuevaCita);
 //listar citas pendientes del usuario
-router.get('/user/cita/listar/:id',passport.authenticate('user', { session: false}),citaController.Obtener_Citas_Paciente);
+router.get('/user/cita/listar_pendientes/:id',passport.authenticate('user', { session: false}),citaController.Obtener_Citas_Pendientes_Paciente);
 //listar citas atendidas del usuario
 router.get('/user/cita/listar_ocupadas/:id',passport.authenticate('user', { session: false}),citaController.Obtener_Citas_Atendidas_Paciente);
 //actualizar citas

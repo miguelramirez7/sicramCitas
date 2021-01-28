@@ -256,14 +256,14 @@ exports.GenerarNuevaCita = async function (req, res) {
 };
 
 //obtener nuevas citas pendientes
-exports.Obtener_Citas_Paciente = async function (req, res) {
+exports.Obtener_Citas_Pendientes_Paciente = async function (req, res) {
   try {
     var token = getToken(req.headers);
     if (token) {
       if (req.user.id == req.params.id) {
         logger(chalk.blue("obtener Cita :  ") + chalk.green(req.user.id));
         await Cita.find(
-          { user: req.user.id, estado: { $ne: "atendido" } },
+          { user: req.user.id, estado: 'pendiente' },
           (err, citas) => {
             if (!citas) {
               logger(chalk.red("Cita no encontrada"));
@@ -307,7 +307,7 @@ exports.Obtener_Citas_Atendidas_Paciente = async function (req, res) {
       if (req.user.id == req.params.id) {
         logger(chalk.blue("obtener Cita :  ") + chalk.green(req.user.id));
         await Cita.find(
-          { user: req.user.id, estado: "atendido" },
+          { user: req.user.id, estado: {$ne: 'pendiente'} },
           (err, CitasOcupadas) => {
             if (!CitasOcupadas) {
               logger(chalk.red("Cita no encontrada"));

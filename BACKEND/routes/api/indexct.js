@@ -60,7 +60,7 @@ router.post(
 //////-----CITAS DEL DOCTOR--------------------------------------------
 //listar citas pendientes
 router.get(
-  "/doctor/cita/listar/:id",
+  "/doctor/cita/listar_pendientes/:id",
   passport.authenticate("doctor", { session: false }),
   doctorController.Obtener_Citas_Doctor
 );
