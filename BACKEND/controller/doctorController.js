@@ -574,14 +574,14 @@ exports.Cambiar_estado_citas = async function (req, res) {
     throw err;
   }
 };
-//listar citas Doctor
+//listar citas pendientes Doctor
 exports.Obtener_Citas_Doctor = async function (req, res) {
   try {
     var token = getToken(req.headers);
     if (token) {
       if (req.user.id == req.params.id) {
         logger(chalk.blue("obtener Citas :  ") + chalk.green(req.user.id));
-        await Cita.find({ doctor: req.user.id, estado:'atendida' }, (err, citas) => {
+        await Cita.find({ doctor: req.user.id, estado:'pendiente' }, (err, citas) => {
           if (!citas) {
             logger(chalk.red("CITA NO ENCONTRADA"));
             res.json({ msg: "no encontro las cita" });
