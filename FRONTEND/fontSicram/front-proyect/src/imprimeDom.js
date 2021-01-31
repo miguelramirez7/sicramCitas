@@ -1,6 +1,6 @@
 'use strict'
 export function print(dato){
-    const prtHtml = document.getElementById('inprime').innerHTML;
+    const prtHtml = document.getElementById('inprime').innerHTML; 
   
         // Get all stylesheets HTML
         let stylesHtml = "";
