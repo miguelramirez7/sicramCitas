@@ -9,6 +9,7 @@ const state = {
     especialidades: null, // VARIABLE PARA LA LISTA DE LAS ESPECIALIDADES
     listaDoctoresPorEspecialidad : null, // VARIABLE PARA LA LISTA DE DOCTORES POR ESPECIALIDAD
     citasPendientes: null, // VARIABLE PARA LA LISTA DE CITAS PENDIENTES
+    citasAtendidas: null, // VARIABLE PARA LA LISTA DE CITAS ATENDIDAS
     dataSintomasPaciente : null // VARIABLE PARA OBTENER SINTOMAS DEL PACIENTE
 };
 
@@ -34,9 +35,13 @@ const getters = {
     },
 
     //CONSEGUIR LAS CITAS PENDIENTES
-
     getCitasPendientes(state){
         return state.citasPendientes
+    },
+
+    //CONSEGUIR LAS CITAS ATENDIDAS
+    getCitasAtendidas(state){
+        return state.citasAtendidas
     },
 
     //CONSIGUE LOS DATOS DE LOS SINTOMAS DEL PACIENTE DE LA CITA
@@ -70,6 +75,11 @@ const mutations = {
     //PONE LAS CITAS PENDIENTES
     setCitasPendientes(state,payload){
         state.citasPendientes=payload
+    },
+
+    //PONE LAS CITAS ATENDIDAS
+    setCitasAtendidas(state,payload){
+      state.citasAtendidas=payload
     },
 
     //PONE LOS DATOS DE LOS SINTOMAS DEL PACIENTE DE LA CITA
@@ -289,7 +299,7 @@ const actions = {
     //CONSULTA PARA OBTENER LA LISTA DE CITAS PENDIENTES DEL DOCTOR
     listarCitasPendientes({commit,dispatch},doctor){
          return axios
-            .get(`/doctor/cita/listar/${doctor.id}`,
+            .get(`/doctor/cita/listar_pendientes/${doctor.id}`,
             {
                 headers: {
                   Authorization: `${doctor.token}`,
@@ -316,6 +326,33 @@ const actions = {
         });
     },
 
+    //CONSULTA PARA CONSEGUIR LAS CITAS ATENDIDAS POR EL DOCTOR
+    listarCitasAtendidas({commit},doctor){
+      let url =
+      `/doctor/historial/${doctor.id}`;
+      return axios
+      .get(url, {
+        headers: {
+          Authorization: `${doctor.token}`,
+        },
+      })
+
+      .then((res) => {
+          console.log(res)
+          if(res.data.length!=0){ 
+            commit('setCitasAtendidas',res.data)
+            return Promise.resolve(true)
+          }else{
+            commit('setCitasAtendidas',null)
+            return Promise.resolve(false)
+          }
+      })
+      .catch((e) => {
+          console.log(e)
+          return Promise.resolve(false)
+      });
+    },
+
     //CONSULTA PARA CONSEGUIR LOS SINTOMAS DEL PACIENTE
     sintomasPaciente({commit},datos){
         return axios 
@@ -334,11 +371,11 @@ const actions = {
             commit('setDataSintomasPaciente',res.data)
             else
             commit('setDataSintomasPaciente',null)
-            Promise.resolve(true)
+            return Promise.resolve(true)
         })
         .catch((e)=>{
             console.log(e)
-            Promise.resolve(false)
+            return Promise.resolve(false)
         })
     },
 
@@ -401,7 +438,38 @@ const actions = {
         dispatch('mensajeTipoAlert', {mensajeAlerta:"Ocurrió un error al guardar la receta médica." ,tipoAlerta:'error'} , { root: true })
         return Promise.resolve(false)
       })
-    }
+    },
+
+    //CONSULTA PARA ATENDER CITA
+    atenderCita({commit},datos){
+      let url =
+        `/doctor/cita/estado/${datos.doctor.id}`;
+       return axios
+        .post(url,
+          { estado: datos.estado, id_cita : datos.id_cita  },
+          {
+            headers: {
+              Authorization: `${datos.doctor.token}`,
+            },
+          }
+        )
+
+        .then((res) => {
+            console.log(res)
+            if(res.data.msg == "Estado guardado"){
+              return Promise.resolve(true)
+            }else{
+              return Promise.resolve(true)
+            }
+        })
+        .catch((e) => {
+            console.log("ocurrio un error")
+            return Promise.resolve(true)
+        });
+    },
+
+
+
 };
 
 export default {

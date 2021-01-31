@@ -182,7 +182,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(["sintomasPaciente"]),
+    ...mapActions(["sintomasPaciente","atenderCita"]),
     abrrirModal(e) {
       console.log("modasdasdal a abrir", e);
       switch (e) {
@@ -214,7 +214,15 @@ export default {
 
     colgar() {
       this.showQuestion = false;
-      window.location.assign("/doctorsystem");
+      const datos = {
+        doctor : this.getUsuario,
+        estado : 'atendido',
+        id_cita : this.get_idCita,
+      }
+      this.atenderCita(datos).then(res=>{
+         window.location.assign("/doctorsystem");
+      })
+      
     },
 
     mostrarSintomas() {
@@ -233,9 +241,9 @@ export default {
             nombre: this.getDoctorPerfil.name,
             apellido: this.getDoctorPerfil.lastname,
             especialidad: this.getDoctorPerfil.especialidad.especialidad,
-            fecha: this.getDataSintomasPaciente.horario,
+            fecha: this.getDataSintomasPaciente.horario.fecha,
             sintomas: this.getDataSintomasPaciente.detalle_sintomas.sintoma,
-            alergias: this.getDataSintomasPaciente.detalle_sintomas.alergia,
+            alergias: "Ninguna",
           };
         }
 

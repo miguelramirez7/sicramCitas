@@ -4,6 +4,7 @@ const axios = require('axios');
 const state = {
     pacientePerfil: null, // VARIABLE PARA LOS DATOS DEL PACIENTE
     citasPendientesTitular: null, // VARIABLE PARA LAS CITAS PENDIENTE DEL PACIENTE TITULAR
+    citasAtendidasTitular: null, // VARIABLE PARA LAS CITAS ATENDIDAS DEL PACIENTE TITULAR
     citasPendientesDependiente: null, // VARIABLE PARA LAS CITAS PENDIENTES DEL PACIENTE DEPENDIENTE
     listaDependientes: null // VARIABLE PARA LA LISTA DE DEPENDIENTES
 };
@@ -16,6 +17,10 @@ const getters = {
     //PARA CONSEGUIR LAS CITAS PENDIENTES DEL PACIENTE TITULAR
     getCitasPendientesTitular(state){
         return state.citasPendientesTitular
+    },
+    //PARA CONSEGUIR LAS CITAS ATENDIDAS DEL PACIENTE TITULAR
+    getCitasAtendidasTitular(state){
+      return state.citasAtendidasTitular
     },
     //PARA CONSEGUIR LAS CITAS PENDIENTES DEL PACIENTE DEPENDIENTE
     getCitasPendientesDependiente(state){
@@ -36,6 +41,11 @@ const mutations = {
     //PONE LAS CITAS PENDIENTES DEL TITULAR
     setCitasPendientesTitular(state,payload){
         state.citasPendientesTitular = payload
+    },
+
+    //PONE LAS CITAS ATENDIDAS DEL TITULAR
+    setCitasAtendidasTitular(state,payload){
+      state.citasAtendidasTitular = payload
     },
 
     //PONE LAS CITAS PENDIENTES DEL DEPENDIENTE
@@ -286,7 +296,7 @@ const actions = {
 
     //CONSULTA PARA CONSEGUIR LA LISTA DE CITAS DEL PACIENTE TITULAR
     listarCitasPendientesTitular({commit},paciente){
-        let url = `/user/cita/listar/${paciente.id}`;
+        let url = `/user/cita/listar_pendientes/${paciente.id}`;
         return axios
           .get(
             url,
@@ -306,6 +316,33 @@ const actions = {
             console.log(e)
             return Promise.resolve(false)
         })
+    },
+
+    listarCitasAtendidasTitular({commit},paciente){
+      let url =
+      `/user/historial/${paciente.id}`;
+      return axios
+      .get(url, {
+        headers: {
+          Authorization: `${paciente.token}`,
+        },
+      })
+      .then((res) => {
+        console.log(res)
+        if(res.data.length!=0){
+          
+          commit('setCitasAtendidasTitular',res.data)
+          return Promise.resolve(true)
+        }else{
+          console.log("vacia")
+          commit('setCitasAtendidasTitular',null)
+          return Promise.resolve(false)
+        }
+      })
+      .catch((e) => {
+         console.log(e) 
+         return Promise.resolve(false)
+      });
     },
 
      //CONSULTA PARA CONSEGUIR LA LISTA DE CITAS DEL PACIENTE DEPENDIENTE
@@ -394,6 +431,8 @@ const actions = {
             return Promise.resolve(false)
         })
     },
+
+    
 
     
 };

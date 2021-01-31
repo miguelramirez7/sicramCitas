@@ -98,7 +98,7 @@
                   dense
                   outlined
                   color="teal"
-                  v-model="element.nombre"
+                  v-model="element.medicamento"
                 ></v-text-field>
               </v-col>
               <v-col md="2" sm="2">
@@ -117,7 +117,7 @@
                   dense
                   outlined
                   color="teal"
-                  v-model="element.frecuencia"
+                  v-model="element.dosis_frecuencia"
                   >></v-text-field
                 >
               </v-col>
@@ -157,7 +157,7 @@
                   <v-text-field
                     :rules="[getReglas.requerido]"
                     color="teal"
-                    v-model="infoReceta.fechaExpedicion"
+                    v-model="infoReceta.fecha_expedicion"
                     label="FECHA DE EXPEDICIÓN"
                     prepend-icon="mdi-calendar"
                     readonly
@@ -168,7 +168,7 @@
                 <v-date-picker
                   :min="date"
                   color="teal"
-                  v-model="infoReceta.fechaExpedicion"
+                  v-model="infoReceta.fecha_expedicion"
                   @input="menu1 = false"
                 ></v-date-picker>
               </v-menu>
@@ -187,7 +187,7 @@
                   <v-text-field
                     :rules="[getReglas.requerido]"
                     color="teal"
-                    v-model="infoReceta.fechaVencimiento"
+                    v-model="infoReceta.valida_hasta"
                     label="VÁLIDA HASTA"
                     prepend-icon="mdi-calendar"
                     readonly
@@ -197,7 +197,7 @@
                 </template>
                 <v-date-picker
                   color="teal"
-                  v-model="infoReceta.fechaVencimiento"
+                  v-model="infoReceta.valida_hasta"
                   :min="date1"
                   @input="menu2 = false"
                 ></v-date-picker>
@@ -211,6 +211,7 @@
                   @change="getImage"
                   accept="image/*"
                 />
+                
                 
             </v-col>
           </v-row>

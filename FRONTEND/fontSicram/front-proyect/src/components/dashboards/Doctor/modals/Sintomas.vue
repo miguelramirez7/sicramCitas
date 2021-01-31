@@ -31,7 +31,11 @@
           <v-col sm="4" md="4">
             DOCTOR
           </v-col>
-          <v-col sm="8" md="8"> : {{ data.nombre }} {{ data.apellido }} </v-col>
+          <v-col sm="8" md="8"> : {{ data.nombreDoc }} {{ data.apellidoDoc }} </v-col>
+          <v-col sm="4" md="4">
+            PACIENTE
+          </v-col>
+          <v-col sm="8" md="8"> : {{ data.nombrePac }} {{ data.apellidoPac }} </v-col>
           <v-col sm="4" md="4">
             Especialidad
           </v-col>
@@ -85,8 +89,11 @@ export default {
       type: Object,
       required: false,
       default: {
-        nombre: "NOMBRE DOCTOR",
-        apellido: "APELLIDO DOCTOR",
+        nombreDoc: "NOMBRE DOCTOR",
+        apellidoDoc: "APELLIDO DOCTOR",
+        nombrePac : "NOMBRE PACIENTE",
+        apellidoPac: "APELLIDO PACIENTE",
+        especialidad : "PRUEBA",
         fecha: "2020-20-20",
         sintomas: "Sintomas",
         alergias: "alergias",

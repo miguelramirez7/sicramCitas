@@ -25,6 +25,7 @@
     "vee-validate": "^3.4.3",
     "vue": "^2.6.11",
     "vue-axios": "^3.2.1",
+    "vue-html2pdf": "^1.8.0",
     "vue-router": "^3.2.0",
     "vue-signature": "^2.4.7",
     "vuetify": "^2.2.11",
