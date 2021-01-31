@@ -17,6 +17,9 @@ var DiagnosticoSchema = new Schema({
   fecha: {
     type: String,
   },
+  anamnesis: {
+    type: String,
+  },
   edad: {
     type: Number,
   },

@@ -657,21 +657,38 @@ exports.Ver_Historial_Paciente = async function (req, res) {
           } else {
             await User.findById(cita.user, async (err, paciente) => {
               if (err) {
-                res.json({ msg: "No se encontraron recetas para esta cita" });
+                res.json({ msg: "No se encontraron pacientes para esta cita" });
               } else {
-                await Diagnostico.find(
-                  { user: paciente },
-                  async (err, diagnosticos) => {
-                    if (!diagnosticos) {
-                      res.json({
-                        msg:
-                          "No se encontraron diagnósticos para este paciente",
-                      });
-                    } else {
-                      res.json(diagnosticos);
-                    }
+                await Cita.find({user: paciente, estado:{$ne:'pendiente'}}, async(err,citas)=>{
+                  if(err){
+                    res.json(err);
                   }
-                );
+                  if(citas[0]== null){
+                    res.json({msg: "Usted no tiene citas atendidas"})
+                  }else{
+                    res.json(citas);
+                  }
+                }).populate({path: "user", select: "email name lastname dni edad celular genero"})
+                .populate({path:"diagnostico", select:"diagnostico resultados_labo tratamiento anamnesis"})
+                .populate({path:"receta", select: "acto_medico medicamentos fecha_expedicion valida_hasta firma"})
+                .populate({path:'doctor', select: 'name lastname email genero dni celular cmp'})
+                .populate({path: 'especialidad', select: 'especialidad'})
+                .populate({path: 'horario', select: 'fecha hora_inicio hora_fin'});;
+
+
+                // await Diagnostico.find(
+                //   { user: paciente },
+                //   async (err, diagnosticos) => {
+                //     if (!diagnosticos) {
+                //       res.json({
+                //         msg:
+                //           "No se encontraron diagnósticos para este paciente",
+                //       });
+                //     } else {
+                //       res.json(cita);
+                //     }
+                //   }
+                // );
               }
             });
           }
@@ -835,7 +852,8 @@ exports.Registrar_Diagnostico = async function (req, res) {
                                       edad: paciente.edad,
                                       diagnostico: req.body.diagnostico,
                                       resultados_labo: req.body.resultados_labo,
-                                      tratamiento: req.body.tratamiento
+                                      tratamiento: req.body.tratamiento,
+                                      anamnesis: req.body.anamnesis
                                     });
 
                                     newdiagnostico.cita = cita;
@@ -1002,7 +1020,7 @@ exports.Paciente_historial_clinico = async function(req,res) {
 
         })
         .populate({path: "user", select: "email name lastname dni edad celular genero"})
-        .populate({path:"diagnostico", select:"diagnostico resultados_labo tratamiento"})
+        .populate({path:"diagnostico", select:"diagnostico resultados_labo tratamiento anamnesis"})
         .populate({path:"receta", select: "acto_medico medicamentos fecha_expedicion valida_hasta firma"})
         .populate({path:'doctor', select: 'name lastname email genero dni celular cmp'})
         .populate({path: 'especialidad', select: 'especialidad'})
@@ -1035,7 +1053,7 @@ exports.Doctor_historial_medico = async function (req, res) {
           }
         })
         .populate({path: "user", select: "email name lastname dni edad celular genero"})
-        .populate({path:"diagnostico", select:"diagnostico resultados_labo tratamiento"})
+        .populate({path:"diagnostico", select:"diagnostico resultados_labo tratamiento anamnesis"})
         .populate({path:"receta", select: "acto_medico medicamentos fecha_expedicion valida_hasta firma"})
         .populate({path:'doctor', select: 'name lastname email genero dni celular cmp'})
         .populate({path: 'especialidad', select: 'especialidad'})
