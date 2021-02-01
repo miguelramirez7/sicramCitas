@@ -185,10 +185,6 @@ export default {
 </script>
 
 <style scope>
-button {
-  background: blue;
-  color: red;
-  height: 50px;
-  width: 100px;
-}
+
+
 </style>

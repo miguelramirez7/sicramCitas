@@ -929,9 +929,14 @@ exports.Buscar_Sintoma = async (req, res) => {
       citaBuscada && citaBuscada.especialidad
         ? await Especialidad.findById(citaBuscada.especialidad)
         : null;
+    let horarioBuscado = 
+      citaBuscada && citaBuscada.horario
+        ? await Horario.findById(citaBuscada.horario)
+        : null;
 
     const resultado = {
       sintomas,
+      horarioBuscado,
       citaBuscada,
       usuarioBuscado,
       especialidadBuscada,

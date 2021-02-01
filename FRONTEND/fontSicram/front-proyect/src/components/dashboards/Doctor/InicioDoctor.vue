@@ -1,4 +1,4 @@
-import { mapGetters } from 'vuex';
+
 <template >
     <div class="d-flex justify-center flex-column align-center" > 
         <h1 class="text-center">BIENVENIDO(A) A SICRAM</h1>

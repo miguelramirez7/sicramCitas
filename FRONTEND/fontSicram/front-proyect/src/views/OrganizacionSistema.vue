@@ -1,5 +1,6 @@
 <template>
 <div class="">
+  <loader :dialog="mostrarLoader" />
   <menu-org></menu-org>
 
   <component  v-bind:is="getComponenteOrganizacion"></component>
@@ -11,6 +12,8 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import Loader from "../modals/Loader.vue";
+
 import MenuOrg from './../components/MenuOrg'
 import InicioOrganizacion from './../components/dashboards/Organizacion/InicioOrganizacion.vue'
 import TuPerfilOrg from './../components/dashboards/Organizacion/TuPerfilOrg.vue'
@@ -26,14 +29,19 @@ export default {
         TuPerfilOrg,
         ActualizarDatosOrg,
         AgregarDoctorOrg,
-        TusDoctoresOrg
+        TusDoctoresOrg,
+        Loader
     },
     computed:{
-      ...mapGetters(['getComponenteOrganizacion'])
+      ...mapGetters(['getComponenteOrganizacion',"getOrganizacionPerfil"]),
+      mostrarLoader() {
+      if (this.getOrganizacionPerfil === null) return true;
+      else return false;
+    },
     }
 }
 </script>
 
-<style>
+<style> 
 
 </style>

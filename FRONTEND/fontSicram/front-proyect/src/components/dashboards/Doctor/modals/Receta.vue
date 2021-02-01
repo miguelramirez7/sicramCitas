@@ -1,7 +1,7 @@
 <template>
   <v-dialog :value="modalReceta" persistent max-width="700px">
     <v-card v-if="data!==null">
-      <v-card-title>
+      <v-card-title> 
         RECETA MÉDICA
         <v-spacer></v-spacer>
         <v-btn icon color="red" @click="close">
@@ -18,9 +18,9 @@
           </v-col>
           <v-col sm="4" md="4">
             DOCTOR
-          </v-col>
+          </v-col>  
           <v-col sm="8" md="8">
-            : {{data.nombre}} {{data.apellido}}
+            : {{data.nombreDoc}} {{data.apellidoDoc}}
           </v-col>
           <v-col sm="4" md="4">
             Especialidad
@@ -28,6 +28,13 @@
           <v-col sm="8" md="8">
             : {{data.especialidad}}
           </v-col>
+          <v-col sm="4" md="4">
+            PACIENTE
+          </v-col>
+          <v-col sm="8" md="8">
+            : {{data.nombrePac}} {{data.apellidoPac}}
+          </v-col>
+          
         </v-row>
         <v-data-table
           :items="data.medicamentos"
@@ -36,6 +43,20 @@
           class="elevation-1"
         >
         </v-data-table>
+      </v-card-text>
+    </v-card>
+    <v-card v-if="data == null">
+      <v-card-title>
+        RECETA MÉDICA
+        <v-spacer></v-spacer>
+        <v-btn icon color="red" @click="close">
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
+      </v-card-title>
+      <v-card-text>
+        <v-alert text prominent type="error" icon="mdi-cloud-alert">
+          El doctor no expidió una receta en esta cita.
+        </v-alert>
       </v-card-text>
     </v-card>
   </v-dialog>
@@ -52,15 +73,18 @@ export default {
     data: {
       type: Object,
       default: {
-        nombre: "NOMBRE DOCTOR",
-        apellido: "APELLIDO DOCTOR",
+        nombreDoc: "NOMBRE DOCTOR",
+        apellidoDoc: "APELLIDO DOCTOR",
+        nombrePac : "NOMBRE PACIENTE",
+        apellidoPac: "APELLIDO PACIENTE",
         fecha: "2020-20-20",
+        especialidad: "PRUEBA",
         medicamentos: [
           {
             medicamento: "pastilla",
-            concentración: "conc",
-            frecuencia: "frec",
-            duración: "dur",
+            concentracion: "conc",
+            dosis_frecuencia: "frec",
+            duracion: "dur",
             cantidad: "ctd",
           },
         ],
@@ -71,9 +95,9 @@ export default {
     return {
       headers: [
         { text: "Medicamento", value: "medicamento" },
-        { text: "Concentración", value: "concentración" },
-        { text: "Frecuencia", value: "frecuencia" },
-        { text: "Duración", value: "duración" },
+        { text: "Concentración", value: "concentracion" },
+        { text: "Frecuencia", value: "dosis_frecuencia" },
+        { text: "Duración", value: "duracion" },
         { text: "Cantidad", value: "cantidad" },
       ],
     };

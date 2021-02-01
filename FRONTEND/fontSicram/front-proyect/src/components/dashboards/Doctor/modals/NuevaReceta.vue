@@ -6,7 +6,7 @@
     <questioner
       :dialog="showQuestioner"
       :title="'Registrar Receta'"
-      :message="'¿Está seguro que desea registrar la receta médica?'"
+      :message="'Solo se puede registrar una vez la receta médica de una cita ¿Está seguro que desea registrar la receta médica? '"
       @accept="registrarReceta"
       @close="showQuestioner = false"
     />
@@ -42,7 +42,7 @@
           </v-col>
           <v-col class="text-center" md="3" sm="3">NOMBRES Y APELLIDOS </v-col>
           <v-col class="text-center" md="9" sm="9">
-            {{ infoReceta.nombre }} {{ infoReceta.apellido }}
+            {{ data.nombre }} {{ data.apellido }}
           </v-col>
           <v-col md="12" sm="12"
             >Agregue medicamentos
@@ -98,7 +98,7 @@
                   dense
                   outlined
                   color="teal"
-                  v-model="element.nombre"
+                  v-model="element.medicamento"
                 ></v-text-field>
               </v-col>
               <v-col md="2" sm="2">
@@ -117,7 +117,7 @@
                   dense
                   outlined
                   color="teal"
-                  v-model="element.frecuencia"
+                  v-model="element.dosis_frecuencia"
                   >></v-text-field
                 >
               </v-col>
@@ -157,7 +157,7 @@
                   <v-text-field
                     :rules="[getReglas.requerido]"
                     color="teal"
-                    v-model="infoReceta.fechaExpedicion"
+                    v-model="infoReceta.fecha_expedicion"
                     label="FECHA DE EXPEDICIÓN"
                     prepend-icon="mdi-calendar"
                     readonly
@@ -168,7 +168,7 @@
                 <v-date-picker
                   :min="date"
                   color="teal"
-                  v-model="infoReceta.fechaExpedicion"
+                  v-model="infoReceta.fecha_expedicion"
                   @input="menu1 = false"
                 ></v-date-picker>
               </v-menu>
@@ -187,7 +187,7 @@
                   <v-text-field
                     :rules="[getReglas.requerido]"
                     color="teal"
-                    v-model="infoReceta.fechaVencimiento"
+                    v-model="infoReceta.valida_hasta"
                     label="VÁLIDA HASTA"
                     prepend-icon="mdi-calendar"
                     readonly
@@ -197,29 +197,25 @@
                 </template>
                 <v-date-picker
                   color="teal"
-                  v-model="infoReceta.fechaVencimiento"
+                  v-model="infoReceta.valida_hasta"
                   :min="date1"
                   @input="menu2 = false"
                 ></v-date-picker>
               </v-menu>
             </v-col>
             <v-col md="4" sm="4">
-              <v-file-input
-                :rules="[getReglas.requerido]"
-                accept="image/*"
-                color="teal"
-                label="Firma imagen"
-                @change="subido"
-                v-model="infoReceta.firma"
-              ></v-file-input>
+              <img class="signature" v-if="signa!=null" :src="signa" />
+              <input
+                  type="file"
+                  name="image"
+                  @change="getImage"
+                  accept="image/*"
+                />
+                
+                
             </v-col>
           </v-row>
 
-          <v-row no-gutters class="text-center mb-7" v-show="imgTemp">
-            <v-col>
-              <img class="signature" :src="imgTemp" alt="" />
-            </v-col>
-          </v-row>
 
           <v-row no-gutters class="text-right ">
             <v-col>
@@ -229,7 +225,7 @@
                   mdi-draw
                 </v-icon>
               </v-btn>
-              <v-btn @click="registrarReceta" class="mr-5" color="green " dark>
+              <v-btn @click="registrar" class="mr-5" color="green " dark>
                 Registrar
                 <v-icon right dark>
                   mdi-file-upload
@@ -250,15 +246,13 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 import Alert from "@/modals/Alert.vue";
 import Loader from "@/modals/Loader.vue";
 import Questioner from "@/modals/Questioner.vue";
 import Firma from "./Firma.vue";
 
-const axios = require("axios");
-//BASE URL POR DEFAULT EN LOCAL HOST
-axios.defaults.baseURL = "http://localhost:3000/api";
+
 export default {
   components: { Firma, Loader, Questioner, Alert },
   name: "NuevaReceta",
@@ -269,6 +263,10 @@ export default {
     },
     data: {
       type: Object,
+      default: {
+        nombre: "NOMBRE PACIENTE",
+        apellido: "APELLIDO PACIENTE"
+      },
       required: false,
     },
   },
@@ -291,52 +289,38 @@ export default {
       menu1: false,
       menu2: false,
       infoReceta: {
-        nombre: "",
-        apellido: "",
         medicamentos: [],
         fechaExpedicion: "",
         fechaVencimiento: "",
-        firma: null
+        firma: null,
       },
-      imgTemp: "",
+      firma_imagen: null,
+      signa: null,
+
     };
   },
   computed: {
-    ...mapGetters(["getReglas"]),
+    ...mapGetters(["getReglas","getUsuario","get_idCita","getAlert"]),
     receta() {
       return this.dialog;
     },
   },
-  watch: {
-    data: {
-      deep: true,
-      handler(val) {
-        this.infoReceta = val;
-        this.numMedicamentos= val.medicamentos.length
 
-        // SI LA RECETA TRAIDA POSEE UNA FIRMA
-        this.imgTemp = `http://localhost:3000/api/uploads/${val.firma}`;
-      },
-    },
-  },
   methods: {
     close() {
       this.$emit("close");
     },
-    subido(event) {
-      var input = event.target;
-
-      this.infoReceta.firma = event;
-
-      let reader = new FileReader();
-
-      reader.onload = (e) => {
-        this.imgTemp = e.target.result;
-      };
-
-      reader.readAsDataURL(event);
+    ...mapActions(['registrarRecetaMedica']),
+    //PARA LA FIRMA
+    getImage(event) {
+      //Asignamos la imagen a  nuestra data
+      this.firma_imagen = event.target.files[0];
+      this.signa = URL.createObjectURL(this.firma_imagen)
     },
+
     agregarMedicamento() {
+      
+      
       if (this.numMedicamentos == this.maxMedicamentos) {
         console.log("Llego al máximo.");
       } else {
@@ -358,54 +342,74 @@ export default {
         this.infoReceta.medicamentos.splice(index, 1);
       }
     },
-    async registrarReceta() {
-      this.showQuestioner = false;
+
+    registrar(){
       if (this.numMedicamentos == 0) {
         this.alert.tipo = "warning";
         this.alert.mensaje = "Registre almenos 1 medicamento!";
         this.showAlert = true;
       }
-      if (this.$refs.form.validate() && this.numMedicamentos > 0) {
-        var bodyFormData = new FormData();
-
-        bodyFormData.append("firma", this.infoReceta.firma);
-
-        if (typeof this.infoReceta.firma == "object") {
-          let fileResponse = await axios({
-            method: "post",
-            url: `/uploadImage`,
-            data: bodyFormData,
-            headers: { "Content-Type": "multipart/form-data" },
-          });
-
-          this.infoReceta.firma = `${fileResponse.data.filename}`;
-        }
-        axios({
-          method: "post",
-          url: `/doctor/generar-receta/${this.$route.params.id}`,
-          data: this.infoReceta,
-          // headers: { "Content-Type": "multipart/form-data" },
-        }).then((response) => {
-          console.log(response);
-          console.log("Fue generado");
-          this.close();
-        });
-
-        return;
-      } else {
-        console.log("mal");
+      if (this.$refs.form.validate() && this.numMedicamentos > 0){
+        this.showQuestioner = true
       }
     },
+
+    registrarReceta(){
+      this.showQuestioner = false
+      this.showLoader = true
+      console.log(this.infoReceta)
+      var data = new FormData()
+      console.log(this.firma_imagen)
+      data.append("acto_medico", "que cha se yo")
+      data.append("firma_imagen", this.firma_imagen);
+      data.append("id_cita", this.get_idCita);
+      data.append("fecha_expedicion", this.infoReceta.fecha_expedicion);
+      data.append("valida_hasta", this.infoReceta.valida_hasta);
+      for (let i = 0; i < this.numMedicamentos; i++) {
+        data.append(
+          "medicamentos[" + i + "][medicamento]",
+          this.infoReceta.medicamentos[i].medicamento
+        );
+        data.append(
+          "medicamentos[" + i + "][concentracion]",
+          this.infoReceta.medicamentos[i].concentracion
+        );
+        data.append(
+          "medicamentos[" + i + "][dosis_frecuencia]",
+          this.infoReceta.medicamentos[i].dosis_frecuencia
+        );
+        data.append(
+          "medicamentos[" + i + "][duracion]",
+          this.infoReceta.medicamentos[i].duracion
+        );
+        data.append(
+          "medicamentos[" + i + "][cantidad]",
+          this.infoReceta.medicamentos[i].cantidad
+        );
+      }
+      let datos = {
+        doctor: this.getUsuario,
+        lista: data,
+      };
+      console.log(JSON.stringify(data));
+      this.registrarRecetaMedica(datos).then((res) => {
+        this.showLoader = false
+        this.alert.tipo = this.getAlert.tipoAlerta
+        this.alert.mensaje = this.getAlert.mensajeAlerta
+        this.showAlert = true
+        
+      });
+
+    }
   },
 };
 </script>
 
 <style lang="scss" scoped>
 .signature {
-  height: 150px;
-  width: 150px;
-  object-fit: contain;
-  border: rgb(141, 89, 226) solid 2px;
+  height: 70px;
+  width: 170px;
+  border-bottom: 1px  black solid ;
 }
 .input-medicamentos {
   max-height: 10px !important;

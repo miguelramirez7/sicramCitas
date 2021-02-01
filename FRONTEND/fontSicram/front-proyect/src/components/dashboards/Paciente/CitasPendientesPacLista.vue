@@ -1,8 +1,17 @@
 <template>
   <div>
     <!---MODALS------->
-    <editar-cita-pendiente :dialog="showEdit" :cita="citaEditar" @close="showEdit = false" />
-    <registrar-sintomas :dialog="showSintomas" @close="showSintomas = false" :idDoctor="idDoctor" :idCita="idCita"/>
+    <editar-cita-pendiente
+      :dialog="showEdit"
+      :cita="citaEditar"
+      @close="showEdit = false"
+    />
+    <registrar-sintomas
+      :dialog="showSintomas"
+      @close="showSintomas = false"
+      :idDoctor="idDoctor"
+      :idCita="idCita"
+    />
     <!----CARGADOR---->
     <loader :dialog="showLoader" />
     <!----ALERTA---->
@@ -23,36 +32,46 @@
       :message="mensajeEliminar.mensaje"
     />
     <!----------------------------------->
-    <v-data-table
-      :headers="headers"
-      :items="dataPacientes"
-      sort-by="calories"
-      class="elevation-1"
-      v-if="dataPacientes != null"
-    >
-      <template v-slot:top>
-        <v-toolbar flat>
-          <v-toolbar-title>Mis horarios</v-toolbar-title>
-          <v-divider class="mx-4" inset vertical></v-divider>
-        </v-toolbar>
-      </template>
-      <template v-slot:[`item.actions`]="{ item }">
-        <v-icon small class="mr-2" @click="editarItem(item)">
-          mdi-pencil
-        </v-icon>
-        <v-icon small class="mr-2" @click="elimiar(item)">
-          mdi-delete
-        </v-icon>
-        <v-icon small @click="ingresar(item)">mdi-import</v-icon>
-      </template>
-    </v-data-table>
+    <div v-if="showNodata == true">
+      <v-alert text prominent type="error" icon="mdi-cloud-alert">
+        Al parecer aún no ha registrado citas, le recomendamos registrarla en la
+        sección <strong>Nueva Cita!</strong>
+      </v-alert>
+    </div>
+    <div v-if="showEskeletor == true">
+      <v-sheet color="grey lighten-4" class="pa-3">
+        <v-skeleton-loader
+          class="mx-auto"
+          type="table-tbody,actions"
+        ></v-skeleton-loader>
+      </v-sheet>
+    </div>
+    <div v-if="dataPacientes !== null">
+      <v-data-table
+        :headers="headers"
+        :items="dataPacientes"
+        sort-by="calories"
+        class="elevation-1"
+        v-if="dataPacientes != null"
+      >
+        <template v-slot:[`item.actions`]="{ item }">
+          <v-icon small class="mr-2" @click="editarItem(item)">
+            mdi-pencil
+          </v-icon>
+          <v-icon small class="mr-2" @click="elimiar(item)">
+            mdi-delete
+          </v-icon>
+          <v-icon small @click="ingresar(item)">mdi-import</v-icon>
+        </template>
+      </v-data-table>
+    </div>
   </div>
 </template>
 <script>
 import Loader from "@/modals/Loader.vue";
 import Alert from "@/modals/Alert.vue";
 import Questioner from "@/modals/Questioner.vue";
-import RegistrarSintomas from "./modals/RegistrarSintomas.vue"
+import RegistrarSintomas from "./modals/RegistrarSintomas.vue";
 import EditarCitaPendiente from "./modals/EditarCitaPendiente.vue";
 import { mapActions, mapGetters } from "vuex";
 export default {
@@ -82,10 +101,12 @@ export default {
         lastname: "Apellido",
       },
     },
-     idCita: null,
+    idCita: null,
     idDoctor: null,
-    showSintomas : false, //MUESTRA EL MODAL PARA REGISTRAR SINTOMAS
+    showSintomas: false, //MUESTRA EL MODAL PARA REGISTRAR SINTOMAS
     showEdit: false, //MUESTRA EL MODAL DE EDITAR CITA
+    showEskeletor: false,
+    showNoData: false,
     dataPacientes: null,
     mensajeEliminar: {
       titulo: "Eliminar Horario.",
@@ -125,19 +146,23 @@ export default {
       "listarCitasPendientesDependiente",
     ]),
     //MUESTRA EL MODAL DE REGISTRAR SINTOMAS
-    ingresar(e){
+    ingresar(e) {
       console.log(e);
-       this.idCita = e._id
-      this.idDoctor = e.doctor._id
+      this.idCita = e._id;
+      this.idDoctor = e.doctor._id;
       this.showSintomas = true;
     },
     //TIPO DE USUARIO
     userType() {
+      this.showNodata = false;
+      this.showEskeletor = true;
       this.dataPacientes = null;
       //console.log("asdasd",this.paciente)
       if (this.paciente.tipoPaciente == "titular") {
         this.listarCitasPendientesTitular(this.getUsuario).then((res) => {
           this.dataPacientes = this.getCitasPendientesTitular;
+          this.showEskeletor = false;
+          if (this.dataPacientes == null) this.showNodata = true;
         });
       } else {
         this.listarCitasPendientesDependiente({
@@ -145,6 +170,8 @@ export default {
           id_dependiente: this.paciente.datos._id,
         }).then((res) => {
           this.dataPacientes = this.getCitasPendientesDependiente;
+          this.showEskeletor = false;
+          if (this.dataPacientes == null) this.showNodata = true;
         });
       }
     },
@@ -152,7 +179,7 @@ export default {
       this.citaEditar = e;
       this.showEdit = true;
       console.log(this.citaEditar);
-      console.log(e)
+      console.log(e);
     },
     elimiar(e) {},
     eliminarItem() {},

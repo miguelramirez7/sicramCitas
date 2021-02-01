@@ -1,8 +1,18 @@
 <template>
   <div>
     <!---MODALS------->
-    <editar-cita-pendiente :dialog="showEdit" :cita="citaEditar" @close="showEdit = false" @recargaCalendar="recargar"/>
-    <registrar-sintomas :dialog="showSintomas" @close="showSintomas = false" :idDoctor="idDoctor" :idCita="idCita"/>
+    <editar-cita-pendiente
+      :dialog="showEdit"
+      :cita="citaEditar"
+      @close="showEdit = false"
+      @recargaCalendar="recargar"
+    />
+    <registrar-sintomas
+      :dialog="showSintomas"
+      @close="showSintomas = false"
+      :idDoctor="idDoctor"
+      :idCita="idCita"
+    />
     <!----CARGADOR---->
     <loader :dialog="showLoader" />
     <!----ALERTA---->
@@ -12,11 +22,24 @@
       :mensaje="getAlert.mensajeAlerta"
       :tipo="getAlert.tipoAlerta"
     />
+    <!---QUESTIONER -------->
+    <questioner
+    :dialog="showQuestioner"
+      @close="showQuestioner = false"
+      :title="'ELIMINAR CITA'"
+      :message="'¿Está seguro de que desea aliminar este cita?'"
+      @accept="eliminarItem" 
+    />
     <v-row class="fill-height">
       <v-col>
+        <div v-if="showNodata == true">
+          <v-alert text prominent type="error" icon="mdi-cloud-alert">
+            Al parecer aún no ha registrado citas, le recomendamos registrarla en la sección <strong>Nueva Cita!</strong>
+          </v-alert>
+        </div>
         <v-sheet
           :color="`grey ${theme.isDark ? 'darken-2' : 'lighten-4'}`"
-          v-if="dataPacientes == null"
+          v-if="showEskeletor == true"
         >
           <v-skeleton-loader
             class="mx-auto "
@@ -100,7 +123,7 @@
                 <v-btn icon @click="editar(selectedEvent)">
                   <v-icon>mdi-pencil</v-icon>
                 </v-btn>
-                <v-btn icon>
+                <v-btn icon @click="eliminar(selectedEvent)">
                   <v-icon>mdi-delete</v-icon>
                 </v-btn>
                 <v-btn icon @click="selectedOpen = false">
@@ -123,7 +146,11 @@
                     {{ selectedEvent.especialidad }}
                   </v-col>
                   <v-col sm="12" md="12" class="d-flex justify-center">
-                    <v-btn :color="selectedEvent.color" style="color:white;" @click="ingresarCita(selectedEvent)">
+                    <v-btn
+                      :color="selectedEvent.color"
+                      style="color:white;"
+                      @click="ingresarCita(selectedEvent)"
+                    >
                       Ingresar
                       <v-icon>mdi-import</v-icon>
                     </v-btn>
@@ -140,9 +167,10 @@
 <script>
 import Loader from "@/modals/Loader.vue";
 import Alert from "@/modals/Alert.vue";
+import Questioner from "@/modals/Questioner.vue";
 import EditarCitaPendiente from "./modals/EditarCitaPendiente.vue";
 import { mapActions, mapGetters } from "vuex";
-import RegistrarSintomas from './modals/RegistrarSintomas.vue';
+import RegistrarSintomas from "./modals/RegistrarSintomas.vue";
 
 export default {
   name: "CitasPendientesPacCalendar",
@@ -151,12 +179,13 @@ export default {
     RegistrarSintomas,
     Alert,
     Loader,
+    Questioner
   },
   props: {
     paciente: {
       type: Object,
       default: {
-        tipoPaciente: 'titular',
+        tipoPaciente: "titular",
         datos: null,
       },
     },
@@ -170,7 +199,10 @@ export default {
         lastname: "Apellido",
       },
     },
-    showSintomas : false, //MUESTRA EL MODAL PARA REGISTRAR SINTOMAS
+    showQuestioner : false,
+    showNodata: false,
+    showEskeletor: false,
+    showSintomas: false, //MUESTRA EL MODAL PARA REGISTRAR SINTOMAS
     showEdit: false, //MUESTRA EL MODAL DE EDITAR CITA
     dataPacientes: null,
     showLoader: false, //MUESTRA EL CARGADOR DESPUES DE REGISTRAR
@@ -205,21 +237,25 @@ export default {
     ...mapActions([
       "listarCitasPendientesTitular",
       "listarCitasPendientesDependiente",
+      "eliminarCitaTitular"
     ]),
     //INGRESA A LA CITA SELECCIONADA
-    ingresarCita(e){
-      this.idCita = e.data._id
-      this.showSintomas = true
-      this.idDoctor = e.data.doctor._id
-
+    ingresarCita(e) {
+      this.idCita = e.data._id;
+      this.showSintomas = true;
+      this.idDoctor = e.data.doctor._id;
     },
     //TIPO DE USUARIO
     userType() {
+      this.showNodata = false;
+      this.showEskeletor = true;
       this.dataPacientes = null;
       //console.log("asdasd",this.paciente)
       if (this.paciente.tipoPaciente == "titular") {
-          this.listarCitasPendientesTitular(this.getUsuario).then((res) => {
+        this.listarCitasPendientesTitular(this.getUsuario).then((res) => {
           this.dataPacientes = this.getCitasPendientesTitular;
+          this.showEskeletor = false;
+          if (this.dataPacientes == null) this.showNodata = true;
         });
       } else {
         this.listarCitasPendientesDependiente({
@@ -227,6 +263,9 @@ export default {
           id_dependiente: this.paciente.datos._id,
         }).then((res) => {
           this.dataPacientes = this.getCitasPendientesDependiente;
+          console.log(this.dataPacientes);
+          this.showEskeletor = false;
+          if (this.dataPacientes == null) this.showNodata = true;
         });
       }
     },
@@ -239,9 +278,29 @@ export default {
       console.log(this.citaEditar);
     },
 
+    eliminar(event){
+      this.selccion = event;
+      this.showQuestioner= true
+    },
+
+    eliminarItem(){
+      this.showQuestioner= false
+      const datos = {
+        paciente: this.getUsuario,
+        id_cita: this.selccion.data._id
+      }
+      this.showLoader = true,
+      this.eliminarCitaTitular(datos)
+      .then(res=>{
+        this.showLoader = false,
+        this.showAlert = true
+        this.userType()
+      })
+    },
+
     //RECARGAR
-    recargar(){
-      this.userType()
+    recargar() {
+      this.userType();
     },
 
     viewDay({ date }) {
@@ -326,9 +385,9 @@ export default {
   watch: {
     paciente: {
       handler: function(val, oldVal) {
-        console.log("nuevo:",val)
-        console.log("viejo:",oldVal)
-        if(val.vista == "Bandeja"){
+        console.log("nuevo:", val);
+        console.log("viejo:", oldVal);
+        if (val.vista == "Bandeja") {
           this.userType();
           this.updateRange; // call it in the context of your component object
         }

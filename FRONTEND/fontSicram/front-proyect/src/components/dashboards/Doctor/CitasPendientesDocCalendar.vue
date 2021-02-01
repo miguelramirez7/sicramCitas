@@ -11,9 +11,16 @@
     />
     <v-row class="fill-height">
       <v-col>
+        <div v-if="showNodata == true">
+          <v-alert text prominent type="error" icon="mdi-cloud-alert">
+            Al parecer aún no se han registrado citas en sus horarios
+            registrados, si no cuenta con uno puede registrarlo en
+            <strong>Agregar Horario!</strong>
+          </v-alert>
+        </div>
         <v-sheet
           :color="`grey ${theme.isDark ? 'darken-2' : 'lighten-4'}`"
-          v-if="dataPacientes == null"
+          v-if="showEskeletor == true"
         >
           <v-skeleton-loader
             class="mx-auto "
@@ -84,11 +91,7 @@
             @click:date="viewDay"
             @change="updateRange"
           ></v-calendar>
-          <v-menu
-            v-model="selectedOpen"
-            :activator="selectedElement"
-            offset-x
-          >
+          <v-menu v-model="selectedOpen" :activator="selectedElement" offset-x>
             <v-card color="grey lighten-4" width="500px" flat class="pa-0">
               <v-toolbar :color="selectedEvent.color" dark class="pa-0">
                 <v-toolbar-title v-html="'CITA PENDIENTE'"></v-toolbar-title>
@@ -142,6 +145,8 @@ export default {
     Alert,
   },
   data: () => ({
+    showNodata: false,
+    showEskeletor: false,
     dataPacientes: null,
     showLoader: false, //MUESTRA EL CARGADOR DESPUES DE REGISTRAR
     showAlert: false, //MUESTRA LA ALERTA DESPUES DEL REGISTRO
@@ -190,9 +195,13 @@ export default {
     },
     //TIPO DE USUARIO
     userType() {
+      this.showEskeletor = true;
+      this.showNodata = false;
       this.dataPacientes = null;
       this.listarCitasPendientes(this.getUsuario).then((res) => {
         this.dataPacientes = this.getCitasPendientes;
+        this.showEskeletor = false;
+        if (this.dataPacientes == null) this.showNodata = true;
       });
     },
     //AGREGAR HORARIO:

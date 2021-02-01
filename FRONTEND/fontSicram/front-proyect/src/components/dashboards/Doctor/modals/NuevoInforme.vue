@@ -7,18 +7,18 @@
       :dialog="showQuestioner"
       :title="'Registrar Informe'"
       :message="'¿Está seguro que desea registrar el Informe médico?'"
-      @accept="registrarReceta"
+      @accept="registrarInforme"
       @close="showQuestioner = false"
     />
     <!---ALERT---->
     <alert
-      @close="showAlert = false"
       :dialog="showAlert"
-      :tipo="alert.tipo"
-      :mensaje="alert.mensaje"
+      @close="showAlert = false"
+      :mensaje="getAlert.mensajeAlerta"
+      :tipo="getAlert.tipoAlerta"
     />
     <!-- :tipo="" :mensaje:""-->
-    <v-card color="white">
+    <v-card color="white" v-if="data !== null">
       <v-card-text style="color:black;">
         <v-row no-gutters class="pt-2 pb-5">
           <v-col class="text-center" md="8" sm="8">
@@ -37,27 +37,22 @@
               </v-col>
             </v-row>
           </v-col>
-          <v-col class="text-center" md="3" sm="3">NOMBRES Y APELLIDOS </v-col>
+          <v-col md="3" sm="3">NOMBRES Y APELLIDOS DOCTOR</v-col>
           <v-col class="text-center" md="9" sm="9">
-            {{ infoInforme.nombre }} {{ infoInforme.apellido }}
+            {{ data.nombre }} {{ data.apellido }}
           </v-col>
         </v-row>
 
-        <v-form
-          ref="form"
-          lazy-validation
-          @submit.prevent="showQuestioner = true"
-        >
+        <v-form ref="form" lazy-validation @submit.prevent="registrar">
           <v-row no-gutters class="ma-5">
             <v-col md="3" sm="3">
               ANAMNESIS:
             </v-col>
             <v-col md="9" sm="9">
               <v-textarea
-                :rules="[getReglas.requerido]"
+                
                 dense
                 rows="1"
-                v-model="infoInforme.anamnesis"
                 outlined
                 no-resize
                 color="teal"
@@ -99,7 +94,7 @@
                 :rules="[getReglas.requerido]"
                 dense
                 rows="1"
-                v-model="infoInforme.ultimaEvolucion"
+                v-model="infoInforme.resultados_labo"
                 no-resize
                 outlined
                 color="teal"
@@ -108,13 +103,7 @@
           </v-row>
           <v-row no-gutters class="text-right ">
             <v-col>
-              <v-btn
-                @click="saveInform"
-                type="submit"
-                class="mr-5"
-                color="blue "
-                dark
-              >
+              <v-btn type="submit" class="mr-5" color="blue " dark>
                 Registrar
                 <v-icon right dark>
                   mdi-file-upload
@@ -135,17 +124,13 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 import Alert from "@/modals/Alert.vue";
 import Loader from "@/modals/Loader.vue";
 import Questioner from "@/modals/Questioner.vue";
-import Firma from "./Firma.vue";
 
-const axios = require("axios");
-//BASE URL POR DEFAULT EN LOCAL HOST
-axios.defaults.baseURL = "http://localhost:3000/api";
 export default {
-  components: { Firma, Loader, Questioner, Alert },
+  components: {  Loader, Questioner, Alert },
   name: "NuevoInforme",
   props: {
     dialog: {
@@ -159,95 +144,52 @@ export default {
         nombre: "NOMBRE DOCTOR",
         apellido: "APELLIDO DOCTOR",
         fecha: "2020-20-20",
-        especialidad: "",
-        anamnesis: "",
-        diagnostico: "",
-        tratamiento: "",
-        ultimaEvolucion: "",
       },
     },
   },
   data() {
     return {
-      alert: {
-        tipo: "info",
-        mensaje: "",
-      },
-      showFirma: false,
       showAlert: false,
       showQuestioner: false,
       showLoader: false,
       infoInforme: {
-        nombre: "",
-        apellido: "",
-        fecha: "",
-        especialidad: "",
-        anamnesis: "",
         diagnostico: "",
+        resultados_labo: "",
         tratamiento: "",
-        ultimaEvolucion: "",
+        id_cita : ""
       },
     };
   },
   computed: {
-    ...mapGetters(["getReglas"]),
+    ...mapGetters(["getAlert","getReglas", "getUsuario", "get_idCita"]),
     informe() {
       return this.dialog;
     },
   },
-  watch: {
-    data: {
-      deep: true,
-      handler(val) {
-        this.infoInforme = val;
-      },
-    },
-  },
   methods: {
+    ...mapActions(["registrarInformeMedico"]),
     close() {
       this.$emit("close");
     },
-    saveInform() {
-      axios
-        .post(
-          `/doctor/generar-informe/${this.$route.params.id}`,
-          this.infoInforme
-        )
-        .then((response) => {
-          console.log("Fue generado");
-          this.close();
-        });
-    },
-    agregarMedicamento() {
-      if (this.numMedicamentos == this.maxMedicamentos) {
-        console.log("Llego al máximo.");
-      } else {
-        let medicamentos = {
-          medicamento: "",
-          concentracion: "",
-          dosis_frecuencia: "",
-          duracion: "",
-          cantidad: "",
-        };
-        this.numMedicamentos = 1 + this.numMedicamentos;
-        this.medicamentos.push(medicamentos);
-        console.log(this.medicamentos);
-      }
-    },
-    eliminarMedicamento(index) {
-      this.numMedicamentos = this.numMedicamentos - 1;
-      //var i = this.medicamentos.indexOf(item)
-      if (index !== -1) {
-        this.medicamentos.splice(index, 1);
-      }
-    },
-    registrarReceta() {
-      this.showQuestioner = false;
+    registrar() {
+      console.log(this.infoInforme)
       if (this.$refs.form.validate()) {
-        console.log("bien");
-      } else {
-        console.log("mal");
+        this.showQuestioner = true
       }
+    },
+    registrarInforme() {
+      
+      this.infoInforme.id_cita = this.get_idCita
+      this.showQuestioner = false
+      this.showLoader = true
+      const datos = {
+        doctor: this.getUsuario,
+        informe: this.infoInforme,
+      };
+      this.registrarInformeMedico(datos).then((res) => {
+        this.showLoader = false
+        this.showAlert = true
+      });
     },
   },
 };

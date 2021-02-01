@@ -20,31 +20,43 @@
       :message="mensajeEliminar.mensaje"
     />
     <!----------------------------------->
-    <v-data-table
-      :headers="headers"
-      :items="dataPacientes"
-      sort-by="calories"
-      class="elevation-1"
-      v-if="dataPacientes != null"
-    >
-      <template v-slot:top>
-        <v-toolbar flat>
-          <v-toolbar-title>Mis horarios</v-toolbar-title>
-          <v-divider class="mx-4" inset vertical></v-divider>
-        </v-toolbar>
-      </template>
-      <template v-slot:[`item.actions`]="{ item }">
-        <router-link :to="{ name: 'CitaDoctor', params: { id: item._id } }">
-          <v-tooltip top>
-            <template v-slot:activator="{ on }">
-              <v-icon v-on="on">mdi-video-plus</v-icon>
-            </template>
-            <span>Ir a la llamada</span>
-          </v-tooltip>
-        </router-link>
-        <v-icon class="ml-2" small @click="elimiar(item)">mdi-import</v-icon>
-      </template>
-    </v-data-table>
+    <div v-if="showNodata == true">
+      <v-alert text prominent type="error" icon="mdi-cloud-alert">
+        Al parecer aún no se han registrado citas en sus horarios registrados,
+        si no cuenta con uno puede registrarlo en
+        <strong>Agregar Horario!</strong>
+      </v-alert>
+    </div>
+    <div v-if="showEskeletor == true">
+      <v-sheet color="grey lighten-4" class="pa-3">
+        <v-skeleton-loader
+          class="mx-auto"
+          type="table-tbody,actions"
+        ></v-skeleton-loader>
+      </v-sheet>
+    </div>
+
+    <div>
+      <v-data-table
+        :headers="headers"
+        :items="dataPacientes"
+        sort-by="calories"
+        class="elevation-1"
+        v-if="dataPacientes != null"
+      >
+        <template v-slot:[`item.actions`]="{ item }">
+          <router-link :to="{ name: 'CitaDoctor', params: { id: item._id } }">
+            <v-tooltip top>
+              <template v-slot:activator="{ on }">
+                <v-icon v-on="on">mdi-video-plus</v-icon>
+              </template>
+              <span>Ir a la llamada</span>
+            </v-tooltip>
+          </router-link>
+          <v-icon class="ml-2" small @click="elimiar(item)">mdi-import</v-icon>
+        </template>
+      </v-data-table>
+    </div>
   </div>
 </template>
 <script>
@@ -61,6 +73,8 @@ export default {
   },
 
   data: () => ({
+    showEskeletor: false,
+    showNoData: false,
     mensajeEliminar: {
       titulo: "Eliminar Horario.",
       mensaje: "¿Está seguro que desea eliminar este horario?",
@@ -93,9 +107,13 @@ export default {
     ...mapActions(["listarCitasPendientes"]),
     //TIPO DE USUARIO
     userType() {
+      this.showNodata = false;
+      this.showEskeletor = true;
       this.dataPacientes = null;
       this.listarCitasPendientes(this.getUsuario).then((res) => {
         this.dataPacientes = this.getCitasPendientes;
+        this.showEskeletor = false;
+        if (this.dataPacientes == null) this.showNodata = true;
       });
     },
     editarItem(e) {},

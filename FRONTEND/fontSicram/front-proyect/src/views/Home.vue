@@ -2,6 +2,10 @@
   <div class="imagen" v-if="getUsuario == null">
     <!---------------MODALES---------------------->
     <Login :dialog="loginDialog" @close="loginDialog = false" />
+    <RegistroOrganizacionMod
+      :dialog="items[0].action"
+      @close="items[0].action = false"
+    />
     <RegistroPacienteMod
       :dialog="items[1].action"
       @close="items[1].action = false"
@@ -9,10 +13,6 @@
     <RegistroDoctorMod
       :dialog="items[2].action"
       @close="items[2].action = false"
-    />
-    <RegistroOrganizacionMod
-      :dialog="items[0].action"
-      @close="items[0].action = false"
     />
     <!-------------------------------------------->
     <v-app-bar color="" dense dark absolute>

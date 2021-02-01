@@ -60,21 +60,22 @@ export default {
     };
   },
   props: {
-
     data: {
-        type: Object,
-        required: true,
-        default: {
-            userOutgoing : "",
-            userIncoming : "",
-            userOutgoingFoto: "",
-            sesionChat: "",
-        }
+      type: Object,
+      required: true,
+      default: {
+        userOutgoing: "",
+        userIncoming: "",
+        userOutgoingFoto: "",
+        sesionChat: "",
+      },
     },
   },
   methods: {
     async getMessages() {
       moment.locale("es");
+      console.log(this.data.userOutgoing)
+      console.log(this.data.sesionChat)
       let ref = db
         .collection("chatSicram")
         .doc(this.data.userOutgoing)
@@ -83,14 +84,13 @@ export default {
       ref.onSnapshot((qsh) => {
         this.mensajes = [];
         qsh.forEach((element) => {
-          
-            this.mensajes.push({
-              mensaje: element.data().mensaje,
-              nombre: element.data().nombre,
-              fecha: moment(element.data().fecha).format("lll"),
-              foto: element.data().foto,
-            });
-          
+          this.mensajes.push({
+            mensaje: element.data().mensaje,
+            nombre: element.data().nombre,
+            fecha: moment(element.data().fecha).format("lll"),
+            foto: element.data().foto,
+          });
+
           var messageDisplay = this.$refs.messageDisplay;
           messageDisplay.scrollTop = messageDisplay.scrollHeight;
           this.count = this.count + 1;
@@ -191,7 +191,7 @@ export default {
   }
 }
 
-.mensaje-saliente {  
+.mensaje-saliente {
   color: rgb(41, 41, 41);
   border-radius: 25px 25px 25px 0px;
   background: rgb(231, 231, 231);
@@ -205,5 +205,4 @@ export default {
     background: rgb(85, 192, 81);
   }
 }
-
 </style>

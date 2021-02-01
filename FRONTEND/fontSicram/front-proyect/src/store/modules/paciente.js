@@ -1,9 +1,10 @@
 const axios = require('axios');
-//axios.defaults.baseURL = 'https://sicramtest.herokuapp.com/api';
+
 
 const state = {
     pacientePerfil: null, // VARIABLE PARA LOS DATOS DEL PACIENTE
     citasPendientesTitular: null, // VARIABLE PARA LAS CITAS PENDIENTE DEL PACIENTE TITULAR
+    citasAtendidasTitular: null, // VARIABLE PARA LAS CITAS ATENDIDAS DEL PACIENTE TITULAR
     citasPendientesDependiente: null, // VARIABLE PARA LAS CITAS PENDIENTES DEL PACIENTE DEPENDIENTE
     listaDependientes: null // VARIABLE PARA LA LISTA DE DEPENDIENTES
 };
@@ -16,6 +17,10 @@ const getters = {
     //PARA CONSEGUIR LAS CITAS PENDIENTES DEL PACIENTE TITULAR
     getCitasPendientesTitular(state){
         return state.citasPendientesTitular
+    },
+    //PARA CONSEGUIR LAS CITAS ATENDIDAS DEL PACIENTE TITULAR
+    getCitasAtendidasTitular(state){
+      return state.citasAtendidasTitular
     },
     //PARA CONSEGUIR LAS CITAS PENDIENTES DEL PACIENTE DEPENDIENTE
     getCitasPendientesDependiente(state){
@@ -36,6 +41,11 @@ const mutations = {
     //PONE LAS CITAS PENDIENTES DEL TITULAR
     setCitasPendientesTitular(state,payload){
         state.citasPendientesTitular = payload
+    },
+
+    //PONE LAS CITAS ATENDIDAS DEL TITULAR
+    setCitasAtendidasTitular(state,payload){
+      state.citasAtendidasTitular = payload
     },
 
     //PONE LAS CITAS PENDIENTES DEL DEPENDIENTE
@@ -284,9 +294,36 @@ const actions = {
         })
     },
 
+    //CONSULTA PARA ELIMINAR UNA CITA DEL TITULAR
+    eliminarCitaTitular({commit,dispatch},datos){
+      return axios
+            .post(`/user/cita/eliminar/${datos.paciente.id}`, { id_cita : datos.id_cita }, {
+                headers: {
+                    Authorization: `${datos.paciente.token}`,
+                },
+            })
+            .then((res) => {
+                console.log(res)
+                if (res.data.msg == "Cita eliminada") {
+                    dispatch('mensajeTipoAlert', { mensajeAlerta: "Cita eliminada con éxito.", tipoAlerta: 'success' }, { root: true })
+                } else {
+                    dispatch('mensajeTipoAlert', { mensajeAlerta: res.data.msg, tipoAlerta: 'warning' }, { root: true })
+                }
+
+                return Promise.resolve(true)
+            })
+            .catch((e) => {
+
+                console.log(e)
+                dispatch('mensajeTipoAlert', { mensajeAlerta: 'OCURRIO UN ERROR', tipoAlerta: 'error' }, { root: true })
+
+                return Promise.resolve(false)
+            })
+    },
+
     //CONSULTA PARA CONSEGUIR LA LISTA DE CITAS DEL PACIENTE TITULAR
     listarCitasPendientesTitular({commit},paciente){
-        let url = `/user/cita/listar/${paciente.id}`;
+        let url = `/user/cita/listar_pendientes/${paciente.id}`;
         return axios
           .get(
             url,
@@ -298,13 +335,41 @@ const actions = {
           )
         .then((res)=>{
             console.log(res)
-            commit('setCitasPendientesTitular',res.data)
+            if(res.data.length == 0 )  commit('setCitasPendientesTitular',null)
+            else commit('setCitasPendientesTitular',res.data)
             return Promise.resolve(true)
         })
         .catch((e)=>{
             console.log(e)
             return Promise.resolve(false)
         })
+    },
+
+    listarCitasAtendidasTitular({commit},paciente){
+      let url =
+      `/user/historial/${paciente.id}`;
+      return axios
+      .get(url, {
+        headers: {
+          Authorization: `${paciente.token}`,
+        },
+      })
+      .then((res) => {
+        console.log(res)
+        if(res.data.msg !== "Usted no tiene citas atendidas"){
+          
+          commit('setCitasAtendidasTitular',res.data)
+          return Promise.resolve(true)
+        }else{
+          console.log("vacia")
+          commit('setCitasAtendidasTitular',null)
+          return Promise.resolve(false)
+        }
+      })
+      .catch((e) => {
+         console.log(e) 
+         return Promise.resolve(false)
+      });
     },
 
      //CONSULTA PARA CONSEGUIR LA LISTA DE CITAS DEL PACIENTE DEPENDIENTE
@@ -321,7 +386,9 @@ const actions = {
         )
       .then((res)=>{
           console.log(res)
-          commit('setCitasPendientesDependiente',res.data)
+         
+          if(res.data.length == 0 )  commit('setCitasPendientesDependiente',null)
+          else commit('setCitasPendientesDependiente',res.data)
           return Promise.resolve(true)
       })
       .catch((e)=>{
@@ -359,7 +426,42 @@ const actions = {
             dispatch('mensajeTipoAlert', {mensajeAlerta:"Ocurrio un error en la actualizacion",tipoAlerta:'error'} , { root: true })
             return Promise.resolve(false)
         })
-    }
+    },
+
+    //CONSULTA PARA REGISTRAR LOS SINTOMAS DEL PACIENTE INGRESANDO A LA CITA
+    registrarSintomas({commit,dispatch},datos){
+        let url = `/user/cita/registrar_sintomas/${datos.paciente.id}`;
+        return axios
+          .post(
+            url,
+            { ...datos.sintomas },
+            {
+              headers: {
+                Authorization: `${datos.paciente.token}`,
+              },
+            }
+          )
+        .then((res)=>{
+            console.log(res)
+            if(res.data==="Sintomas agregados"){
+              dispatch('mensajeTipoAlert', {mensajeAlerta: res.data,tipoAlerta:'success'} , { root: true })
+              return Promise.resolve(true)
+            }else{
+              dispatch('mensajeTipoAlert', {mensajeAlerta:res.data.msg ,tipoAlerta:'warning'} , { root: true })
+              return Promise.resolve(false)
+            }
+
+        })
+        .catch((e)=>{
+            console.log(e)
+            dispatch('mensajeTipoAlert', {mensajeAlerta:"Ocurrio un error en la actualizacion",tipoAlerta:'error'} , { root: true })
+            return Promise.resolve(false)
+        })
+    },
+
+    
+
+    
 };
 
 export default {

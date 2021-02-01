@@ -22,7 +22,7 @@
                   label="Nombres*"
                   required
                   color="cyan"
-                  :rules="[getReglas.requerido]"
+                  :rules="[getReglas.requerido,getReglas.maxCharacters,getReglas.onlyLetters]"
                   v-model="doctorDatos.name"
                 ></v-text-field>
               </v-col>
@@ -31,7 +31,7 @@
                   label="Apellidos*"
                   required
                   color="cyan"
-                  :rules="[getReglas.requerido]"
+                  :rules="[getReglas.requerido,getReglas.maxCharacters,getReglas.onlyLetters]"
                   v-model="doctorDatos.lastname"
                 ></v-text-field>
               </v-col>
@@ -40,7 +40,7 @@
                   label="Correo*"
                   required
                   color="cyan"
-                  :rules="[getReglas.requerido, getReglas.correo]"
+                  :rules="[getReglas.requerido, getReglas.correo,getReglas.maxCharacters]"
                   v-model="doctorDatos.email"
                 ></v-text-field>
               </v-col>
@@ -55,6 +55,7 @@
                     getReglas.requerido,
                     getReglas.pass,
                     getReglas.minimochar,
+                    getReglas.maxCharacters
                   ]"
                   @click:append="show1 = !show1"
                   v-model="doctorDatos.password"
@@ -62,6 +63,7 @@
               </v-col>
               <v-col cols="12" sm="6">
                 <v-text-field
+                type="number"
                   label="DNI*"
                   required
                   color="cyan"
@@ -74,7 +76,7 @@
                   :items="['MASCULINO', 'FEMENINO']"
                   label="Género*"
                   required
-                  color="cyan"
+                  color="cyan"                  
                   :rules="[getReglas.requerido]"
                   v-model="doctorDatos.genero"
                 ></v-select>
@@ -82,7 +84,7 @@
               <v-col cols="12" sm="6">
                 <v-text-field
                   label="CMP*"
-                  required
+                  required   
                   color="cyan"
                   :rules="[getReglas.requerido]"
                   v-model="doctorDatos.cmp"
@@ -102,9 +104,10 @@
               <v-col cols="12" sm="6">
                 <v-text-field
                   label="Edad*"
+                  type="number"
                   required
                   color="cyan"
-                  :rules="[getReglas.requerido]"
+                  :rules="[getReglas.requerido,getReglas.edad]"
                   v-model="doctorDatos.edad"
                 ></v-text-field>
               </v-col>

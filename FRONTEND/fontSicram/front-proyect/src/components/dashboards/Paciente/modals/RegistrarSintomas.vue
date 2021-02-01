@@ -1,6 +1,14 @@
 <template>
   <v-dialog :value="modSintomas" max-width="600px" persistent>
+    <!--CARGADOR-->
     <loader :dialog="showLoader" />
+    <!--ALERTA-->
+    <alert
+      :dialog="showAlert"
+      @close="showAlert = false"
+      :mensaje="getAlert.mensajeAlerta"
+      :tipo="getAlert.tipoAlerta"
+    />
     <v-card>
       <v-toolbar color="teal" dark class="pa-0" max-height="60px">
         <v-btn
@@ -26,7 +34,13 @@
               actuales:
             </v-col>
             <v-col md="12" sm="12">
-              <v-textarea v-model="form.sintomas" color="teal" filled rows="1" no-resize></v-textarea>
+              <v-textarea
+                v-model="sintomas.sintoma"
+                color="teal"
+                filled
+                rows="1"
+                no-resize
+              ></v-textarea>
             </v-col>
 
             <v-col md="6" sm="6">
@@ -37,9 +51,10 @@
                 </v-col>
                 <v-col cols="12">
                   <v-switch
-                    v-model="form.last_atention"
+                    color="teal"
+                    v-model="sintomas.tratamiento_reciente"
                     :label="
-                      form.last_atention
+                      sintomas.tratamiento_reciente
                         ? 'Sí, he recibido atención médico'
                         : 'No en las últimas 24 horas'
                     "
@@ -55,9 +70,10 @@
                 </v-col>
                 <v-col sm="12">
                   <v-switch
-                    v-model="form.some_allergy"
+                    color="teal"
+                    v-model="sintomas.alergia"
                     :label="
-                      form.some_allergy
+                      sintomas.alergia
                         ? 'Sí, sufro de alguna alergía'
                         : 'No poseo alergías'
                     "
@@ -73,7 +89,6 @@
               <v-textarea
                 color="teal"
                 filled
-                v-model="form.alergias"
                 rows="1"
                 no-resize
                 name="input-7-4"
@@ -87,22 +102,12 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 import Loader from "@/modals/Loader.vue";
-
-const axios = require("axios");
-//BASE URL POR DEFAULT EN LOCAL HOST
-axios.defaults.baseURL = "http://localhost:3000/api";
-
-const defaultForm = {
-  sintomas: "",
-  last_atention: false,
-  some_allergy: true,
-  alergias: "",
-};
+import Alert from "@/modals/Alert.vue";
 
 export default {
-  components: { Loader },
+  components: { Loader, Alert },
   name: "RegistrarSintomas",
   props: {
     dialog: {
@@ -121,52 +126,46 @@ export default {
   data() {
     return {
       showLoader: false,
-      form: { ...defaultForm },
+      showAlert: false,
+      sintomas: {
+        sintoma: "",
+        tratamiento_reciente: false,
+        alergia: false,
+        id_cita: "",
+      },
     };
   },
   computed: {
+    ...mapGetters(["getUsuario", "getAlert"]),
     modSintomas() {
       return this.dialog;
     },
   },
-  watch: {
-    // SI SE ABRE SE BUSCARÁ SI POSEE YA SINTOMAS REGISTRADOS
-    dialog(val) {
-      if (!!val) {
-        this.searchSintomas(this.idCita);
-      }
-    },
-  },
   methods: {
-    ...mapActions(["save_idCita"]),
+    ...mapActions(["save_idCita", "registrarSintomas"]),
     close() {
       this.$emit("close");
     },
-    searchSintomas(idCita) {
-      axios.get(`/doctor/obtener-sintoma/${idCita}`).then((res) => {
-        if (res.data.citaBuscada && res.data.citaBuscada.detalle_sintomas) {
-          this.form = {
-            sintomas: res.data.citaBuscada.detalle_sintomas.sintomas,
-            last_atention: res.data.citaBuscada.detalle_sintomas.last_atention,
-            some_allergy: res.data.citaBuscada.detalle_sintomas.some_allergy,
-            alergias: res.data.citaBuscada.detalle_sintomas.alergias,
-          };
-        }
-      });
-    },
     ingresarCita() {
-      this.showLoader = true;
-      setTimeout(() => {
-        this.showLoader = false;
+      //if (this.$refs.form.validate()) {
+        this.sintomas.id_cita = this.idCita;
         this.save_idCita(this.idCita);
-        this.form.fecha = new Date()
-        axios.post(`/doctor/generar-sintomas/${this.idCita}`, this.form).then((res) => {
-          this.$router.push({
-            name: "CitaPaciente",
-            params: { id: this.idDoctor },
-          });
+        this.showLoader = true;
+        const datos = {
+          paciente: this.getUsuario,
+          sintomas: this.sintomas,
+        };
+        this.registrarSintomas(datos).then((res) => {
+          this.showLoader = false;
+          this.showAlert = true;
+          if (res == true) {
+            this.$router.push({
+              name: "CitaPaciente",
+              params: { id: this.idDoctor },
+            });
+          }
         });
-      }, 500);
+      //}
     },
   },
 };
