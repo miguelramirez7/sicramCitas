@@ -1,6 +1,6 @@
 <template>
   <v-dialog :value="modalSintomas" persistent max-width="700px">
-    <v-card v-if="data.sintomas == '' || data == null">
+    <v-card v-if="data == null">
       <v-card-title>
         SINTOMAS DEL PACIENTE
         <v-spacer></v-spacer>
@@ -10,11 +10,11 @@
       </v-card-title>
       <v-card-text>
         <v-alert text prominent type="error" icon="mdi-cloud-alert">
-          El paciente aún no ha registrado sus sintomas.
+          El paciente no ha registrado sus sintomas.
         </v-alert>
       </v-card-text>
     </v-card>
-    <v-card v-if="data.sintomas !== '' || data !== null">
+    <v-card v-if=" data !== null">
       <v-card-title>
         SINTOMAS DEL PACIENTE
         <v-spacer></v-spacer>

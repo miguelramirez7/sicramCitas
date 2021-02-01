@@ -294,6 +294,33 @@ const actions = {
         })
     },
 
+    //CONSULTA PARA ELIMINAR UNA CITA DEL TITULAR
+    eliminarCitaTitular({commit,dispatch},datos){
+      return axios
+            .post(`/user/cita/eliminar/${datos.paciente.id}`, { id_cita : datos.id_cita }, {
+                headers: {
+                    Authorization: `${datos.paciente.token}`,
+                },
+            })
+            .then((res) => {
+                console.log(res)
+                if (res.data.msg == "Cita eliminada") {
+                    dispatch('mensajeTipoAlert', { mensajeAlerta: "Cita eliminada con éxito.", tipoAlerta: 'success' }, { root: true })
+                } else {
+                    dispatch('mensajeTipoAlert', { mensajeAlerta: res.data.msg, tipoAlerta: 'warning' }, { root: true })
+                }
+
+                return Promise.resolve(true)
+            })
+            .catch((e) => {
+
+                console.log(e)
+                dispatch('mensajeTipoAlert', { mensajeAlerta: 'OCURRIO UN ERROR', tipoAlerta: 'error' }, { root: true })
+
+                return Promise.resolve(false)
+            })
+    },
+
     //CONSULTA PARA CONSEGUIR LA LISTA DE CITAS DEL PACIENTE TITULAR
     listarCitasPendientesTitular({commit},paciente){
         let url = `/user/cita/listar_pendientes/${paciente.id}`;
@@ -329,7 +356,7 @@ const actions = {
       })
       .then((res) => {
         console.log(res)
-        if(res.data.length!=0){
+        if(res.data.msg !== "Usted no tiene citas atendidas"){
           
           commit('setCitasAtendidasTitular',res.data)
           return Promise.resolve(true)

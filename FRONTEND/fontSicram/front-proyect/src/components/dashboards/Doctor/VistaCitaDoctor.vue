@@ -236,15 +236,19 @@ export default {
       //ABRIMOS LA CONSULTA PARA LOS SINTOMAS DEL PACIENTE
       this.sintomasPaciente(datos).then((res) => {
         this.showLoader = false;
-        if (this.getDataSintomasPaciente !== null) {
-          this.dataSintomas = {
-            nombre: this.getDoctorPerfil.name,
-            apellido: this.getDoctorPerfil.lastname,
+        if (this.getDataSintomasPaciente.detalle_sintomas.sintoma !== null) {
+          this.dataSintomas = { 
+            nombreDoc: this.getDoctorPerfil.name,
+            apellidoDoc: this.getDoctorPerfil.lastname,
+            nombrePac: this.getDataSintomasPaciente.user.name,
+            apellidoPac: this.getDataSintomasPaciente.user.lastname,
             especialidad: this.getDoctorPerfil.especialidad.especialidad,
             fecha: this.getDataSintomasPaciente.horario.fecha,
             sintomas: this.getDataSintomasPaciente.detalle_sintomas.sintoma,
             alergias: "Ninguna",
           };
+        }else{
+          this.dataSintomas = null
         }
 
         this.modalSintomas = true;

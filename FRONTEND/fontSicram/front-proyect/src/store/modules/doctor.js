@@ -6,11 +6,13 @@ axios.defaults.baseURL = 'https://sicramtest.herokuapp.com/api';
 const state = {
     doctorPerfil: null, // VARIABLE PARA LOS DATOS DEL DOCTOR
     horariosDesocupados: null, // VARUABLE PARA LOS HORARIOS DEL DOCTOR
+    horariosOcupados: null, // VARIABLE PARA LOS HORARIOS OCUPADOS DEL DOCTOR
     especialidades: null, // VARIABLE PARA LA LISTA DE LAS ESPECIALIDADES
     listaDoctoresPorEspecialidad : null, // VARIABLE PARA LA LISTA DE DOCTORES POR ESPECIALIDAD
     citasPendientes: null, // VARIABLE PARA LA LISTA DE CITAS PENDIENTES
     citasAtendidas: null, // VARIABLE PARA LA LISTA DE CITAS ATENDIDAS
-    dataSintomasPaciente : null // VARIABLE PARA OBTENER SINTOMAS DEL PACIENTE
+    dataSintomasPaciente : null, // VARIABLE PARA OBTENER SINTOMAS DEL PACIENTE
+    historialPaciente: null //VARIABLE PARA OBTENER EL HISTORIAL DEL PACIENTE
 };
 
 const getters = {
@@ -22,6 +24,11 @@ const getters = {
     //CONSIGUE LOS HORARIOS DESOCUPADOS DEL DOCTOR
     getHorariosDesocupados(state) {
         return state.horariosDesocupados
+    },
+
+    //CONSIGUE LOS HORARIOS OCUPADOS DEL DOCTOR
+    getHorariosOcupados(state) {
+      return state.horariosOcupados
     },
 
     //CONSIGUE LAS ESPECIALIDADES
@@ -47,6 +54,11 @@ const getters = {
     //CONSIGUE LOS DATOS DE LOS SINTOMAS DEL PACIENTE DE LA CITA
     getDataSintomasPaciente(state){
         return state.dataSintomasPaciente
+    },
+
+    //CONSIGUE LOS DATOS DEL HISTORIAL DEL PACIENTE
+    getHistorialPaciente(state){
+      return state.historialPaciente
     }
 
 };
@@ -60,6 +72,11 @@ const mutations = {
     //PONE LOS HORARIOS DESOCUPADOS DEL DOCTOR
     setHorariosDesocupados(state, payload) {
         state.horariosDesocupados = payload
+    },
+
+    //PONE LOS HORARIOS OCUPADOS DEL DOCTOR
+    setHorariosOcupados(state, payload) {
+      state.horariosOcupados = payload
     },
 
     //PONE LAS ESPECIALIDADES
@@ -85,6 +102,11 @@ const mutations = {
     //PONE LOS DATOS DE LOS SINTOMAS DEL PACIENTE DE LA CITA
     setDataSintomasPaciente(state,payload){
         state.dataSintomasPaciente = payload
+    },
+
+    //CONSIGUE LOS DATOS DEL HISTORIAL DEL PACIENTE
+    setHistorialPaciente(state, payload){
+      state.historialPaciente = payload
     }
 
 };
@@ -208,6 +230,31 @@ const actions = {
             console.log(e)
             return Promise.resolve(false)
         });
+    },
+
+    //CONSULTA PARA LISTAR LOS HORARIOS DEL DOCTOR
+    listarHorariosOcupadosDoctor({ commit }, doctor) {
+      return axios
+         .get(`/doctor/horarios_ocupados/${doctor.id}`)
+
+     .then((res) => {
+         console.log(res)
+         if(res.data.length!=0){
+             commit('setHorariosOcupados',null)
+             console.log("si tiene horarios")
+             commit('setHorariosOcupados',res.data)
+             
+         }else{
+           commit('setHorariosOcupados',null)
+         
+         }
+         return Promise.resolve(true)
+         
+     })
+     .catch((e) => {
+         console.log(e)
+         return Promise.resolve(false)
+     });
     },
 
     //MODIFICAR EL HORARIO DE DOCTOR
@@ -339,7 +386,7 @@ const actions = {
 
       .then((res) => {
           console.log(res)
-          if(res.data.length!=0){ 
+          if(res.data.msg!== "Usted no tiene citas atendidas"){ 
             commit('setCitasAtendidas',res.data)
             return Promise.resolve(true)
           }else{
@@ -467,6 +514,36 @@ const actions = {
             return Promise.resolve(true)
         });
     },
+
+    historialDelPaciente({commit},datos){
+      let url =
+        `/doctor/cita/ver_historial_de_paciente/${datos.doctor.id}`;
+       return axios
+        .post(url,
+          { id_cita : datos.id_cita  },
+          {
+            headers: {
+              Authorization: `${datos.doctor.token}`,
+            },
+          }
+        )
+
+        .then((res) => {
+            console.log(res)
+            if(res.msg == "asd"){
+              commit('setHistorialPaciente',null)
+              return Promise.resolve(false)
+            }else{
+              commit('setHistorialPaciente',res.data)
+              return Promise.resolve(true)
+            }
+
+        })
+        .catch((e) => {
+            console.log("ocurrio un error")
+            return Promise.resolve(true)
+        });
+    }
 
 
 

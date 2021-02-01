@@ -22,6 +22,14 @@
       :mensaje="getAlert.mensajeAlerta"
       :tipo="getAlert.tipoAlerta"
     />
+    <!---QUESTIONER -------->
+    <questioner
+    :dialog="showQuestioner"
+      @close="showQuestioner = false"
+      :title="'ELIMINAR CITA'"
+      :message="'¿Está seguro de que desea aliminar este cita?'"
+      @accept="eliminarItem" 
+    />
     <v-row class="fill-height">
       <v-col>
         <div v-if="showNodata == true">
@@ -115,7 +123,7 @@
                 <v-btn icon @click="editar(selectedEvent)">
                   <v-icon>mdi-pencil</v-icon>
                 </v-btn>
-                <v-btn icon>
+                <v-btn icon @click="eliminar(selectedEvent)">
                   <v-icon>mdi-delete</v-icon>
                 </v-btn>
                 <v-btn icon @click="selectedOpen = false">
@@ -159,6 +167,7 @@
 <script>
 import Loader from "@/modals/Loader.vue";
 import Alert from "@/modals/Alert.vue";
+import Questioner from "@/modals/Questioner.vue";
 import EditarCitaPendiente from "./modals/EditarCitaPendiente.vue";
 import { mapActions, mapGetters } from "vuex";
 import RegistrarSintomas from "./modals/RegistrarSintomas.vue";
@@ -170,6 +179,7 @@ export default {
     RegistrarSintomas,
     Alert,
     Loader,
+    Questioner
   },
   props: {
     paciente: {
@@ -189,6 +199,7 @@ export default {
         lastname: "Apellido",
       },
     },
+    showQuestioner : false,
     showNodata: false,
     showEskeletor: false,
     showSintomas: false, //MUESTRA EL MODAL PARA REGISTRAR SINTOMAS
@@ -226,6 +237,7 @@ export default {
     ...mapActions([
       "listarCitasPendientesTitular",
       "listarCitasPendientesDependiente",
+      "eliminarCitaTitular"
     ]),
     //INGRESA A LA CITA SELECCIONADA
     ingresarCita(e) {
@@ -264,6 +276,26 @@ export default {
       this.citaEditar = this.selccion.data;
       this.showEdit = true;
       console.log(this.citaEditar);
+    },
+
+    eliminar(event){
+      this.selccion = event;
+      this.showQuestioner= true
+    },
+
+    eliminarItem(){
+      this.showQuestioner= false
+      const datos = {
+        paciente: this.getUsuario,
+        id_cita: this.selccion.data._id
+      }
+      this.showLoader = true,
+      this.eliminarCitaTitular(datos)
+      .then(res=>{
+        this.showLoader = false,
+        this.showAlert = true
+        this.userType()
+      })
     },
 
     //RECARGAR

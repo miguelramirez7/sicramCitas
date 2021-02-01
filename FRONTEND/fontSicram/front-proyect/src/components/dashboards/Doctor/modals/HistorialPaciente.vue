@@ -26,9 +26,9 @@
           <v-icon>mdi-close</v-icon>
         </v-btn>
       </v-toolbar>
-      <v-card-text class="mt-5">
+      <v-card-text class="mt-5 caja-historial" >
         <v-data-table
-          :items="items"
+          :items="histPaciente" 
           :headers="headers"
           sort-by="calories"
           class="elevation-1"
@@ -90,6 +90,7 @@
 </template>
 
 <script>
+import { mapActions, mapGetters } from "vuex";
 import Informe from "./Informe.vue";
 import Receta from "./Receta.vue";
 import Sintomas from "./Sintomas.vue";
@@ -112,10 +113,10 @@ export default {
       dataInforme: null,
       dataReceta: null,
       headers: [
-        { text: "Fecha", value: "fecha" },
-        { text: "NombreDoctor", value: "nombre" },
-        { text: "ApellidoDoctor", value: "apellido" },
-        { text: "Especialidad", value: "especialidad" },
+        { text: "Fecha", value: "horario.fecha" },
+        { text: "NombreDoctor", value: "doctor.name" },
+        { text: "ApellidoDoctor", value: "doctor.lastname" },
+        { text: "Especialidad", value: "especialidad.especialidad" },
         { text: "Actions", value: "actions", sortable: false },
       ],
       items: [
@@ -141,68 +142,109 @@ export default {
     };
   },
   computed: {
+    ...mapGetters(["get_idCita", "getUsuario", "getHistorialPaciente"]),
     modHistorial() {
       return this.dialog;
     },
+    histPaciente() {
+      if (this.getHistorialPaciente == null) return [];
+      else return this.getHistorialPaciente;
+    },
   },
   methods: {
+    ...mapActions(["historialDelPaciente"]),
     close() {
       this.$emit("close");
     },
 
+    obtenerHistorial() {
+      const datos = {
+        doctor: this.getUsuario,
+        id_cita: this.get_idCita,
+      };
+      this.historialDelPaciente(datos);
+    },
+
     abrirReceta(e) {
-      (this.showReceta = true),
-        (this.dataReceta = {
-          nombre: e.nombre,
-          apellido: e.apellido,
-          fecha: e.fecha,
-          especialidad: e.especialidad,
-          medicamentos: [
-            {
-              medicamento: "pastilla",
-              concentración: "conca",
-              frecuencia: "frec",
-              duración: "dur",
-              cantidad: "ctd",
-            },
-            {
-              medicamento: "pastilla",
-              concentración: "conca",
-              frecuencia: "frec",
-              duración: "dur",
-              cantidad: "ctd",
-            },
-          ],
-        });
+      if (e.receta == undefined) this.dataReceta = null;
+      else
+        this.dataReceta = {
+          nombreDoc: e.doctor.name,
+          apellidoDoc: e.doctor.lastname,
+          nombrePac: e.user.name,
+          apellidoPac: e.user.lastname,
+          fecha: e.horario.fecha,
+          medicamentos: e.receta.medicamentos,
+          especialidad: e.especialidad.especialidad,
+        };
+      this.showReceta = true;
     },
     abrirInforme(e) {
-      (this.showInforme = true),
-        (this.dataInforme = {
-          nombre: e.nombre,
-          apellido: e.apellido,
-          fecha: e.fecha,
-          especialidad: e.especialidad,
-          anamnesis:
-            "asdasasdkapsdjasdasdasdjklklasdjklasdjkasdjkasdjklasdjklasdklklasdjklasdjklsdjklasdjkld",
-          tratamiento: "puta la wea",
-          diagnostico: "aasdasdasd12123",
-          ultima_evolucion: "asdñasdjkl123123ñasdjklasd",
-        });
+      if(e.diagnostico == undefined) this.dataInforme = null
+      else
+      this.dataInforme = {
+        nombreDoc: e.doctor.name,
+        apellidoDoc: e.doctor.lastname,
+        nombrePac: e.user.name,
+        apellidoPac: e.user.lastname,
+        fecha: e.horario.fecha,
+        especialidad: e.especialidad.especialidad,
+        anamnesis: "ESTE PACIENTE LLEGO CON",
+        tratamiento: e.diagnostico.tratamiento,
+        diagnostico: e.diagnostico.diagnostico,
+        ultima_evolucion: e.diagnostico.resultados_labo,
+      };
+      
+      this.showInforme = true
     },
     abrirSintomas(e) {
+      if (e.detalle_sintomas.sintoma == null) this.dataSintomas = null;
+      else
+        this.dataSintomas = {
+          nombreDoc: e.doctor.name,
+          apellidoDoc: e.doctor.lastname,
+          nombrePac: e.user.name,
+          apellidoPac: e.user.lastname,
+          fecha: e.horario.fecha,
+          especialidad: e.especialidad.especialidad,
+          sintomas: e.detalle_sintomas.sintoma,
+          alergias: "NINGUNA",
+        };
       this.showSintomas = true;
-      
-       this.dataSintomas = {
-         nombre: e.nombre,
-         apellido: e.apellido,
-         fecha: e.fecha,
-         especialidad: e.especialidad,
-         sintomas: "ME DUELE MUCHO LA PANZA LA PTM",
-         alergias: "Ninguna",
-       }
     },
+  },
+  created() {
+    this.obtenerHistorial();
   },
 };
 </script>
 
-<style></style>
+<style lang="scss" scoped>
+
+  .caja-historial {
+  max-height: 70vh;
+  overflow: hidden;
+  overflow-y: scroll;
+  &::-webkit-scrollbar:vertical {
+    width: 8px;
+  }
+  &::-webkit-scrollbar {
+    -webkit-appearance: none;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: #a7a5a5;
+    border-radius: 20px;
+    border: 1px solid #f1f2f3;
+  }
+  &::-webkit-scrollbar-button:increment,
+  .contenedor::-webkit-scrollbar-button {
+    display: none;
+  }
+  .enviarMensaje {
+    bottom: 15px;
+    position: absolute;
+    width: 87%;
+  }
+}
+</style>
+

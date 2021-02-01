@@ -1,12 +1,25 @@
 <template>
   <v-dialog :value="receta" max-width="979px" persistent>
     <!---LOADER--->
-
-    <v-card color="white">
+    <v-card v-if="data == null">
+      <v-card-title>
+        RECETA MÉDICA
+        <v-spacer></v-spacer>
+        <v-btn icon color="red" @click="close">
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
+      </v-card-title>
+      <v-card-text>
+        <v-alert text prominent type="error" icon="mdi-cloud-alert">
+          El doctor no expidió una receta en esta cita.
+        </v-alert>
+      </v-card-text>
+    </v-card>
+    <v-card color="white" v-if="data !== null">
       <v-card-text style="color:black;" color="white" id='inprime'>
         <v-row no-gutters class="pt-2 pb-2">
           <v-col class="text-center" md="9" sm="9">
-            <h2 class="pl-10 pt-8 pb-8">RECETA MÉDICA</h2></v-col
+            <h2 class="pl-10 pt-8 pb-5">RECETA MÉDICA</h2></v-col
           >
           <v-col class="text-center" md="3" sm="3">
             <v-row no-gutters>
@@ -24,12 +37,12 @@
           <v-col class="text-center" md="3" sm="3">NOMBRES Y APELLIDOS </v-col>
           <v-col class="text-center" md="9" sm="9">
             <label for="" class="label-receta">
-              LUIS ENRIQUE MEDINA CASTILLO
+              {{paciente.nombre}} {{paciente.apellido}}
             </label>
           </v-col>
         </v-row>
 
-        <v-row class="text-center mb-2 titulo-medicamentos" no-gutters>
+        <v-row class="text-center titulo-medicamentos" no-gutters>
           <v-col md="4" sm="4"> MEDICAMENTO </v-col>
           <v-col md="2" sm="2" style="border-left:1px solid;">
             CONCENTRACIÓN
@@ -85,7 +98,7 @@
             </v-col>
             <v-col md="4" sm="4" class="text-center">
               <img class="signature" :src="data.firma" /><br />
-              {{doctor.nombre}} {{doctor.apellido}} {{doctor.dni}}
+              {{doctor.nombre}} {{doctor.apellido}}<br />DNI: {{doctor.dni}} CMP: {{doctor.cmp}}
             </v-col>
           </v-row>
       </v-card-text>

@@ -1,5 +1,10 @@
 <template>
-  <v-dialog :value="loginDialog" max-width="600px" persistent content-class="modal-ingreso">
+  <v-dialog
+    :value="loginDialog"
+    max-width="600px"
+    persistent
+    content-class="modal-ingreso"
+  >
     <!----CARGADOR---->
     <Loader :dialog="showLoader" />
     <!----ALERTA---->
@@ -9,7 +14,7 @@
       :mensaje="'Usuario o contraseña incorrectos!'"
       :tipo="'error'"
     />
-    <v-row no-gutters >
+    <v-row no-gutters>
       <v-col cols="12" md="6">
         <v-img
           src="../assets/doctor-patient.jpg"
@@ -62,7 +67,6 @@
           </v-form>
         </v-card>
       </v-col>
-      
     </v-row>
   </v-dialog>
 </template>
@@ -124,16 +128,16 @@ export default {
                 this.$router.push("/doctorsystem");
               } else {
                 console.log("usuarios incorrecots");
-                this.showLoader = false;
-                this.showAlert = true;
                 //INICIAR SESION COMO ORGANIZACION
-                /*this.loginOrganizacion(this.usuario).then((res) => {
-                if (res) {
-                  this.$router.push("/organizacionvista");
-                } else {
-                  console.lo("usuarios incorrecots")
-                }
-              });*/
+                this.loginOrganizacion(this.usuario).then((res) => {
+                  if (res) {
+                    this.$router.push("/orgsystem");
+                  } else {
+                    this.showLoader = false;
+                    this.showAlert = true;
+                    console.lo("usuarios incorrecots");
+                  }
+                });
               }
             });
           }
@@ -148,7 +152,5 @@ export default {
 </script>
 
 <style scoped>
-
-@import '../assets/css/home.css';
-
+@import "../assets/css/home.css";
 </style>

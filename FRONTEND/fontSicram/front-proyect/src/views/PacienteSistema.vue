@@ -37,7 +37,7 @@ export default {
   computed: {
     ...mapGetters(["getComponentePaciente", "getPacientePerfil"]),
     mostrarLoader() {
-      if (this.getPacientePerfil === null) return true;
+      if (this.getOrganizacionPerfil === null) return true;
       else return false;
     },
   },

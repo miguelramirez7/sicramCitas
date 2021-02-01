@@ -1,7 +1,7 @@
 <template>
   <v-dialog :value="modalReceta" persistent max-width="700px">
     <v-card v-if="data!==null">
-      <v-card-title>
+      <v-card-title> 
         RECETA MÉDICA
         <v-spacer></v-spacer>
         <v-btn icon color="red" @click="close">
@@ -18,15 +18,9 @@
           </v-col>
           <v-col sm="4" md="4">
             DOCTOR
-          </v-col>
+          </v-col>  
           <v-col sm="8" md="8">
             : {{data.nombreDoc}} {{data.apellidoDoc}}
-          </v-col>
-          <v-col sm="4" md="4">
-            PACIENTE
-          </v-col>
-          <v-col sm="8" md="8">
-            : {{data.nombrePac}} {{data.apellidoPac}}
           </v-col>
           <v-col sm="4" md="4">
             Especialidad
@@ -34,6 +28,13 @@
           <v-col sm="8" md="8">
             : {{data.especialidad}}
           </v-col>
+          <v-col sm="4" md="4">
+            PACIENTE
+          </v-col>
+          <v-col sm="8" md="8">
+            : {{data.nombrePac}} {{data.apellidoPac}}
+          </v-col>
+          
         </v-row>
         <v-data-table
           :items="data.medicamentos"
@@ -42,6 +43,20 @@
           class="elevation-1"
         >
         </v-data-table>
+      </v-card-text>
+    </v-card>
+    <v-card v-if="data == null">
+      <v-card-title>
+        RECETA MÉDICA
+        <v-spacer></v-spacer>
+        <v-btn icon color="red" @click="close">
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
+      </v-card-title>
+      <v-card-text>
+        <v-alert text prominent type="error" icon="mdi-cloud-alert">
+          El doctor no expidió una receta en esta cita.
+        </v-alert>
       </v-card-text>
     </v-card>
   </v-dialog>

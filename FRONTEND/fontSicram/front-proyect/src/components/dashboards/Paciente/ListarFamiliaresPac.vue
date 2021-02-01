@@ -23,7 +23,15 @@
     <v-card-title
       ><h3 class="titulo-perfil-pac">LISTA DE FAMILIARES</h3></v-card-title
     >
-    <v-card-text class="mt-1">
+    <v-card-text v-if="showSkeletor == true">
+      <v-sheet color="grey lighten-4" class="pa-3">
+        <v-skeleton-loader
+          class="mx-auto"
+          type="table-tbody,actions"
+        ></v-skeleton-loader>
+      </v-sheet>
+    </v-card-text>
+    <v-card-text class="mt-1" v-if="listaDependientes !== null">
       <v-data-table
         :items="listaDependientes"
         :headers="headers"
@@ -93,6 +101,12 @@
         </template>
       </v-data-table>
     </v-card-text>
+    <v-card-text v-if="showNoData == true">
+      <v-alert text prominent type="error" icon="mdi-cloud-alert">
+        Al parecer no cuenta con familiares registrados, si desea registrar un
+        familiar diríjase a la sección <strong>Registrar Familiar.</strong>
+      </v-alert>
+    </v-card-text>
   </v-card>
 </template>
 
@@ -108,6 +122,8 @@ export default {
       showAlert: false,
       showLoader: false,
       showQuestioner: false,
+      showNoData: false,
+      showSkeletor: false,
       editarDependienteDialog: false,
       familiarItem: null,
       dependiente: {
@@ -140,6 +156,14 @@ export default {
   },
   methods: {
     ...mapActions(["listarDependientes", "eliminarFamiliar"]),
+    listar() {
+      this.showSkeletor = true;
+      this.listarDependientes(this.getUsuario).then((res) => {
+        console.log(this.getListaDependientes);
+        if (this.getListaDependientes == null) this.showNoData = true;
+        this.showSkeletor = false;
+      });
+    },
     editar(elemento) {
       this.editarDependienteDialog = !this.editarDependienteDialog;
       console.log(elemento);
@@ -160,21 +184,19 @@ export default {
       this.eliminarFamiliar(datos).then((res) => {
         this.showAlert = true;
         this.showLoader = false;
-        this.listarDependientes(this.getUsuario)
+        this.listarDependientes(this.getUsuario);
       });
     },
   },
   computed: {
     ...mapGetters(["getListaDependientes", "getUsuario", "getAlert"]),
     listaDependientes() {
-      if (this.getListaDependientes === null) return [];
+      if (this.getListaDependientes === null) return null;
       else return this.getListaDependientes;
     },
   },
   created() {
-    this.listarDependientes(this.getUsuario).then((res) => {
-      console.log(this.getListaDependientes);
-    });
+    this.listar();
   },
 };
 </script>

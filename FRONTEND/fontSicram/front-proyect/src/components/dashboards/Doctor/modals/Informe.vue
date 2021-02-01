@@ -82,7 +82,7 @@
               dense
               rows="1"
               no-resize
-              outlined
+              outlined 
               color="teal"
             ></v-textarea>
           </v-col>

@@ -21,7 +21,15 @@
     <v-card-title
       ><h3 class="titulo-perfil-pac">Citas Atendidas</h3></v-card-title
     >
-    <v-card-text class="mt-1">
+    <v-card-text v-if="showSkeletor == true">
+      <v-sheet color="grey lighten-4" class="pa-3">
+        <v-skeleton-loader
+          class="mx-auto"
+          type="table-tbody,actions"
+        ></v-skeleton-loader>
+      </v-sheet>
+    </v-card-text>
+    <v-card-text class="mt-1" v-if="listaCitas !== null">
       <v-data-table
         :items="listaCitas"
         :headers="headers"
@@ -71,9 +79,13 @@
             </template>
             <span>Sintomas Registrados</span>
           </v-tooltip>
-          
         </template>
       </v-data-table>
+    </v-card-text>
+    <v-card-text v-if="showNoData == true">
+      <v-alert text prominent type="error" icon="mdi-cloud-alert">
+        No cuenta con citas atendidas.
+      </v-alert>
     </v-card-text>
   </v-card>
 </template>
@@ -93,6 +105,8 @@ export default {
       showReceta: false,
       showSintomas: false,
       showInforme: false,
+      showNoData : false,
+      showSkeletor: false,
       citasAtendidas: [],
       dataReceta: {
         nombre: "NOMBRE DOCTOR",
@@ -141,7 +155,7 @@ export default {
   computed: {
     ...mapGetters(["getUsuario", "getCitasAtendidas"]),
     listaCitas() {
-      if (this.getCitasAtendidas === null) return [];
+      if (this.getCitasAtendidas === null) return null;
       else return this.getCitasAtendidas;
     },
   },
@@ -149,60 +163,68 @@ export default {
     ...mapActions(["listarCitasAtendidas"]),
     //LISTA LAS CITAS ATENDIDAS DEL TITULAR
     listarCitas() {
-      this.listarCitasAtendidas(this.getUsuario);
+
+      this.showSkeletor = true
+      this.listarCitasAtendidas(this.getUsuario)
+      .then((res)=>{
+        if(this.getCitasAtendidas ==null) this.showNoData = true
+        console.log(this.getCitasAtendidas )
+        this.showSkeletor = false
+      })
     },
 
     abrirReceta(e) {
-      this.dataReceta = {
-        nombreDoc: e.doctor.name,
-        apellidoDoc: e.doctor.lastname,
-        nombrePac: e.user.name,
-        apellidoPac: e.user.lastname,
-        fecha: e.horario.fecha,
-        medicamentos: e.receta.medicamentos,
-        especialidad: e.especialidad.especialidad,
-      };
+      if (e.receta == undefined) this.dataReceta = null;
+      else
+        this.dataReceta = {
+          nombreDoc: e.doctor.name,
+          apellidoDoc: e.doctor.lastname,
+          nombrePac: e.user.name,
+          apellidoPac: e.user.lastname,
+          fecha: e.horario.fecha,
+          medicamentos: e.receta.medicamentos,
+          especialidad: e.especialidad.especialidad,
+        };
       this.showReceta = true;
     },
 
     abrirSintomas(e) {
-      
-      this.dataSintomas = {
-        nombreDoc: e.doctor.name,
-        apellidoDoc: e.doctor.lastname,
-        nombrePac: e.user.name,
-        apellidoPac: e.user.lastname,
-        fecha: e.horario.fecha,
-        especialidad: e.especialidad.especialidad,
-        sintomas: e.detalle_sintomas.sintoma,
-        alergias: "NINGUNA",
-      };
+      if (e.detalle_sintomas.sintoma == null) this.dataSintomas = null;
+      else
+        this.dataSintomas = {
+          nombreDoc: e.doctor.name,
+          apellidoDoc: e.doctor.lastname,
+          nombrePac: e.user.name,
+          apellidoPac: e.user.lastname,
+          fecha: e.horario.fecha,
+          especialidad: e.especialidad.especialidad,
+          sintomas: e.detalle_sintomas.sintoma,
+          alergias: "NINGUNA",
+        };
       this.showSintomas = true;
     },
 
     abrirInforme(e) {
-      if(e.diagnostico == undefined) this.dataInforme = null
+      if (e.diagnostico == undefined) this.dataInforme = null;
       else
-      this.dataInforme = {
-        nombreDoc: e.doctor.name,
-        apellidoDoc: e.doctor.lastname,
-        nombrePac: e.user.name,
-        apellidoPac: e.user.lastname,
-        fecha: e.horario.fecha,
-        especialidad: e.especialidad.especialidad,
-        anamnesis: "ESTE PACIENTE LLEGO CON",
-        tratamiento: e.diagnostico.tratamiento,
-        diagnostico: e.diagnostico.diagnostico,
-        ultima_evolucion: e.diagnostico.resultados_labo,
-      };
-      
-      this.showInforme = true
+        this.dataInforme = {
+          nombreDoc: e.doctor.name,
+          apellidoDoc: e.doctor.lastname,
+          nombrePac: e.user.name,
+          apellidoPac: e.user.lastname,
+          fecha: e.horario.fecha,
+          especialidad: e.especialidad.especialidad,
+          anamnesis: "ESTE PACIENTE LLEGO CON",
+          tratamiento: e.diagnostico.tratamiento,
+          diagnostico: e.diagnostico.diagnostico,
+          ultima_evolucion: e.diagnostico.resultados_labo,
+        };
+
+      this.showInforme = true;
     },
   },
   created() {
-    this.listarCitas((res) => {
-      this.citasAtendidas = this.getCitasAtendidas;
-    });
+    this.listarCitas();
   },
 };
 </script>

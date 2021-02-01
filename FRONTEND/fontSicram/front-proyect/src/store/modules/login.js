@@ -57,7 +57,7 @@ const actions = {
     //INICIAR SESION ORGANIZACION
     loginOrganizacion({commit,dispatch },organizacion){
         
-        /*return axios 
+        return axios 
         .post("/signinorganizacion",{
           ...organizacion
         })
@@ -73,7 +73,7 @@ const actions = {
         .catch((e)=>{
             console.log(e)
             return Promise.resolve(false)
-        })*/
+        })
        
     },
 
