@@ -20,6 +20,7 @@ import TuPerfilOrg from './../components/dashboards/Organizacion/TuPerfilOrg.vue
 import ActualizarDatosOrg from './../components/dashboards/Organizacion/ActualizarDatosOrg.vue'
 import AgregarDoctorOrg from './../components/dashboards/Organizacion/AgregarDoctorOrg.vue'
 import TusDoctoresOrg from './../components/dashboards/Organizacion/TusDoctoresOrg.vue'
+import EstadisticaDocs from './../components/dashboards/Organizacion/EstadisticaDocs.vue'
 
 export default {
     name: 'OrganizacionSistema',
@@ -30,7 +31,8 @@ export default {
         ActualizarDatosOrg,
         AgregarDoctorOrg,
         TusDoctoresOrg,
-        Loader
+        Loader,
+        EstadisticaDocs
     },
     computed:{
       ...mapGetters(['getComponenteOrganizacion',"getOrganizacionPerfil"]),

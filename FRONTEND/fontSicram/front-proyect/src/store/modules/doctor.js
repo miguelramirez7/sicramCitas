@@ -1,7 +1,6 @@
 const axios = require('axios')
 //BASE URL POR DEFAULT EN LOCAL HOST 
 //axios.defaults.baseURL = 'http://localhost:3000/api'; 
-axios.defaults.baseURL = 'https://sicramtest.herokuapp.com/api';
 
 const state = {
     doctorPerfil: null, // VARIABLE PARA LOS DATOS DEL DOCTOR
@@ -530,7 +529,7 @@ const actions = {
 
         .then((res) => {
             console.log(res)
-            if(res.msg == "asd"){
+            if(res.data.msg == "Usted no tiene citas atendidas"){
               commit('setHistorialPaciente',null)
               return Promise.resolve(false)
             }else{

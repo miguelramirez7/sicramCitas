@@ -214,7 +214,7 @@ export default {
           apellidoPac: e.user.lastname,
           fecha: e.horario.fecha,
           especialidad: e.especialidad.especialidad,
-          anamnesis: "ESTE PACIENTE LLEGO CON",
+          anamnesis: e.diagnostico.anamnesis,
           tratamiento: e.diagnostico.tratamiento,
           diagnostico: e.diagnostico.diagnostico,
           ultima_evolucion: e.diagnostico.resultados_labo,

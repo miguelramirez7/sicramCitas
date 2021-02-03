@@ -94,9 +94,10 @@ export default {
       vista2: "PruebaVista2",
       apiKey: "46815904",
       sessionID:
-        "1_MX40NjgxNTkwNH5-MTYwOTM5OTQ5ODAwNn5oLzVydysyVmloczJTUWFRWnFFY1lTM0t-fg",
+        "1_MX40NjgxNTkwNH5-MTYxMjMyNzI2MDY5M35sRyt1RjJzUTQyaWluVCtpL0hZMVhXR1d-fg",
       token:
-        "T1==cGFydG5lcl9pZD00NjgxNTkwNCZzaWc9NTFkOTY0MjAzNmNjY2RhODNlYTBmMjhjYzEyYTE4MTc3ZjgwOTc1NTpzZXNzaW9uX2lkPTFfTVg0ME5qZ3hOVGt3Tkg1LU1UWXdPVE01T1RRNU9EQXdObjVvTHpWeWR5c3lWbWxvY3pKVFVXRlJXbkZGWTFsVE0wdC1mZyZjcmVhdGVfdGltZT0xNjA5Mzk5NTA2Jm5vbmNlPTAuNjM2OTU5ODg0Mjk4NDA5NyZyb2xlPXB1Ymxpc2hlciZleHBpcmVfdGltZT0xNjEwMDA0MzA1JmluaXRpYWxfbGF5b3V0X2NsYXNzX2xpc3Q9",
+      
+        "T1==cGFydG5lcl9pZD00NjgxNTkwNCZzaWc9NmI5ZTdmZjYwMTFkMzFkZDFhZmRmZjVkZDI0NzQyNzgyYzZiODRiMjpzZXNzaW9uX2lkPTFfTVg0ME5qZ3hOVGt3Tkg1LU1UWXhNak15TnpJMk1EWTVNMzVzUnl0MVJqSnpVVFF5YVdsdVZDdHBMMGhaTVZoWFIxZC1mZyZjcmVhdGVfdGltZT0xNjEyMzI3MjczJm5vbmNlPTAuNjc1NzA4NDA4NTUzOTk1NyZyb2xlPXB1Ymxpc2hlciZleHBpcmVfdGltZT0xNjEyOTMyMDcxJmluaXRpYWxfbGF5b3V0X2NsYXNzX2xpc3Q9",
       streams: [],
       session: null,
       stream: null,
