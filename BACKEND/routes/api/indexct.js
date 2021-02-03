@@ -130,6 +130,7 @@ router.get("/doctor/historial/:id",passport.authenticate("doctor", { session: fa
     citaController.Doctor_historial_medico
 );
 
+
 //////RESPORTES | ESTADISTICAS MEDICOS ..///////////
 router.get("/doctor/estadisticas/especialidad",doctorController.Reporte_Doctores_Por_Especialidad)
 
@@ -141,6 +142,5 @@ router.get("/doctor/estadisticas/citas/atendidas",doctorController.Reporte_Citas
 
 
 router.get("/doctor/estadisticas/pacientes/atendidos/especialidad",doctorController.Reporte_Pacientes_Atendidos_Por_Especialidad)
-
 
 module.exports = router;  

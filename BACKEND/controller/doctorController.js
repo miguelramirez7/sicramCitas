@@ -16,6 +16,8 @@ const mailer = require("../mail/mediador_mailer");
 //para agregar en cloudinary nuestras imagenes
 const cloudinary = require("../tools/cloudinary");
 const fs = require("fs");
+const { json } = require("body-parser");
+const { loggers } = require("winston");
 
 //registro doctor
 exports.SignupDoctor = async function (req, res) {
@@ -35,7 +37,7 @@ exports.SignupDoctor = async function (req, res) {
             //variable que contiene los datos del cmp encontrado
             const datosCMP = await pup.scrapeProduct(
               "https://200.48.13.39/cmp/php/detallexmedico.php?id=" +
-                req.body.cmp
+              req.body.cmp
             );
             var especialidad = await Especialidad.findOne({
               especialidad: req.body.especialidad,
@@ -45,7 +47,7 @@ exports.SignupDoctor = async function (req, res) {
             if (
               req.body.name.toLowerCase() == datosCMP.nombres.toLowerCase() &&
               req.body.lastname.toLowerCase() ==
-                datosCMP.apellidos.toLowerCase()
+              datosCMP.apellidos.toLowerCase()
             ) {
               //creamos el nuevo docotor y guaardamos sus datos
               var newDoctor = new Doctor({
@@ -207,9 +209,9 @@ exports.Actualizar_datos_doctor = async function (req, res) {
         console.log("No es el usuario");
         res.send(
           "NO ES EL USUARIO   " +
-            req.user.id +
-            " comparando con " +
-            req.params.id
+          req.user.id +
+          " comparando con " +
+          req.params.id
         );
       }
     } else {
@@ -234,11 +236,11 @@ exports.Obtener_datos_doctor = async function (req, res) {
         console.log("No es el usuario");
         res.send(
           "NO ES EL USUARIO    " +
-            req.user.id +
-            " username :  " +
-            req.user.username +
-            "  comparando con " +
-            req.params.id
+          req.user.id +
+          " username :  " +
+          req.user.username +
+          "  comparando con " +
+          req.params.id
         );
       }
     } else {
@@ -324,9 +326,9 @@ exports.Agregar_horario_doctor = async function (req, res) {
         console.log("No es el usuario");
         res.send(
           "NO ES EL USUARIO   " +
-            req.user.id +
-            " comparando con " +
-            req.params.id
+          req.user.id +
+          " comparando con " +
+          req.params.id
         );
       }
     } else {
@@ -357,9 +359,9 @@ exports.Actualizar_horario_doctor = async function (req, res) {
             });
             logger(
               "doctor del horario: " +
-                horario.doctor._id +
-                " es igual a: " +
-                req.user.id
+              horario.doctor._id +
+              " es igual a: " +
+              req.user.id
             );
 
             if (!horarioEncontrado) {
@@ -400,15 +402,15 @@ exports.Actualizar_horario_doctor = async function (req, res) {
       } else {
         logger(
           chalk.blue("NO es el usuario ") +
-            chalk.green(req.user.id) +
-            chalk.blue("comparado con ") +
-            chalk.magenta(req.params.id)
+          chalk.green(req.user.id) +
+          chalk.blue("comparado con ") +
+          chalk.magenta(req.params.id)
         );
         res.send(
           "NO ES EL USUARIO   " +
-            req.user.id +
-            " comparando con " +
-            req.params.id
+          req.user.id +
+          " comparando con " +
+          req.params.id
         );
       }
     } else {
@@ -504,17 +506,17 @@ exports.Eliminar_horario_doctor = async function (req, res) {
       } else {
         logger(
           chalk.blue("NO es el usuario ") +
-            chalk.green(req.user.id) +
-            chalk.blue("comparado con ") +
-            chalk.magenta(req.params.id)
+          chalk.green(req.user.id) +
+          chalk.blue("comparado con ") +
+          chalk.magenta(req.params.id)
         );
         res.send(
           "NO ES EL USUARIO    " +
-            req.user.id +
-            " username :  " +
-            req.user.username +
-            "  comparando con " +
-            req.params.id
+          req.user.id +
+          " username :  " +
+          req.user.username +
+          "  comparando con " +
+          req.params.id
         );
       }
     } else {
@@ -553,15 +555,15 @@ exports.Cambiar_estado_citas = async function (req, res) {
       } else {
         logger(
           chalk.blue("NO es el usuario ") +
-            chalk.green(req.user.id) +
-            chalk.blue("comparado con ") +
-            chalk.magenta(req.params.id)
+          chalk.green(req.user.id) +
+          chalk.blue("comparado con ") +
+          chalk.magenta(req.params.id)
         );
         res.send(
           "NO ES EL USUARIO   " +
-            req.user.id +
-            " comparando con " +
-            req.params.id
+          req.user.id +
+          " comparando con " +
+          req.params.id
         );
       }
     } else {
@@ -581,7 +583,7 @@ exports.Obtener_Citas_Doctor = async function (req, res) {
     if (token) {
       if (req.user.id == req.params.id) {
         logger(chalk.blue("obtener Citas :  ") + chalk.green(req.user.id));
-        await Cita.find({ doctor: req.user.id, estado:'pendiente' }, (err, citas) => {
+        await Cita.find({ doctor: req.user.id, estado: 'pendiente' }, (err, citas) => {
           if (!citas) {
             logger(chalk.red("CITA NO ENCONTRADA"));
             res.json({ msg: "no encontro las cita" });
@@ -599,15 +601,15 @@ exports.Obtener_Citas_Doctor = async function (req, res) {
       } else {
         logger(
           chalk.blue("NO es el usuario ") +
-            chalk.green(req.user.id) +
-            chalk.blue("comparado con ") +
-            chalk.magenta(req.params.id)
+          chalk.green(req.user.id) +
+          chalk.blue("comparado con ") +
+          chalk.magenta(req.params.id)
         );
         res.send(
           "NO ES EL USUARIO   " +
-            req.user.id +
-            " comparando con " +
-            req.params.id
+          req.user.id +
+          " comparando con " +
+          req.params.id
         );
       }
     } else {
@@ -625,7 +627,7 @@ exports.Obtener_Citas_Atendidas_Doctor = async function (req, res) {
       if (req.user.id == req.params.id) {
         logger(chalk.blue("obtener Citas :  ") + chalk.green(req.user.id));
         await Cita.find(
-          { doctor: req.user.id, estado: {$ne: 'pendiente'}},
+          { doctor: req.user.id, estado: { $ne: 'pendiente' } },
           (err, citas) => {
             if (!citas) {
               logger(chalk.red("CITAs atendidas NO ENCONTRADA"));
@@ -633,7 +635,7 @@ exports.Obtener_Citas_Atendidas_Doctor = async function (req, res) {
             } else {
               logger(
                 chalk.blue("CITAS ATENDIDAS ENCONTRADAS: ") +
-                  chalk.magenta(citas.length)
+                chalk.magenta(citas.length)
               );
               res.status(200).json(citas);
             }
@@ -646,15 +648,15 @@ exports.Obtener_Citas_Atendidas_Doctor = async function (req, res) {
       } else {
         logger(
           chalk.blue("NO es el usuario ") +
-            chalk.green(req.user.id) +
-            chalk.blue("comparado con ") +
-            chalk.magenta(req.params.id)
+          chalk.green(req.user.id) +
+          chalk.blue("comparado con ") +
+          chalk.magenta(req.params.id)
         );
         res.send(
           "NO ES EL USUARIO   " +
-            req.user.id +
-            " comparando con " +
-            req.params.id
+          req.user.id +
+          " comparando con " +
+          req.params.id
         );
       }
     } else {
@@ -702,8 +704,8 @@ exports.Enviar_Datos_Nueva_Receta = async function (req, res) {
               //mensaje encontrando al doctor
               logger(
                 chalk.blue("mensaje: ") +
-                  chalk.green("se encontro al doctor: ") +
-                  chalk.magenta(doctor.lastname)
+                chalk.green("se encontro al doctor: ") +
+                chalk.magenta(doctor.lastname)
               );
               //encontrando cita por ID mandado por Body
               await Cita.findById(req.body.id_cita, async (err, cita) => {
@@ -720,16 +722,16 @@ exports.Enviar_Datos_Nueva_Receta = async function (req, res) {
                         await Horario.findById(cita.horario, (err, horario) => {
                           console.log(
                             chalk.blue("nombre del paciente de la receta: ") +
-                              chalk.yellow(paciente.name + " " + paciente.lastname)
+                            chalk.yellow(paciente.name + " " + paciente.lastname)
                           );
                           console.log(
                             chalk.blue("nombre del doctor de la receta: ") +
-                              chalk.yellow(doctor.name + " "+doctor.lastname)
+                            chalk.yellow(doctor.name + " " + doctor.lastname)
                           );
                           res.json({
                             receta: "OK",
-                            paciente: paciente.name +" " +paciente.lastname,
-                            doctor: doctor.name + " "+ doctor.lastname,
+                            paciente: paciente.name + " " + paciente.lastname,
+                            doctor: doctor.name + " " + doctor.lastname,
                             horario:
                               "De " +
                               horario.hora_inicio +
@@ -758,22 +760,22 @@ exports.Enviar_Datos_Nueva_Receta = async function (req, res) {
       } else {
         logger(
           chalk.blue("NO es el usuario ") +
-            chalk.green(req.user.id) +
-            chalk.blue("comparado con ") +
-            chalk.magenta(req.params.id)
+          chalk.green(req.user.id) +
+          chalk.blue("comparado con ") +
+          chalk.magenta(req.params.id)
         );
         res.send(
           "NO ES EL USUARIO   " +
-            req.user.id +
-            " comparando con " +
-            req.params.id
+          req.user.id +
+          " comparando con " +
+          req.params.id
         );
       }
     } else {
       return res.status(403).send({ success: false, msg: "Unauthorized." });
     }
   } catch (err) {
-    
+
     logger(chalk.red("ERROR: ") + chalk.white(err));
   }
 };
@@ -804,42 +806,42 @@ exports.Crear_Nueva_Receta = async function (req, res) {
                           try {
                             /*----CARGANDO LA IMAGEN EN CLOUDINARY Y ELIMINANDOLA AUTOMATICAMENTE DE NUESTRO ARCHIVO ESTATICO ----*/
                             const uploader = async (path) =>
-                            await cloudinary.uploads(path, "Firmas");
+                              await cloudinary.uploads(path, "Firmas");
                             //console.log(req.file);
                             const file = req.file;
                             /**--------------------------------------------- */
-                            if(file){
+                            if (file) {
                               const path = file.path;
-                            const newUrl = await uploader(path);
-                            const firma_imagen = newUrl.url;
-                            fs.unlinkSync(path);
+                              const newUrl = await uploader(path);
+                              const firma_imagen = newUrl.url;
+                              fs.unlinkSync(path);
 
-                            
+
                               var newreceta = new Receta({
-                              nombres_apellidos:
-                              paciente.name + " " + paciente.lastname,
-                              acto_medico: req.body.acto_medico,
-                              medicamentos: req.body.medicamentos,
-                              fecha_expedicion: req.body.fecha_expedicion,
-                              valida_hasta: req.body.valida_hasta,
-                              cita: req.body.id_cita,
-                              firma: firma_imagen
-                            });
+                                nombres_apellidos:
+                                  paciente.name + " " + paciente.lastname,
+                                acto_medico: req.body.acto_medico,
+                                medicamentos: req.body.medicamentos,
+                                fecha_expedicion: req.body.fecha_expedicion,
+                                valida_hasta: req.body.valida_hasta,
+                                cita: req.body.id_cita,
+                                firma: firma_imagen
+                              });
 
-                            
-                            newreceta.cita = cita;
-                            await newreceta.save();
 
-                            cita.receta = newreceta;
-                            await cita.save();
+                              newreceta.cita = cita;
+                              await newreceta.save();
 
-                            res.json({ msg: "Nueva receta guardada" });
-                            }else{
-                              res.json({msg:"No se detectó ninguna imagen"});
+                              cita.receta = newreceta;
+                              await cita.save();
+
+                              res.json({ msg: "Nueva receta guardada" });
+                            } else {
+                              res.json({ msg: "No se detectó ninguna imagen" });
                             }
-                            
-                
-                            
+
+
+
                           } catch (err) {
                             res.json(err);
                           }
@@ -857,15 +859,15 @@ exports.Crear_Nueva_Receta = async function (req, res) {
       } else {
         logger(
           chalk.blue("NO es el usuario ") +
-            chalk.green(req.user.id) +
-            chalk.blue("comparado con ") +
-            chalk.magenta(req.params.id)
+          chalk.green(req.user.id) +
+          chalk.blue("comparado con ") +
+          chalk.magenta(req.params.id)
         );
         res.send(
           "NO ES EL USUARIO   " +
-            req.user.id +
-            " comparando con " +
-            req.params.id
+          req.user.id +
+          " comparando con " +
+          req.params.id
         );
       }
     } else {
@@ -876,6 +878,294 @@ exports.Crear_Nueva_Receta = async function (req, res) {
     res.send({ msg: "ERROR: " + err });
   }
 };
+
+
+///////RESPORTES - ESTADISTICAS DEL DOCTOR
+//#1
+exports.Reporte_Doctores_Por_Especialidad = async function (req, res) {
+
+  try {
+    await Especialidad.find(async (err, especialidades) => {
+
+      var repo = [{ especialidad: String, cantDoctor: String }]
+
+      //logger(chalk.green("doctores:" + doctores.length))
+
+      especialidades.forEach(x => {
+        repo.push({
+          especialidad: x.especialidad,
+          cantDoctor: x.doctor.length
+        })
+        //reporte.push(dato)
+        //logger(chalk.green("especialidad: "+x.especialidad+"  doctores:"+x.doctor.length))
+      });
+      logger(chalk.green(JSON.stringify(repo)))
+      res.json({ msg: "REPORTE CANTIDAD DE MEDICOS POR ESPECIALIDAD", reporte: repo })
+    })
+  } catch (error) {
+    logger(chalk.red("ERROR: ") + chalk.white(err));
+    res.send({ msg: "error al encontrar especialidades " + err });
+  }
+
+}
+
+exports.Reporte_Pacientes_Atendidos_Por_Doctores = async function (req, res) {
+
+  try {
+
+    await Cita.find({estado: "atendido"}, async (err,citas) => {
+      try {
+
+        await Doctor.find(async (err,doctores) => {
+          var doctoresPorCitasAtendidas = [{doctorId:String,pacientesAtendidos:String}] 
+          doctores.forEach(doctor => {
+            var c=0
+            var docId=null
+            doctor.cita.forEach(citadedoctor => {
+              
+              citas.forEach(cita =>{
+                
+                if(cita.id == citadedoctor){
+                  c++;
+                  console.log("cita "+cita.estado+ "docor: " + doctor.id+ " contador "+c)
+                  docId=doctor.id
+                }
+                
+              })
+              
+
+            })
+            if(c!=0 && docId!=null){
+              console.log(docId)
+              console.log(c)
+              doctoresPorCitasAtendidas.push({doctorId:docId,pacientesAtendidos:c})
+                  
+            }
+            
+          });
+          res.json({msg: "REPORTE CANTIDAD DE PACIENTES POR DOCTORES ",data: doctoresPorCitasAtendidas})    
+
+        })
+        
+      } catch (error) {
+        
+      }
+    })
+
+
+  } catch (error) {
+    logger(chalk.red("ERROR: ") + chalk.white(err));
+    res.send({ msg: "error al encontrar especialidades " + err });
+  }
+
+}
+exports.Reporte_Citas_Atendidas_En_General = async function (req, res) {
+
+  try {
+
+    await Cita.find({estado: "atendido"}, async (err,citas) => {
+      try {
+
+        await Doctor.find(async (err,doctores) => {
+          var doctoresPorCitasAtendidas = [{doctorId:String,cantCitas:String}] 
+          doctores.forEach(doctor => {
+            var c=0
+            var docId=null
+            doctor.cita.forEach(citadedoctor => {
+              
+              citas.forEach(cita =>{
+                
+                if(cita.id == citadedoctor){
+                  c++;
+                  console.log("cita "+cita.estado+ "docor: " + doctor.id+ " contador "+c)
+                  docId=doctor.id
+                }
+                
+              })
+              
+
+            })
+            if(c!=0 && docId!=null){
+              console.log(docId)
+              console.log(c)
+              doctoresPorCitasAtendidas.push({doctorId:docId,cantCitas:c})
+                  
+            }
+            
+          });
+          res.json({msg: "REPORTE CANTIDAD DE CITAS ATENDIDAS POR DOCTORES ",data: doctoresPorCitasAtendidas})    
+
+        })
+        
+      } catch (error) {
+        
+      }
+    })
+
+
+
+
+
+
+
+
+
+
+    // await Doctor.find((err, doctores) => {
+    //   var areglo = [{cantCitas:String}]
+      
+    //   doctores.forEach(async doctor => {
+    //     if(doctor.cita.length==0){
+    //       //logger(chalk.red("doctor: "+ doctor._id +" no tiene citas "+" :D") + chalk.white())
+    //     }else{
+            
+            
+
+    //         //var citas = await Cita.find({estado:"atendido"})
+    //         var cont = 0;
+
+    //         doctor.cita.forEach(async citaxdoctor => {
+    //           try { 
+    //               //var citaencontrada = 
+    //                 await Cita.findById(citaxdoctor,(err,citaencontrada) =>{
+                      
+    //                   if(citaencontrada.estado=="atendido"){
+    //                     cont++;
+    //                     doctorActual = doctor.id
+
+    //                     console.log("Actual: " + doctorActual)
+    //                     console.log("??: " + citaencontrada.doctor)
+    //                     doctorTemporal = doctorActual
+    //                     areglo.push({cantCitas:citaencontrada})
+    //                     console.log("AREGLO : " + areglo)
+    //                     console.log(citaencontrada + " CANTIDAD "+ cont)
+    //                   }
+
+    //                 })    
+              
+    //           } catch (error) {
+                
+    //           }
+
+    //         })
+           
+            
+    //       }
+          
+    //     }
+        
+    //   );
+    //   console.log("ASDJASDALSKDJLASDJLKADJ"+ JSON.stringify(areglo))
+    //   res.json(areglo)
+      
+     
+    //   //citas.forEach(element => {
+    //   //   logger(chalk.green("estado cita: "+ element.estado))
+    //   // });
+    //   // var citaxdoctor = [{doctor:String,cantCitas:String}]
+    //   // var dc = null
+    //   // var cant = 0
+    //   // citas.forEach(async cita => {
+    //   //   logger(chalk.red("citas: "+cita._id))
+    //   //   try {
+
+    //   //     var nombreDoctores=[]
+    //   //     var comparacion = []
+    //   //     await Doctor.findById(cita.doctor, async (err, doctor) => {
+            
+    //   //       nombreDoctores.push(doctor.name)
+            
+    //   //     })
+    //   //     nombreDoctores.forEach(x => {
+    //   //       if(comparacion.find(e => e==x)){
+
+    //   //       }
+    //   //       comparacion.push(x)
+    //   //     });
+    //   //     logger(chalk.green(nombreDoctores))
+    //   //   } catch (error) {
+    //   //     logger(chalk.red("ERROR: ") + chalk.white("NO ENCONTRO DOCTOR"))
+    //   //   }
+    //   // });
+     
+      
+
+
+    // })//.populate({ path: 'doctor', select: 'name' })
+  } catch (error) {
+    logger(chalk.red("ERROR: ") + chalk.white(err));
+    res.send({ msg: "error al encontrar especialidades " + err });
+  }
+}
+
+exports.Reporte_Pacientes_Atendidos_Por_Especialidad = async function (req, res) {
+
+  try {
+    await Cita.find({estado: "atendido"}, async (err,citas) => {
+      try {
+        await Doctor.find(async (err,doctores) => {
+          try {
+            await Especialidad.find(async (err, especialidades)=>{
+
+            var doctoresPorCitasAtendidas = [{doctorId:String,cantCitas:String,especialidad:String}] 
+
+            doctores.forEach(doctor => {
+            var c=0
+            var docId=null
+            var espe=null
+            doctor.cita.forEach(citadedoctor => {
+              
+              citas.forEach(cita =>{
+                
+                if(cita.id == citadedoctor){
+                  c++;
+                  especialidades.forEach(esp=>{
+                    
+                  if(doctor.especialidad==esp.id){
+                    //console.log(esp.especialidad)
+                    espe=esp.especialidad
+                  }
+                  })
+                  console.log("cita "+cita.estado+ "docor: " + doctor.id+ " contador "+c)
+                  docId=doctor.id
+                  }
+                
+                
+                
+              })
+              
+
+            })
+            if(c!=0 && docId!=null){
+              console.log(docId)
+              console.log(c)
+              console.log(espe)
+              doctoresPorCitasAtendidas.push({doctorId:docId,cantCitas:c,especialidad:espe})
+              console.log(doctoresPorCitasAtendidas)
+            }
+            
+          });
+          res.json({msg: "REPORTE CANTIDAD DE CITAS ATENDIDAS POR ESPECIALIDAD DE DOCTOR",data: doctoresPorCitasAtendidas})    
+            })
+            
+          
+          } catch (error) {
+            
+          }
+          
+
+        })
+        
+      } catch (error) {
+        
+      }
+    })
+
+  } catch (error) {
+    logger(chalk.red("ERROR: ") + chalk.white(err));
+    res.send({ msg: "error al encontrar especialidades " + err });
+  }
+}
 
 getToken = function (headers) {
   if (headers && headers.authorization) {
@@ -889,4 +1179,7 @@ getToken = function (headers) {
     return null;
   }
 };
+
+
+
 
