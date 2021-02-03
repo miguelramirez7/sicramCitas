@@ -13,7 +13,7 @@
 
 <script>
 import Session from "@/components/dashboards/Session.vue"
-import Loader from "@/modals/Loader.vue"; 
+import Loader from "@/modals/Loader.vue";  //comentario
 export default {
   name: "prueba",
   components: {
