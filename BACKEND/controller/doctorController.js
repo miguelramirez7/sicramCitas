@@ -686,7 +686,7 @@ exports.Obtener_Detalles_De_Cita_De_Un_Paciente = async function (req, res) {
   }
 };
 
-/////////CREACION DE LA RECETA-------------------------------
+/////////CREACION DE LA RECETA-------------------------------asi es
 //el obtendra los datos de la cita para colocarlas por defecto a la receta
 exports.Enviar_Datos_Nueva_Receta = async function (req, res) {
   try {

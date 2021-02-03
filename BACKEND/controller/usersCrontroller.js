@@ -5,7 +5,7 @@ var jwt = require("jsonwebtoken");
 var User = require("../models/user");
 const mailer = require("../mail/mediador_mailer")
 
-//REGISTRO USUARIO
+//REGISTRO USUARIO asi es
 exports.SignupUsuario = async function (req, res) {
   try {
     if (!req.body.password || !req.body.email) {
