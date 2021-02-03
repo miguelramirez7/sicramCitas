@@ -1167,9 +1167,6 @@ exports.Reporte_Pacientes_Atendidos_Por_Especialidad = async function (req, res)
   }
 }
 
-
-
-
 getToken = function (headers) {
   if (headers && headers.authorization) {
     var parted = headers.authorization.split(" ");
