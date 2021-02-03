@@ -16,7 +16,7 @@
     />
 
     <v-card-title
-      ><h3 class="titulo-perfil-pac">LISTA DE FAMILIARES</h3></v-card-title
+      ><h3 class="titulo-perfil-pac">LISTA DE DOCTORES</h3></v-card-title
     >
     <v-card-text v-if="showSkeletor == true">
       <v-sheet color="grey lighten-4" class="pa-3">
