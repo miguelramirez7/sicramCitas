@@ -198,7 +198,7 @@
                 <v-date-picker
                   color="teal"
                   v-model="infoReceta.valida_hasta"
-                  :min="date1"
+                  :min="infoReceta.fecha_expedicion"
                   @input="menu2 = false"
                 ></v-date-picker>
               </v-menu>
@@ -304,6 +304,9 @@ export default {
     receta() {
       return this.dialog;
     },
+    minDate(){
+      return this.infoReceta.valida_hasta
+    }
   },
 
   methods: {

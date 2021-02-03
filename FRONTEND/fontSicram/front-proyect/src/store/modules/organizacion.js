@@ -1,8 +1,12 @@
 const axios = require('axios');
-
+axios.defaults.baseURL = 'https://sicramtest.herokuapp.com/api';
 const state = {
     organizacionPerfil : null, //VARIABLE PARA CONSEGUIR LOS DATOS DE LA ORGANIZACION
     doctoresOrganizacion: null , //VARIABLE PARA CONSEGUIR LA LISTA DE DOCTORES DE LA ORGANIZACION
+    estadisctica1: null, //DOCTORES POR ESPECIALIDAD 
+    estadistica2 : null, //ATENDIDOS POR DOCTORES
+    estadistica3 : null, //CITAS ATENDIDAS POR DOCTOR
+    estadistica4 : null, //ATENDIDOS POR ESPECIALIDAD
 };
 
 const getters = {
@@ -14,7 +18,27 @@ const getters = {
     //CONSIGUE LOS DOCTORES REGISTRADOS PARA EL DOCTOR
     getDoctoresOrganizacion(state){
         return state.doctoresOrganizacion
-    }
+    },
+
+    //CONSIGUE LA ESTADÍSTICA 1
+    getEstadistica1(state){
+        return state.estadisctica1
+    },
+
+    //CONSIGUE LA ESTADÍSTICA 2
+    getEstadistica2(state){
+        return state.estadistica2
+    },
+
+    //CONSIGUE LA ESTADÍSTICA 3
+    getEstadistica3(state){
+        return state.estadistica3
+
+    },
+    //CONSIGUE LA ESTADÍSTICA 4
+    getEstadistica4(state){
+        return state.estadistica4
+    },
 };
 
 const mutations = { 
@@ -26,7 +50,27 @@ const mutations = {
     //PONE LA LISTA DE LOS DOCTORES DE LA ORGANIZACION
     setDoctoresOrganizacion(state, payload){
         state.doctoresOrganizacion = payload
-    }
+    },
+
+    //CONSIGUE LA ESTADÍSTICA 1
+    setEstadistica1(state,payload){
+        state.estadisctica1 = payload 
+    },
+
+    //CONSIGUE LA ESTADÍSTICA 2
+    setEstadistica2(state,payload){
+        state.estadistica2 = payload
+    },
+    
+    //CONSIGUE LA ESTADÍSTICA 3
+    setEstadistica3(state,payload){
+        state.estadistica3 = payload
+    },
+
+    //CONSIGUE LA ESTADÍSTICA 4
+    setEstadistica4(state,payload){
+        state.estadistica4 = payload
+    },
 };
 
 const actions = {
@@ -154,8 +198,8 @@ const actions = {
        });
    },
 
-   //CONSULTA PARA ELIMINAR UN DOCTOR DE LA ORGANIZACION
-   eliminarDoctor({commit,dispatch},datos){
+    //CONSULTA PARA ELIMINAR UN DOCTOR DE LA ORGANIZACION
+    eliminarDoctor({commit,dispatch},datos){
     let url = `/organizacion/doctor/eliminar/${datos.organizacion.id}`;
     return axios
       .post(
@@ -178,7 +222,70 @@ const actions = {
         dispatch('mensajeTipoAlert', {mensajeAlerta:'Ocurrió un error al eliminar el horario.' ,tipoAlerta:'success'} , { root: true })
         return Promise.resolve(false)
       })
-  },
+    },
+
+    //REPORTE DE DOCTORES POR ESPECIALIDAD
+    reporteDoctoresEspecialidad({commit}){
+        return axios
+           .get("/doctor/estadisticas/especialidad")
+            .then((res) => {
+                console.log(res)
+                commit('setEstadistica1',res.data.reporte)
+                return Promise.resolve(true)
+            })
+            .catch((e) => {
+                console.log(e)
+                return Promise.resolve(false)
+            });
+    },
+
+    //REPORTE DE PACIENTE ATENDIDOS POR DOCTORES
+    reportePacienteAtendidoDoc({commit}){
+        return axios
+           .get(`/doctor/estadisticas/pacientes/atendidos`)
+            .then((res) => {
+                console.log(res)
+                commit('setEstadistica2',res.data.data)
+                return Promise.resolve(true)
+            })
+            .catch((e) => {
+                console.log(e)
+                return Promise.resolve(false)
+            });
+    },
+
+    //REPORTE CITAS ATENDIDAS POR DOCTORES
+    reporteCitaAtendidaDoc({commit}){
+        return axios
+           .get(`/doctor/estadisticas/citas/atendidas`)
+            .then((res) => {
+                console.log(res)
+                commit('setEstadistica3',res.data.data)
+                return Promise.resolve(true)
+            })
+            .catch((e) => {
+                console.log(e)
+                return Promise.resolve(false)
+            });
+    },
+
+    //REPORTE ATENDIDOS POR ESPECIALIDAD
+    reporteAtendidosEspecialidad({commit}){
+        return axios
+           .get(`/doctor/estadisticas/pacientes/atendidos/especialidad`)
+            .then((res) => {
+                console.log(res)
+                commit('setEstadistica4',res.data.data)
+                return Promise.resolve(true)
+            })
+            .catch((e) => {
+                console.log(e)
+                return Promise.resolve(false)
+            });
+    }
+
+
+
 
 };
 

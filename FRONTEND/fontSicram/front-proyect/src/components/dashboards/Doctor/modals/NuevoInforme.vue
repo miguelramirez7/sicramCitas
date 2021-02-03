@@ -50,7 +50,7 @@
             </v-col>
             <v-col md="9" sm="9">
               <v-textarea
-                
+                v-model="infoInforme.anamnesis"
                 dense
                 rows="1"
                 outlined
@@ -153,6 +153,7 @@ export default {
       showQuestioner: false,
       showLoader: false,
       infoInforme: {
+        anamnesis: "",
         diagnostico: "",
         resultados_labo: "",
         tratamiento: "",

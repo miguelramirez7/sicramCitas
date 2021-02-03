@@ -23,6 +23,7 @@
                   transition="scale-transition"
                   offset-y
                   min-width="290px"
+                  color="teal"
                 >
                   <template v-slot:activator="{ on, attrs }">
                     <v-text-field
@@ -32,17 +33,21 @@
                       readonly
                       v-bind="attrs"
                       v-on="on"
+                      color="teal"
                       :rules="[getReglas.requerido]"
                     ></v-text-field>
                   </template>
                   <v-date-picker
+                    color="teal"
                     v-model="date"
                     @input="menu2 = false"
+                    :min="date"
                   ></v-date-picker>
                 </v-menu>
               </v-col>
               <v-col cols="12" md="4" class="pl-4 pr-4">
                 <v-select
+                 color="teal"
                   :items="items"
                   item-text="hora"
                   label="Horario"
@@ -94,6 +99,10 @@ export default {
         { hora: "9:00-10:00", hora_inicio: "9:00", hora_fin: "10:00" },
         { hora: "10:00-11:00", hora_inicio: "10:00", hora_fin: "11:00" },
         { hora: "11:00-12:00", hora_inicio: "11:00", hora_fin: "12:00" },
+        { hora: "12:00-13:00", hora_inicio: "12:00", hora_fin: "13:00" },
+        { hora: "13:00-14:00", hora_inicio: "13:00", hora_fin: "14:00" },
+        { hora: "14:00-15:00", hora_inicio: "14:00", hora_fin: "15:00" },
+        { hora: "15:00-16:00", hora_inicio: "15:00", hora_fin: "16:00" },
       ],
       horario: {
         fecha: "",

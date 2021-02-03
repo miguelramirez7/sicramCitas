@@ -26,7 +26,12 @@
           <v-icon>mdi-close</v-icon>
         </v-btn>
       </v-toolbar>
-      <v-card-text class="mt-5 caja-historial" >
+      <v-card-text class="mt-5" v-if="histPaciente== null">
+        <v-alert text prominent type="error" icon="mdi-cloud-alert">
+          El paciente no cuenta con un Historial médico.
+        </v-alert>
+      </v-card-text>
+      <v-card-text class="mt-5 caja-historial"  v-if="histPaciente != null">
         <v-data-table
           :items="histPaciente" 
           :headers="headers"
@@ -147,7 +152,7 @@ export default {
       return this.dialog;
     },
     histPaciente() {
-      if (this.getHistorialPaciente == null) return [];
+      if (this.getHistorialPaciente == null) return null;
       else return this.getHistorialPaciente;
     },
   },
