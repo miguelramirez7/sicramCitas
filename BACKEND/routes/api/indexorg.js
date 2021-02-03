@@ -25,7 +25,7 @@ router.get('/organizacion/perfil/:id', passport.authenticate('organizacion', { s
 
 //actualizar datos de la organizacion logeada
 router.post('/organizacion/perfil/update/:id',passport.authenticate('organizacion', { session: false}),organizacionController.Actualizar_Datos_Organizacion);
-
+ 
 
 /* ---------------------------------------------------------------------
 --------------ENDPOINTS DE DOCTORES DE ORGANIZACIÓN---------------------
