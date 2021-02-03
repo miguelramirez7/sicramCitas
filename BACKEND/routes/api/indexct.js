@@ -128,4 +128,6 @@ router.post(
 router.get("/doctor/historial/:id",passport.authenticate("doctor", { session: false }),
     citaController.Doctor_historial_medico
 );
+
+
 module.exports = router;
