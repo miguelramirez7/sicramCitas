@@ -122,6 +122,7 @@ router.post(
   citaController.Ver_receta_doctor
 );
 
+
 /*----------------------------------------------------------------
 ----------------historial médico del doctor-----------------------
 ------------------------------------------------------------------ */
@@ -129,5 +130,13 @@ router.get("/doctor/historial/:id",passport.authenticate("doctor", { session: fa
     citaController.Doctor_historial_medico
 );
 
+////////RESPORTES | ESTADISTICAS MEDICOS ..//////////////////////////
+router.get("/doctor/estadisticas/especialidad",doctorController.Reporte_Doctores_Por_Especialidad)
 
-module.exports = router;
+router.get("/doctor/estadisticas/pacientes/atendidos",doctorController.Reporte_Pacientes_Atendidos_Por_Doctores)
+
+router.get("/doctor/estadisticas/citas/atendidas",doctorController.Reporte_Citas_Atendidas_En_General)
+
+router.get("/doctor/estadisticas/pacientes/atendidos/especialidad",doctorController.Reporte_Pacientes_Atendidos_Por_Especialidad)
+
+module.exports = router;  
