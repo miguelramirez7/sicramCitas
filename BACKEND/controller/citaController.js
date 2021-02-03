@@ -11,7 +11,7 @@ const chalk = require("chalk");
 const mailer = require("../mail/mediador_mailer");
 const logger = console.log;
 
-//generar nueva citas
+//generar nueva citas asi es
 exports.GenerarNuevaCita = async function (req, res) {
   try {
     var token = getToken(req.headers);
