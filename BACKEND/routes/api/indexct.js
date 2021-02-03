@@ -12,6 +12,7 @@ const upload = require("../../libs/storage");
 router.post("/signupdoctor", doctorController.SignupDoctor);
 //LOGEARTE una vez ya tengas tu CUENTA REGISTRADA
 router.post("/signindoctor", doctorController.SigninDoctor);
+
 //salir de la cuenta del doctor
 router.get(
   "/signoutdoctor",
@@ -60,7 +61,7 @@ router.post(
 //////-----CITAS DEL DOCTOR--------------------------------------------
 //listar citas pendientes
 router.get(
-  "/doctor/cita/listar/:id",
+  "/doctor/cita/listar_pendientes/:id",
   passport.authenticate("doctor", { session: false }),
   doctorController.Obtener_Citas_Doctor
 );
@@ -127,4 +128,6 @@ router.post(
 router.get("/doctor/historial/:id",passport.authenticate("doctor", { session: false }),
     citaController.Doctor_historial_medico
 );
+
+
 module.exports = router;
